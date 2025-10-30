@@ -36,3 +36,6 @@
    __git status__ - polecenie do sprawdzenia różnic między lokalną a zdalną wersją projektu (brancha)  
    __git pull__ - pobranie ze zdalnego repo na lokalne  
    __git push__ - wypchnięcie z lokalnego repo na zdalne  
+   __git checkout NAZWA_BRANCHA__ - zmiana na branch o wybranej nazwie   
+   __git fetch origin__ - pobranie zmian z zdalnego repo, najlepiej zawsze przed mergowaniem  
+   __git merge origin/NAZWA_BRANCHA__ - zmergowanie się z branchem o wybranej nazwie  
