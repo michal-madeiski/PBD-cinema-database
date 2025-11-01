@@ -11,7 +11,7 @@ CREATE TYPE discount_name as ENUM {
 
 CREATE TYPE ticket_type_name as ENUM {
     "standard",
-    "reduced",
+    "reduced"
 };
 
 CREATE TYPE ticket_status AS ENUM (
