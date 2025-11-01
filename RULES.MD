@@ -1,6 +1,4 @@
 # ZASADY KODU:
-### (aby uniknąć bałaganu)
----
 1. WSZYSTKIE nazwy z małej (tabeli, atrybutów, ograniczeń, enumów), bo postgres i tak zamienia wszystko potem na małe litery i w skryptach będzie problem i bałagan a tak to wszędzie wszystko Z MAŁYCH (snake_case).  
    
 2. Spójna konwencja typów: daty (bez czasu) to DATE; data+czas to TIMESTAMP(0) - 0 oznacza bez sekund; tekstowe to VARCHAR(50), chyba że coś może być dłuższe np. qr code to wtedy więcej; liczbowe to int a ceny itp to NUMERIC(10, 2), chyba że coś ma konkertny zakres np. procenty to NUMERIC(4, 2).  
