@@ -1,5 +1,2 @@
-CREATE DATABASE cinema_db
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-
-USE cinema_db;
+CREATE DATABASE cinema_db ENCODING = "UTF8";
+\c cinema_db;
