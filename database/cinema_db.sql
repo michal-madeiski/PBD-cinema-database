@@ -197,13 +197,12 @@ CREATE TABLE shift (
         ON DELETE RESTRICT
 );
 
-
 CREATE TYPE payment_type as ENUM(
-    'cash',
-    'card',
-    'blik',
-    'online',
-    'voucher'
+    "cash",
+    "card",
+    "blik",
+    "online",
+    "voucher"
 );
 
 CREATE TABLE region (
@@ -225,7 +224,7 @@ CREATE TABLE term (
     fk_region_id INT NOT NULL,
     fk_manager_id INT NOT NULL,
     "start_date" DATE NOT NULL DEFAULT CURRENT_DATE,
-    end_date DATE,
+    end_date DATE CHECK (end_date IS NULL OR end_date >= "start_date"),
 
     CONSTRAINT c_fk_region_id
         FOREIGN KEY (fk_region_id)
@@ -236,8 +235,6 @@ CREATE TABLE term (
         FOREIGN KEY (fk_manager_id)
         REFERENCES regional_manager (_id)
         ON DELETE CASCADE,
-
-    CONSTRAINT date_check CHECK ("start_date" <= end_date)
 );
 
 CREATE TABLE product (
@@ -287,8 +284,8 @@ CREATE TABLE screening (
     _id SERIAL PRIMARY KEY,
     fk_room_id INT NOT NULL,
     fk_movie_version_id INT NOT NULL,
-    start_time TIMESTAMP(0),
-    end_time TIMESTAMP(0),
+    start_time TIMESTAMP(0) NOT NULL,
+    end_time TIMESTAMP(0) NOT NULL CHECK (end_time >= start_time),
 
     CONSTRAINT c_fk_room_id
         FOREIGN KEY (fk_room_id)
@@ -299,6 +296,5 @@ CREATE TABLE screening (
         FOREIGN KEY (fk_movie_version_id)
         REFERENCES movie_version (_id)
         ON DELETE CASCADE,
-
-    CONSTRAINT check_time CHECK (start_time <= end_time)
 );
+
