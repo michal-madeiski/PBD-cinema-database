@@ -39,7 +39,7 @@ CREATE TABLE special_offer {
 CREATE TABLE ticket_type {
     _id SERIAL PRIMARY KEY,
     "name" ticket_type_name NOT NULL,
-    price NUMERIC (10, 2) NOT NULL CHECK (price>0)
+    price NUMERIC (10, 2) NOT NULL CHECK (price > 0)
 }
 
 CREATE TABLE seat {
@@ -106,14 +106,11 @@ CREATE TABLE ticket_special_offer {
 };
 
 CREATE TYPE shift_type as ENUM (
-    'ticket_sales',         -- sprzedaż biletów
-    'concessions',          -- sprzedaż przekąsek
-    'usher',                -- obsługa sali (wskazywanie miejsc, kontrola biletów)
-    'cleaning',             -- sprzątanie sal
-    'projection',           -- obsługa projektora i sprzętu
-    'supervision',          -- nadzór / kierownik zmiany
-    'event_support',        -- pomoc przy wydarzeniach specjalnych
-    'technical_support'     -- pomoc techniczna (np. nagłośnienie)
+    "cashier",         
+    "usher",                
+    "cleaning",             
+    "projection",           
+    "technical_support"
 );
 
 CREATE TABLE "user" (
@@ -168,12 +165,6 @@ CREATE TABLE supervisor (
         REFERENCES worker(_id)
         ON DELETE CASCADE
 );
-
--- PLACEHOLDER BO ŻEBY SOBIE POTESTOWAĆ CINEMA ID
--- CREATE TABLE cinema (
---     _id SERIAL PRIMARY KEY,
---     name VARCHAR(50) NOT NULL
--- );
 
 CREATE TABLE employment (
     _id SERIAL PRIMARY KEY,
