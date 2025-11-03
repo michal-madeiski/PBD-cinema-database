@@ -32,7 +32,7 @@ CREATE TABLE special_offer {
     _id SERIAL PRIMARY KEY,
     "name" VARCHAR(50) NOT NULL,
     start_time TIMESTAMP(0) NOT NULL,
-    end_time TIMESTAMP(0) NOT NULL CHECK (start_time < end_time),
+    end_time TIMESTAMP(0) CHECK (end_time IS NULL OR start_time < end_time),
     amount NUMERIC (10, 2) NOT NULL CHECK (amount > 0)
 };
 
@@ -59,6 +59,7 @@ CREATE TABLE ticket {
     fk_discount_id INT,
     fk_screening_id INT NOT NULL,
     fk_seat_id INT NOT NULL,
+    fk_payment_id INT,
     qr_code VARCHAR(100) NOT NULL,
     status ticket_status NOT NULL DEFAULT "free"
 
@@ -80,6 +81,11 @@ CREATE TABLE ticket {
     CONSTRAINT c_fk_seat_id
         FOREIGN KEY (fk_seat_id)
         REFERENCES seat (_id)
+        ON DELETE CASCADE
+
+    CONSTRAINT c_fk_payment_id
+        FOREIGN KEY (fk_payment_id)
+        REFERENCES payment (_id)
         ON DELETE CASCADE
 };
 
