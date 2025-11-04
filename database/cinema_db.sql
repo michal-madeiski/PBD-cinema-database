@@ -393,16 +393,16 @@ CREATE TABLE product_sale (
 
 CREATE TABLE cinema_movie (
     fk_cinema_id INT NOT NULL,
-    fk_movie_id INT NOT NULL,
-    PRIMARY KEY (fk_cinema_id, fk_movie_id), 
+    fk_movie_version_id INT NOT NULL,
+    PRIMARY KEY (fk_cinema_id, fk_movie_version_id), 
 
     CONSTRAINT c_fk_cinema
         FOREIGN KEY (fk_cinema_id)
         REFERENCES cinema (_id)
         ON DELETE CASCADE,
 
-    CONSTRAINT c_fk_movie 
-        FOREIGN KEY (fk_movie_id)
-        REFERENCES movie (_id)
+    CONSTRAINT c_fk_movie_version 
+        FOREIGN KEY (fk_movie_version_id)
+        REFERENCES movie_version (_id)
         ON DELETE CASCADE
 );

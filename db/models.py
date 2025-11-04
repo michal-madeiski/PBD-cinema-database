@@ -36,7 +36,6 @@ class Movie(Base):
     director: Mapped[Optional[str]] = mapped_column(String(50))
     duration_minutes: Mapped[Optional[int]] = mapped_column(Integer)
 
-    fk_cinema: Mapped[list['Cinema']] = relationship('Cinema', secondary='cinema_movie', back_populates='fk_movie')
     movie_version: Mapped[list['MovieVersion']] = relationship('MovieVersion', back_populates='fk_movie')
 
 
@@ -157,7 +156,7 @@ class Cinema(Base):
     building_number: Mapped[Optional[int]] = mapped_column(Integer)
 
     fk_region: Mapped['Region'] = relationship('Region', back_populates='cinema')
-    fk_movie: Mapped[list['Movie']] = relationship('Movie', secondary='cinema_movie', back_populates='fk_cinema')
+    fk_movie_version: Mapped[list['MovieVersion']] = relationship('MovieVersion', secondary='cinema_movie', back_populates='fk_cinema')
     employment: Mapped[list['Employment']] = relationship('Employment', back_populates='fk_cinema')
     room: Mapped[list['Room']] = relationship('Room', back_populates='fk_cinema')
     product_sale: Mapped[list['ProductSale']] = relationship('ProductSale', back_populates='fk_cinema')
@@ -205,6 +204,7 @@ class MovieVersion(Base):
     fk_movie_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_version_id: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    fk_cinema: Mapped[list['Cinema']] = relationship('Cinema', secondary='cinema_movie', back_populates='fk_movie_version')
     fk_movie: Mapped['Movie'] = relationship('Movie', back_populates='movie_version')
     fk_version: Mapped['Version'] = relationship('Version', back_populates='movie_version')
     screening: Mapped[list['Screening']] = relationship('Screening', back_populates='fk_movie_version')
@@ -244,10 +244,10 @@ class Worker(User):
 t_cinema_movie = Table(
     'cinema_movie', Base.metadata,
     Column('fk_cinema_id', Integer, primary_key=True),
-    Column('fk_movie_id', Integer, primary_key=True),
+    Column('fk_movie_version_id', Integer, primary_key=True),
     ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_cinema'),
-    ForeignKeyConstraint(['fk_movie_id'], ['movie._id'], ondelete='CASCADE', name='c_fk_movie'),
-    PrimaryKeyConstraint('fk_cinema_id', 'fk_movie_id', name='cinema_movie_pkey')
+    ForeignKeyConstraint(['fk_movie_version_id'], ['movie_version._id'], ondelete='CASCADE', name='c_fk_movie_version'),
+    PrimaryKeyConstraint('fk_cinema_id', 'fk_movie_version_id', name='cinema_movie_pkey')
 )
 
 
