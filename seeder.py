@@ -1,9 +1,8 @@
 from db.connection import SessionLocal
 from db.models import *
-from db.models import *
 from faker import Faker 
 from datetime import timedelta, datetime
-import randomimport random
+import random
 from datetime import timedelta
 
 faker= Faker()
@@ -13,9 +12,7 @@ def seeder(seed_table, table_name, n):
     session = SessionLocal()
     try: 
         session.add_all(seed_table)
-        session.add_all(seed_table)
         session.commit()
-        print(f"Dodano {n} {table_name} do bazy danych!")
         print(f"Dodano {n} {table_name} do bazy danych!")
     except Exception as e:
         session.rollback()
