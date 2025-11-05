@@ -435,6 +435,7 @@ class Ticket(Base):
     fk_seat_id: Mapped[int] = mapped_column(Integer, nullable=False)
     qr_code: Mapped[str] = mapped_column(String(100), nullable=False)
     status: Mapped[str] = mapped_column(Enum('used', 'valid', 'reserved', 'payment_pending', 'free', name='ticket_status'), nullable=False, server_default=text("'free'::ticket_status"))
+    price: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_discount_id: Mapped[Optional[int]] = mapped_column(Integer)
     fk_payment_id: Mapped[Optional[int]] = mapped_column(Integer)
 

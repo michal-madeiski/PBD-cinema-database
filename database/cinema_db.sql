@@ -323,7 +323,8 @@ CREATE TABLE ticket (
     fk_seat_id INT NOT NULL,
     fk_payment_id INT,
     qr_code VARCHAR(100) NOT NULL,
-    status ticket_status NOT NULL DEFAULT 'free',
+    "status" ticket_status NOT NULL DEFAULT 'free',
+    price INT NOT NULL,
 
     CONSTRAINT c_fk_ticket_type_id
         FOREIGN KEY (fk_ticket_type_id)
