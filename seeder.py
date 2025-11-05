@@ -92,7 +92,7 @@ def seed_cinema_movie(n):
         already_exists.add(pair)
         new_records.append({'fk_cinema_id': pair[0], 'fk_movie_version_id': pair[1]})  
     try:
-        session.execute(insert(t_cinema_movie), new_records)
+        session.execute(t_cinema_movie.insert(), new_records)
         session.commit()
         print(f"Dodano {len(new_records)} rekordów do cinema_movie!")
     except Exception as e:
