@@ -114,8 +114,12 @@ def seed_workers_base(ModelClass, n):
                 break
 
         account_create_date = faker.date_between(start_date='-5y', end_date='today')
-        last_login_time = faker.date_time_between(account_create_date, 'now') \
-            if random.random() < 0.9 else None
+        
+        if random.random() < 0.9:
+            now_minus_5h = datetime.datetime.now() - datetime.timedelta(hours=5)
+            last_login_time = faker.date_time_between(start_date=account_create_date, end_date=now_minus_5h)
+        else:
+            last_login_time = None
 
         data = {
             "name": faker.first_name(),
