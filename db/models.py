@@ -51,6 +51,7 @@ class Product(Base):
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     price: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    is_available: Mapped[bool] = mapped_column(Boolean, nullable=False)
     barcode: Mapped[Optional[str]] = mapped_column(String(50))
 
     product_sale: Mapped[list['ProductSale']] = relationship('ProductSale', back_populates='fk_product')
@@ -375,7 +376,6 @@ class ProductSale(Base):
     fk_product_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_payment_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_cinema_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    is_available: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text('true'))
     time_of_sale: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
 
     fk_cinema: Mapped['Cinema'] = relationship('Cinema', back_populates='product_sale')

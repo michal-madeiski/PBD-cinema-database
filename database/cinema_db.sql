@@ -216,7 +216,8 @@ CREATE TABLE product (
     _id SERIAL PRIMARY KEY,
     "name" VARCHAR(50) NOT NULL UNIQUE,
     barcode VARCHAR(50) UNIQUE,
-    price NUMERIC (10, 2) NOT NULL CHECK (price >= 0)
+    price NUMERIC (10, 2) NOT NULL CHECK (price >= 0),
+    is_available BOOLEAN NOT NULL
 );
 
 CREATE TABLE room (
@@ -369,7 +370,6 @@ CREATE TABLE product_sale (
     fk_product_id INT NOT NULL,
     fk_payment_id INT NOT NULL,
     fk_cinema_id INT NOT NULL,
-    is_available BOOLEAN NOT NULL DEFAULT TRUE,
     time_of_sale TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP
         CHECK (time_of_sale <= CURRENT_TIMESTAMP),
 

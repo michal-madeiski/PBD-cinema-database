@@ -23,7 +23,7 @@ def seeder_region(n):
     existing_names = set(t.name for t in session.query(Region).all())
     names = set()
     for _ in range(n):
-        name = faker.state()
+        name = faker.administrative_unit()
         if name not in names and name not in existing_names:
             names.add(name)
     session.close()     
@@ -75,10 +75,10 @@ def seeder_screening(n):
     for _ in range(n):
         fk_room_id = random.choice(room_ids)
         fk_movie_version_id = random.choice(movie_version_ids)
-        start_time = faker.date_time_between(start_date='1970-01-01', end_date='now')
+        start_time = faker.date_time_between( end_date='now')
         start_time = start_time.replace(second=0, microsecond=0)
-        movie_version = session.query(MovieVersion).get(fk_movie_version_id)
-        movie = session.query(Movie).get(movie_version.fk_movie_id)
+        movie_version = session.get(MovieVersion, fk_movie_version_id)
+        movie = session.get(Movie, movie_version.fk_movie_id)
         duration = movie.duration_minutes
         end_time = start_time + timedelta(minutes = duration + 40)
         screenings.append(Screening(fk_room_id = fk_room_id, fk_movie_version_id = fk_movie_version_id, start_time = start_time, end_time = end_time))
@@ -109,7 +109,7 @@ def seeder_product_sale(n):
         fk_product_id = random.choice(product_ids)
         fk_payment_id = random.choice(payment_ids)
         fk_cinema_id = random.choice(cinema_ids)
-        time_of_sale = faker.date_time_between(start_date='1970-01-01', end_date='now')
+        time_of_sale = faker.date_time_between(end_date='now')
         time_of_sale = time_of_sale.replace(microsecond=0)
         product_sales.append(ProductSale(fk_product_id = fk_product_id, fk_payment_id = fk_payment_id, fk_cinema_id = fk_cinema_id, time_of_sale = time_of_sale))
     session.close()
@@ -133,26 +133,6 @@ def seeder_payment(n):
     session.close()
     seeder(payments, "payment", n)
 
-# def seeder_regional_manager(n):
-#     regional_managers = []
-#     session = SessionLocal()
-#     existing_regional_managers_ids = set(t._id for t in session.query(RegionalManager).all())
-#     regional_managers_ids = set()
-#     user_ids = [t._id for t in session.query(User).all()]
-
-#     if(len(user_ids) == 0):
-#         print("Brak danych w tabeli User")
-#         session.close()
-#         return
-    
-#     for _ in range(n):
-#         fk_user_id = random.choice(user_ids)
-#         if fk_user_id not in existing_regional_managers_ids and fk_user_id not in regional_managers_ids:
-#             regional_managers_ids.add(fk_user_id)
-#             regional_managers.append(RegionalManager(_id = fk_user_id))
-#     session.close()
-#     seeder(regional_managers, "regional_manager", len(regional_managers))
-
 def seeder_term(n):
     terms = []
     session = SessionLocal()
@@ -172,8 +152,8 @@ def seeder_term(n):
     for _ in range(n):
         fk_region_id = random.choice(region_ids)
         fk_manager_id = random.choice(regional_manager_ids)
-        start_date = faker.date_between(start_date='1970-01-01', end_date='2026-01-01')
-        end_date = faker.date_between(start_date='1970-01-01', end_date='2026-01-01')
+        start_date = faker.date_between(end_date='now')
+        end_date = faker.date_between(end_date='now')
         if end_date < start_date:
             end_date = None
         terms.append(Term(fk_region_id = fk_region_id, fk_manager_id = fk_manager_id, start_date = start_date, end_date = end_date))
@@ -192,18 +172,25 @@ def seed_version():
     seeder(versions, "version", len(versions))
 
 def seed_license(n):
-    licenses = [
-        License(
-            title=faker.sentence(nb_words=3),
+    session= SessionLocal()
+    already_exists=set(l[0] for l in session.query(License.license_number).all())
+    licenses=[]
+    for i in range(n):
+        number= faker.random_int(min=1000, max=99999999)
+        while number in already_exists:
+            number= faker.random_int(min=1000, max=99999999)
+        already_exists.add(number)
+        lic= License(
+            title=faker.sentence(nb_words=2, variable_nb_words=True),
             director=faker.name(),
             duration_minutes=faker.random_int(min=60, max=200),
-            license_number=faker.random_int(min=1000000, max=9999999),
+            license_number=number,
             start_date=faker.date_this_year(),
             end_date=faker.date_this_year(before_today=False, after_today=True),
             cost=faker.random_int(min=10000, max=100000)
         )
-        for _ in range(n)
-    ]
+        licenses.append(lic)
+
     seeder(licenses, "license", n)
 
 def seed_movie_version(min_vers=1, max_vers=5):
@@ -229,7 +216,7 @@ def seed_movie_version(min_vers=1, max_vers=5):
 def seed_cinemas(n):
     session= SessionLocal()
     region_ids=[r[0] for r in session.query(Region._id).all()]
-    cinemas=[Cinema(fk_region_id=random.choice(region_ids), city=faker.city_name(), street=faker.street_name(), building_number=random.randint(1, 30)) for _ in range(n)]
+    cinemas=[Cinema(fk_region_id=random.choice(region_ids), city=faker.city(), street=faker.street_name(), building_number=random.randint(1, 30)) for _ in range(n)]
     seeder(cinemas, "cinema", n)
 
 
@@ -308,7 +295,7 @@ def seed_seat(n):
         return
     
     seeder((Seat(fk_room_id = random.choice(room_ids),
-                 seat_num = i
+                 seat_num = i+1
                  )
                  for i in range(n)), "seat", n)
     session.close()
@@ -396,7 +383,6 @@ def seed_ticket_special_offer(n):
     finally: 
         session.close()
         
-import pytz
 def seed_users_base(ModelClass, n):
     session = SessionLocal()
     objects = []
@@ -424,7 +410,7 @@ def seed_users_base(ModelClass, n):
 
         account_create_date = faker.date_between(start_date='-5y', end_date='today')
         if random.random() < 0.9:
-            now_minus_5h = datetime.datetime.now() - datetime.timedelta(hours=5)
+            now_minus_5h = datetime.now() - timedelta(hours=5)
             last_login_time = faker.date_time_between(start_date=account_create_date, end_date=now_minus_5h)
         else:
             last_login_time = None
@@ -494,7 +480,7 @@ def seed_workers_base(ModelClass, n):
         account_create_date = faker.date_between(start_date='-5y', end_date='today')
         
         if random.random() < 0.9:
-            now_minus_5h = datetime.datetime.now() - datetime.timedelta(hours=5)
+            now_minus_5h = datetime.now() - timedelta(hours=5)
             last_login_time = faker.date_time_between(start_date=account_create_date, end_date=now_minus_5h)
         else:
             last_login_time = None
@@ -564,9 +550,9 @@ def seed_employment(n):
 
         if random.random() < 0.3:
             months = random.randint(6, 24)
-            end_date = start_date + datetime.timedelta(days=30 * months)
-            if end_date > datetime.date.today():
-                end_date = datetime.date.today()
+            end_date = start_date + timedelta(days=30 * months)
+            if end_date > datetime.today().date():
+                end_date = datetime.today().date()
         else:
             end_date = None
             
@@ -588,7 +574,7 @@ def seed_employment(n):
     finally:
         session.close()
 
-def seed_shifts(n):
+def seed_shift(n):
     session = SessionLocal()
 
     worker_ids = [w[0] for w in session.query(Worker._id).all()]
@@ -658,6 +644,70 @@ def seed_ticket_with_realistic_price():
 
 if __name__ == "__main__":
     print("Zaczynam seedowanie")
+
+
+    movie_and_license_count=10000
+    cinema_movie=20000
+    min_versions=1
+    max_versions=1
+    cinema_count=5000
+    room_counts= cinema_count*3
+    SERVICES = 200
+    SUPERVISORS = 20
+    CLIENTS = 20000
+    REGIONAL_MANAGERS = 5
+    SHIFTS = 200
+    EMPLOYMENTS = 20
+    region_count = 500
+    product_count = 1000
+    screening_count = 10000
+    product_sale_count = 10000
+    payment_count = 10000
+    term_count = 5000
+    TICKET_COUNT = 1000
+    SPECIAL_OFFER_COUNT = 1000
+    SEAT_COUNT = 5000
+    TICKET_SPECIAL_OFFER_COUNT = 1000
+
+     # seedery, które nie potrzebują innych tabel
+    seeder_region(region_count)
+    seeder_product(product_count)
+
+    seed_license(movie_and_license_count)
+    seed_version()
+    seed_movie_version(min_versions, max_versions)
+    #wymaga regionu
+    seed_cinemas(cinema_count)
+    seed_cinema_movie(cinema_movie)
+    seed_room(room_counts)
+
+   
+    seed_service(SERVICES)
+    seed_supervisor(SUPERVISORS)
+    seed_client(CLIENTS)
+    seed_regional_manager(REGIONAL_MANAGERS)
+    seed_shift(SHIFTS)
+
+    #WYMAGA CINEMA 
+    seed_employment(EMPLOYMENTS)
+
+
+    # seedery, które potrzebują innych tabel
+    seeder_screening(screening_count) # room, movie_version
+    seeder_payment(payment_count) # client
+    seeder_product_sale(product_sale_count) #product, payment, cinema
+    seeder_term(term_count) # region, regional_manager
+
+
+    
+
+    seed_special_offer(SPECIAL_OFFER_COUNT)
+    seed_discount() 
+    seed_ticket_type()
+    seed_seat(SEAT_COUNT) #room 
+    seed_ticket(TICKET_COUNT) #ticket_type, discount, payment, seat, screening
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT) #ticket, special_offer
+    seed_ticket_with_realistic_price()
 
 
 
