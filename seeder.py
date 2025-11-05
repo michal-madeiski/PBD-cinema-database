@@ -3,6 +3,7 @@ from db.models import *
 from faker import Faker 
 from datetime import timedelta, datetime
 import random
+from sqlalchemy import select
 
 faker= Faker("pl_PL")
 
@@ -77,9 +78,10 @@ def seeder_screening(n):
         fk_movie_version_id = random.choice(movie_version_ids)
         start_time = faker.date_time_between( end_date='now')
         start_time = start_time.replace(second=0, microsecond=0)
-        movie_version = session.get(MovieVersion, fk_movie_version_id)
-        movie = session.get(Movie, movie_version.fk_movie_id)
-        duration = movie.duration_minutes
+        # movie_version = session.get(MovieVersion, fk_movie_version_id)
+        # movie = session.get(Movie, movie_version.fk_movie_id)
+        # duration = movie.duration_minutes
+        duration = 120
         end_time = start_time + timedelta(minutes = duration + 40)
         screenings.append(Screening(fk_room_id = fk_room_id, fk_movie_version_id = fk_movie_version_id, start_time = start_time, end_time = end_time))
     session.close()
@@ -365,11 +367,16 @@ def seed_ticket_special_offer(n):
         return
 
     # set bo para jako klucz główny czyli ma być bez powtórzeń
-    pairs = set()
+    stmt = select(t_ticket_special_offer.c.fk_ticket_id, t_ticket_special_offer.c.fk_special_offer_id)
+    ticket_special_offers = session.execute(stmt).fetchall()
+    existed_pairs = {(r.fk_ticket_id, r.fk_special_offer_id) for r in ticket_special_offers}
 
+    pairs = set()
+    pair= ((random.choice(ticket_ids), random.choice(special_offer_ids)))
     while len(pairs) < n:
-        pairs.add((random.choice(ticket_ids), random.choice(special_offer_ids)))
-    
+        while pair in pairs or pair in existed_pairs:
+            pair= ((random.choice(ticket_ids), random.choice(special_offer_ids)))
+        pairs.add(pair)
 
     data = [{"fk_ticket_id": t, "fk_special_offer_id": s} for t, s in pairs]
 
@@ -602,7 +609,7 @@ def seed_shift(n):
         )
         shifts.append(shift)
 
-        if i % 100_000 == 0:
+        if (i+1) % 100_000 == 0:
             print(f"{i}\n")
 
     try:
@@ -688,28 +695,60 @@ if __name__ == "__main__":
     #seed_service(SERVICES)
     #seed_client(CLIENTS)
     #seed_regional_manager(REGIONAL_MANAGERS)
-    seed_shift(SHIFTS)
+    # seed_shift(SHIFTS//5)
+    # seed_shift(SHIFTS//5)
+    # seed_shift(SHIFTS//5)
+    # seed_shift(SHIFTS//5)
+    # seed_shift(SHIFTS//5)
+
 
     #WYMAGA CINEMA 
-    seed_employment(EMPLOYMENTS)
+    #seed_employment(EMPLOYMENTS)
 
 
     # seedery, które potrzebują innych tabel
-    seeder_screening(screening_count) # room, movie_version
-    seeder_payment(payment_count) # client
-    seeder_product_sale(product_sale_count) #product, payment, cinema
-    seeder_term(term_count) # region, regional_manager
+    # seeder_screening(screening_count//5) # room, movie_version
+    # seeder_screening(screening_count//5)
+    # seeder_screening(screening_count//5)
+    # seeder_screening(screening_count//5)
+    # seeder_screening(screening_count//5)
+
+    # seeder_payment(payment_count//10)
+    # seeder_payment(payment_count//10)
+    # seeder_payment(payment_count//10)
+    # seeder_payment(payment_count//10)
+    # seeder_payment(payment_count//10) # client
+
+    # seeder_product_sale(product_sale_count//10) #product, payment, cinema
+    # seeder_product_sale(product_sale_count//10)
+    # seeder_product_sale(product_sale_count//10)
+    # seeder_product_sale(product_sale_count//10)
+    # seeder_product_sale(product_sale_count//10)
+
+    # seeder_term(term_count) # region, regional_manager
 
 
     
 
-    seed_special_offer(SPECIAL_OFFER_COUNT)
-    seed_discount() 
-    seed_ticket_type()
-    seed_seat(SEAT_COUNT) #room 
-    seed_ticket(TICKET_COUNT) #ticket_type, discount, payment, seat, screening
-    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT) #ticket, special_offer
-    seed_ticket_with_realistic_price()
-
-
-
+    # seed_special_offer(SPECIAL_OFFER_COUNT)
+    # seed_discount() 
+    # seed_ticket_type()
+    # seed_seat(SEAT_COUNT) #room 
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    # seed_ticket(TICKET_COUNT//20)
+    
+     #ticket_type, discount, payment, seat, screening
+    #seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    #seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10) #ticket, special_offer
+    # seed_ticket_with_realistic_price()
