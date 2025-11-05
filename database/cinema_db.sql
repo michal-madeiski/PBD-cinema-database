@@ -1,7 +1,6 @@
 CREATE DATABASE cinema_db WITH ENCODING 'UTF8';
 \c cinema_db;
 
-
 CREATE TYPE discount_name as ENUM (
     'student',
     'school',
@@ -136,14 +135,13 @@ CREATE TABLE client (
 
 CREATE TABLE payment (
     _id SERIAL PRIMARY KEY,
-    fk_client_id INT NOT NULL,
+    fk_client_id INT,
     "type" payment_type NOT NULL,
     amount NUMERIC(10, 2) NOT NULL CHECK (amount >= 0),
 
     CONSTRAINT c_fk_client_id
         FOREIGN KEY (fk_client_id)
         REFERENCES client (_id)
-        ON DELETE CASCADE
 );
 
 CREATE TABLE movie (
@@ -272,12 +270,12 @@ CREATE TABLE employment (
     CONSTRAINT c_fk_employment_worker_id
         FOREIGN KEY (fk_worker_id)
         REFERENCES worker(_id)
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
 
     CONSTRAINT c_fk_employment_cinema_id
         FOREIGN KEY (fk_cinema_id)
         REFERENCES cinema(_id)
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
 );
 
 CREATE TABLE shift (
@@ -290,7 +288,7 @@ CREATE TABLE shift (
     CONSTRAINT c_fk_shift_worker_id
         FOREIGN KEY (fk_worker_id)
         REFERENCES worker(_id)
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
 
     CONSTRAINT shift_time_check CHECK (end_time IS NULL OR end_time > start_time)
 );
@@ -333,8 +331,7 @@ CREATE TABLE ticket (
 
     CONSTRAINT c_fk_discount_id
         FOREIGN KEY (fk_discount_id)
-        REFERENCES discount (_id)
-        ON DELETE CASCADE,
+        REFERENCES discount (_id),
 
     CONSTRAINT c_fk_screening_id
         FOREIGN KEY (fk_screening_id)
@@ -349,7 +346,6 @@ CREATE TABLE ticket (
     CONSTRAINT c_fk_payment_id
         FOREIGN KEY (fk_payment_id)
         REFERENCES payment (_id)
-        ON DELETE CASCADE
 );
 
 CREATE TABLE ticket_special_offer (
@@ -373,6 +369,7 @@ CREATE TABLE product_sale (
     fk_product_id INT NOT NULL,
     fk_payment_id INT NOT NULL,
     fk_cinema_id INT NOT NULL,
+    is_available BOOLEAN NOT NULL DEFAULT TRUE,
     time_of_sale TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP
         CHECK (time_of_sale <= CURRENT_TIMESTAMP),
 
@@ -392,17 +389,17 @@ CREATE TABLE product_sale (
         ON DELETE CASCADE
 );
 
-CREATE TABLE cinema_movie (
+CREATE TABLE cinema_movie_version (
     fk_cinema_id INT NOT NULL,
     fk_movie_version_id INT NOT NULL,
     PRIMARY KEY (fk_cinema_id, fk_movie_version_id), 
 
-    CONSTRAINT c_fk_cinema
+    CONSTRAINT c_fk_cinema_id
         FOREIGN KEY (fk_cinema_id)
         REFERENCES cinema (_id)
         ON DELETE CASCADE,
 
-    CONSTRAINT c_fk_movie_version 
+    CONSTRAINT c_fk_movie_version_id
         FOREIGN KEY (fk_movie_version_id)
         REFERENCES movie_version (_id)
         ON DELETE CASCADE

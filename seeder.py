@@ -3,10 +3,8 @@ from db.models import *
 from faker import Faker 
 from datetime import timedelta, datetime
 import random
-from datetime import timedelta
 
-faker= Faker()
-
+faker= Faker("pl_PL")
 
 def seeder(seed_table, table_name, n):
     session = SessionLocal()
@@ -42,6 +40,7 @@ def seeder_product(n):
         name = faker.word()
         barcode = faker.ean13() if random.random() > 0.2 else None
         price = faker.pyfloat(min_value=2, max_value=100, right_digits=2, positive=True)
+        is_available = faker.boolean()
 
         if name in names or name in existing_names:
             continue
@@ -53,7 +52,7 @@ def seeder_product(n):
 
         if barcode is not None:
             barcodes.add(barcode)
-        products.append(Product(name = name, barcode = barcode, price = price))
+        products.append(Product(name = name, barcode = barcode, price = price, is_available = is_available))
 
     session.close()
     seeder(products, "product", len(products))
@@ -134,25 +133,25 @@ def seeder_payment(n):
     session.close()
     seeder(payments, "payment", n)
 
-def seeder_regional_manager(n):
-    regional_managers = []
-    session = SessionLocal()
-    existing_regional_managers_ids = set(t._id for t in session.query(RegionalManager).all())
-    regional_managers_ids = set()
-    user_ids = [t._id for t in session.query(User).all()]
+# def seeder_regional_manager(n):
+#     regional_managers = []
+#     session = SessionLocal()
+#     existing_regional_managers_ids = set(t._id for t in session.query(RegionalManager).all())
+#     regional_managers_ids = set()
+#     user_ids = [t._id for t in session.query(User).all()]
 
-    if(len(user_ids) == 0):
-        print("Brak danych w tabeli User")
-        session.close()
-        return
+#     if(len(user_ids) == 0):
+#         print("Brak danych w tabeli User")
+#         session.close()
+#         return
     
-    for _ in range(n):
-        fk_user_id = random.choice(user_ids)
-        if fk_user_id not in existing_regional_managers_ids and fk_user_id not in regional_managers_ids:
-            regional_managers_ids.add(fk_user_id)
-            regional_managers.append(RegionalManager(_id = fk_user_id))
-    session.close()
-    seeder(regional_managers, "regional_manager", len(regional_managers))
+#     for _ in range(n):
+#         fk_user_id = random.choice(user_ids)
+#         if fk_user_id not in existing_regional_managers_ids and fk_user_id not in regional_managers_ids:
+#             regional_managers_ids.add(fk_user_id)
+#             regional_managers.append(RegionalManager(_id = fk_user_id))
+#     session.close()
+#     seeder(regional_managers, "regional_manager", len(regional_managers))
 
 def seeder_term(n):
     terms = []
@@ -181,6 +180,7 @@ def seeder_term(n):
 
     session.close()
     seeder(terms, "term", n)
+
 def seed_version(): 
     languages=['polish', 'english', 'spanish', 'german'] 
     ver= ['2D', '3D', 'IMAX']
@@ -205,7 +205,6 @@ def seed_license(n):
         for _ in range(n)
     ]
     seeder(licenses, "license", n)
-
 
 def seed_movie_version(min_vers=1, max_vers=5):
     session= SessionLocal()
@@ -241,7 +240,7 @@ def seed_cinema_movie(n):
     if not movie_ver_ids or not cinema_ids:
         print("Nie ma kin albo movie_version do seedowania")
         return
-    already_exists = set(session.query(t_cinema_movie.c.fk_cinema_id,t_cinema_movie.c.fk_movie_version_id  ).all())
+    already_exists = set(session.query(t_cinema_movie_version.c.fk_cinema_id,t_cinema_movie_version.c.fk_movie_version_id  ).all())
     new_records = []
     for _ in range(n):
         pair = (random.choice(cinema_ids), random.choice(movie_ver_ids))
@@ -250,7 +249,7 @@ def seed_cinema_movie(n):
         already_exists.add(pair)
         new_records.append({'fk_cinema_id': pair[0], 'fk_movie_version_id': pair[1]})  
     try:
-        session.execute(t_cinema_movie.insert(), new_records)
+        session.execute(t_cinema_movie_version.insert(), new_records)
         session.commit()
         print(f"Dodano {len(new_records)} rekordów do cinema_movie!")
     except Exception as e:
@@ -589,9 +588,6 @@ def seed_employment(n):
     finally:
         session.close()
 
-
-from datetime import timedelta
-
 def seed_shifts(n):
     session = SessionLocal()
 
@@ -660,8 +656,8 @@ def seed_ticket_with_realistic_price():
         session.close()
 
 
-
 if __name__ == "__main__":
     print("Zaczynam seedowanie")
+
 
 

@@ -2,7 +2,7 @@ from typing import Optional
 import datetime
 import decimal
 
-from sqlalchemy import CheckConstraint, Column, Date, Enum, ForeignKeyConstraint, Integer, Numeric, PrimaryKeyConstraint, String, Table, UniqueConstraint, text
+from sqlalchemy import Boolean, CheckConstraint, Column, Date, Enum, ForeignKeyConstraint, Integer, Numeric, PrimaryKeyConstraint, String, Table, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -156,7 +156,7 @@ class Cinema(Base):
     building_number: Mapped[Optional[int]] = mapped_column(Integer)
 
     fk_region: Mapped['Region'] = relationship('Region', back_populates='cinema')
-    fk_movie_version: Mapped[list['MovieVersion']] = relationship('MovieVersion', secondary='cinema_movie', back_populates='fk_cinema')
+    fk_movie_version: Mapped[list['MovieVersion']] = relationship('MovieVersion', secondary='cinema_movie_version', back_populates='fk_cinema')
     employment: Mapped[list['Employment']] = relationship('Employment', back_populates='fk_cinema')
     room: Mapped[list['Room']] = relationship('Room', back_populates='fk_cinema')
     product_sale: Mapped[list['ProductSale']] = relationship('ProductSale', back_populates='fk_cinema')
@@ -204,7 +204,7 @@ class MovieVersion(Base):
     fk_movie_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_version_id: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    fk_cinema: Mapped[list['Cinema']] = relationship('Cinema', secondary='cinema_movie', back_populates='fk_movie_version')
+    fk_cinema: Mapped[list['Cinema']] = relationship('Cinema', secondary='cinema_movie_version', back_populates='fk_movie_version')
     fk_movie: Mapped['Movie'] = relationship('Movie', back_populates='movie_version')
     fk_version: Mapped['Version'] = relationship('Version', back_populates='movie_version')
     screening: Mapped[list['Screening']] = relationship('Screening', back_populates='fk_movie_version')
@@ -241,13 +241,13 @@ class Worker(User):
     shift: Mapped[list['Shift']] = relationship('Shift', back_populates='fk_worker')
 
 
-t_cinema_movie = Table(
-    'cinema_movie', Base.metadata,
+t_cinema_movie_version = Table(
+    'cinema_movie_version', Base.metadata,
     Column('fk_cinema_id', Integer, primary_key=True),
     Column('fk_movie_version_id', Integer, primary_key=True),
-    ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_cinema'),
-    ForeignKeyConstraint(['fk_movie_version_id'], ['movie_version._id'], ondelete='CASCADE', name='c_fk_movie_version'),
-    PrimaryKeyConstraint('fk_cinema_id', 'fk_movie_version_id', name='cinema_movie_pkey')
+    ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_cinema_id'),
+    ForeignKeyConstraint(['fk_movie_version_id'], ['movie_version._id'], ondelete='CASCADE', name='c_fk_movie_version_id'),
+    PrimaryKeyConstraint('fk_cinema_id', 'fk_movie_version_id', name='cinema_movie_version_pkey')
 )
 
 
@@ -255,8 +255,8 @@ class Employment(Base):
     __tablename__ = 'employment'
     __table_args__ = (
         CheckConstraint('end_date IS NULL OR end_date >= start_date', name='employment_date_check'),
-        ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='RESTRICT', name='c_fk_employment_cinema_id'),
-        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='RESTRICT', name='c_fk_employment_worker_id'),
+        ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_employment_cinema_id'),
+        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='CASCADE', name='c_fk_employment_worker_id'),
         PrimaryKeyConstraint('_id', name='employment_pkey')
     )
 
@@ -274,16 +274,16 @@ class Payment(Base):
     __tablename__ = 'payment'
     __table_args__ = (
         CheckConstraint('amount >= 0::numeric', name='payment_amount_check'),
-        ForeignKeyConstraint(['fk_client_id'], ['client._id'], ondelete='CASCADE', name='c_fk_client_id'),
+        ForeignKeyConstraint(['fk_client_id'], ['client._id'], name='c_fk_client_id'),
         PrimaryKeyConstraint('_id', name='payment_pkey')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    fk_client_id: Mapped[int] = mapped_column(Integer, nullable=False)
     type: Mapped[str] = mapped_column(Enum('cash', 'card', 'blik', 'online', 'voucher', name='payment_type'), nullable=False)
     amount: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    fk_client_id: Mapped[Optional[int]] = mapped_column(Integer)
 
-    fk_client: Mapped['Client'] = relationship('Client', back_populates='payment')
+    fk_client: Mapped[Optional['Client']] = relationship('Client', back_populates='payment')
     product_sale: Mapped[list['ProductSale']] = relationship('ProductSale', back_populates='fk_payment')
     ticket: Mapped[list['Ticket']] = relationship('Ticket', back_populates='fk_payment')
 
@@ -319,7 +319,7 @@ class Shift(Base):
     __tablename__ = 'shift'
     __table_args__ = (
         CheckConstraint('end_time IS NULL OR end_time > start_time', name='shift_time_check'),
-        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='RESTRICT', name='c_fk_shift_worker_id'),
+        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='CASCADE', name='c_fk_shift_worker_id'),
         PrimaryKeyConstraint('_id', name='shift_pkey')
     )
 
@@ -375,6 +375,7 @@ class ProductSale(Base):
     fk_product_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_payment_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_cinema_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_available: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text('true'))
     time_of_sale: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
 
     fk_cinema: Mapped['Cinema'] = relationship('Cinema', back_populates='product_sale')
@@ -421,8 +422,8 @@ class Seat(Base):
 class Ticket(Base):
     __tablename__ = 'ticket'
     __table_args__ = (
-        ForeignKeyConstraint(['fk_discount_id'], ['discount._id'], ondelete='CASCADE', name='c_fk_discount_id'),
-        ForeignKeyConstraint(['fk_payment_id'], ['payment._id'], ondelete='CASCADE', name='c_fk_payment_id'),
+        ForeignKeyConstraint(['fk_discount_id'], ['discount._id'], name='c_fk_discount_id'),
+        ForeignKeyConstraint(['fk_payment_id'], ['payment._id'], name='c_fk_payment_id'),
         ForeignKeyConstraint(['fk_screening_id'], ['screening._id'], ondelete='CASCADE', name='c_fk_screening_id'),
         ForeignKeyConstraint(['fk_seat_id'], ['seat._id'], ondelete='CASCADE', name='c_fk_seat_id'),
         ForeignKeyConstraint(['fk_ticket_type_id'], ['ticket_type._id'], ondelete='CASCADE', name='c_fk_ticket_type_id'),
