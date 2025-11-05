@@ -340,7 +340,7 @@ def seed_ticket(n):
                    fk_screening_id = random.choice(screening_ids),
                    fk_discount_id = None if random.random() < 0.5 else random.choice(discount_ids),
                    fk_payment_id = None if random.random() < 0.25 else random.choice(payment_ids),
-                   qr_code = faker.word(),
+                   qr_code = faker.ean13(),
                    status = random.choice(statuses),
                    price = 0 # TO-DO: pętla uzupełniająca to realnie (tak samo amount w payment)
                    )
@@ -587,7 +587,7 @@ def seed_shift(n):
 
     shifts = []
 
-    for _ in range(n):
+    for i in range(n):
         worker_id = random.choice(worker_ids)
 
         start = faker.date_time_between(start_date='-60d', end_date='now')
@@ -601,6 +601,9 @@ def seed_shift(n):
             type=shift_type
         )
         shifts.append(shift)
+
+        if i % 100_000 == 0:
+            print(f"{i}\n")
 
     try:
         session.add_all(shifts)
@@ -646,46 +649,45 @@ if __name__ == "__main__":
     print("Zaczynam seedowanie")
 
 
-    movie_and_license_count=10000
-    cinema_movie=20000
+    movie_and_license_count=250_000
+    cinema_movie=20_000
     min_versions=1
-    max_versions=1
-    cinema_count=5000
-    room_counts= cinema_count*3
-    SERVICES = 200
-    SUPERVISORS = 20
-    CLIENTS = 20000
-    REGIONAL_MANAGERS = 5
-    SHIFTS = 200
-    EMPLOYMENTS = 20
-    region_count = 500
+    max_versions=5
+    cinema_count=2000
+    room_counts= cinema_count*5
+    SERVICES = 200_000
+    SUPERVISORS = 50_000
+    CLIENTS = 1_000_000
+    REGIONAL_MANAGERS = 1000
+    SHIFTS = 4_000_000
+    EMPLOYMENTS = 400_000
+    region_count = 100
     product_count = 1000
-    screening_count = 10000
-    product_sale_count = 10000
-    payment_count = 10000
-    term_count = 5000
-    TICKET_COUNT = 1000
-    SPECIAL_OFFER_COUNT = 1000
-    SEAT_COUNT = 5000
-    TICKET_SPECIAL_OFFER_COUNT = 1000
+    screening_count = 3_000_000
+    product_sale_count = 1_000_000
+    payment_count = 2_000_000
+    term_count = 2000
+    TICKET_COUNT = 5_000_000
+    SPECIAL_OFFER_COUNT = 20_000
+    SEAT_COUNT = room_counts*50
+    TICKET_SPECIAL_OFFER_COUNT = 2_500_000
 
      # seedery, które nie potrzebują innych tabel
-    seeder_region(region_count)
-    seeder_product(product_count)
+    # seeder_region(region_count)
+    # seeder_product(product_count)
 
-    seed_license(movie_and_license_count)
-    seed_version()
-    seed_movie_version(min_versions, max_versions)
+    # seed_license(movie_and_license_count)
+    # seed_version()
+    #seed_movie_version(min_versions, max_versions)
     #wymaga regionu
-    seed_cinemas(cinema_count)
-    seed_cinema_movie(cinema_movie)
-    seed_room(room_counts)
+    #seed_cinemas(cinema_count)
+    #seed_cinema_movie(cinema_movie)
+    #seed_room(room_counts)
 
    
-    seed_service(SERVICES)
-    seed_supervisor(SUPERVISORS)
-    seed_client(CLIENTS)
-    seed_regional_manager(REGIONAL_MANAGERS)
+    #seed_service(SERVICES)
+    #seed_client(CLIENTS)
+    #seed_regional_manager(REGIONAL_MANAGERS)
     seed_shift(SHIFTS)
 
     #WYMAGA CINEMA 
