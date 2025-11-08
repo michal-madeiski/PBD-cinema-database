@@ -261,7 +261,6 @@ def seed_room(n):
         rooms.append(Room(fk_cinema_id=pair[0], number=pair[1]))
     seeder(rooms, "room", n)
 
-#funkcje do pojedynczych tabel:
 def seed_discount():
     seeder((Discount(name='student', percentage=21),
             Discount(name='school', percentage=15),
@@ -344,13 +343,11 @@ def seed_ticket(n):
                    fk_payment_id = None if random.random() < 0.25 else random.choice(payment_ids),
                    qr_code = faker.ean13(),
                    status = random.choice(statuses),
-                   price = 0 # TO-DO: pętla uzupełniająca to realnie (tak samo amount w payment)
+                   price = 0
                    )
                    for _ in range(n)), "ticket", n)
     session.close()
 
-
-# TABELA POSREDNIA - NIE MODEL ORM - TROCHE INACZEJ
 def seed_ticket_special_offer(n):
     session = SessionLocal()
     ticket_ids = [x[0] for x in session.query(Ticket._id).all()]
@@ -366,7 +363,6 @@ def seed_ticket_special_offer(n):
         session.close()
         return
 
-    # set bo para jako klucz główny czyli ma być bez powtórzeń
     stmt = select(t_ticket_special_offer.c.fk_ticket_id, t_ticket_special_offer.c.fk_special_offer_id)
     ticket_special_offers = session.execute(stmt).fetchall()
     existed_pairs = {(r.fk_ticket_id, r.fk_special_offer_id) for r in ticket_special_offers}
@@ -652,103 +648,88 @@ def seed_ticket_with_realistic_price():
         session.close()
 
 
+def make_batch(function, size):
+    batch_size = 50_000
+    if size > 50_000:
+        for i in range(0, size, batch_size):
+            current_batch = min(batch_size, size - i)
+            function(current_batch)
+    else:
+        function(size)
+
+
 if __name__ == "__main__":
-    print("Zaczynam seedowanie")
+    print("ZACZYNAM SEEDOWANIE")
 
+    REGION = 100
+    PRODUCT = 1000
+    MOVIE_AND_LICENSE = 250_000
+    min_versions = 1
+    max_versions = 5
+    CINEMA = 2000
+    CINEMA_MOVIE = 20_000
+    ROOM = CINEMA*5
+    SERVICE = 200_000
+    SUPERVISOR = 50_000
+    CLIENT = 1_000_000
+    REGIONAL_MANAGER = 1000
+    SHIFT = 4_000_000
+    EMPLOYMENT = 400_000
+    SCREENING = 3_000_000
+    PAYMENT = 2_000_000
+    PRODUCT_SALE = 1_000_000
+    TERM = 2000
+    SPECIAL_OFFER = 20_000
+    SEAT = ROOM*50
+    TICKET = 5_000_000
+    TICKET_SPECIAL_OFFER = 2_500_000
+    
 
-    movie_and_license_count=250_000
-    cinema_movie=20_000
-    min_versions=1
-    max_versions=5
-    cinema_count=2000
-    room_counts= cinema_count*5
-    SERVICES = 200_000
-    SUPERVISORS = 50_000
-    CLIENTS = 1_000_000
-    REGIONAL_MANAGERS = 1000
-    SHIFTS = 4_000_000
-    EMPLOYMENTS = 400_000
-    region_count = 100
-    product_count = 1000
-    screening_count = 3_000_000
-    product_sale_count = 1_000_000
-    payment_count = 2_000_000
-    term_count = 2000
-    TICKET_COUNT = 5_000_000
-    SPECIAL_OFFER_COUNT = 20_000
-    SEAT_COUNT = room_counts*50
-    TICKET_SPECIAL_OFFER_COUNT = 2_500_000
+    # nie potrzebują innych tabel
+    make_batch(seeder_region, REGION)
+    make_batch(seeder_product, PRODUCT)
 
-     # seedery, które nie potrzebują innych tabel
-    # seeder_region(region_count)
-    # seeder_product(product_count)
+    make_batch(seed_license, MOVIE_AND_LICENSE)
+    seed_version()
+    seed_movie_version(min_versions, max_versions)
 
-    # seed_license(movie_and_license_count)
-    # seed_version()
-    #seed_movie_version(min_versions, max_versions)
-    #wymaga regionu
-    #seed_cinemas(cinema_count)
-    #seed_cinema_movie(cinema_movie)
-    #seed_room(room_counts)
-
+    # wymaga: region
+    make_batch(seed_cinemas, CINEMA)
+    make_batch(seed_cinema_movie, CINEMA_MOVIE)
+    make_batch(seed_room, ROOM)
    
-    #seed_service(SERVICES)
-    #seed_client(CLIENTS)
-    #seed_regional_manager(REGIONAL_MANAGERS)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
+    make_batch(seed_service, SERVICE)
+    make_batch(seed_supervisor, SUPERVISOR)
+    make_batch(seed_client, CLIENT)
+    make_batch(seed_regional_manager, REGIONAL_MANAGER)
+    make_batch(seed_shift, SHIFT)
 
+    # wymaga: cinema 
+    make_batch(seed_employment, EMPLOYMENT)
 
-    #WYMAGA CINEMA 
-    #seed_employment(EMPLOYMENTS)
+    # wymaga: room, movie_version
+    make_batch(seeder_screening, SCREENING)
 
+    # wymaga: client
+    make_batch(seeder_payment, PAYMENT)
 
-    # seedery, które potrzebują innych tabel
-    # seeder_screening(screening_count//5) # room, movie_version
-    # seeder_screening(screening_count//5)
-    # seeder_screening(screening_count//5)
-    # seeder_screening(screening_count//5)
-    # seeder_screening(screening_count//5)
+    # wymaga: product, payment, cinema
+    make_batch(seeder_product_sale, PRODUCT_SALE)
 
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10) # client
+    # wymaga: region, regional_manager
+    make_batch(seeder_term, TERM)
 
-    # seeder_product_sale(product_sale_count//10) #product, payment, cinema
-    # seeder_product_sale(product_sale_count//10)
-    # seeder_product_sale(product_sale_count//10)
-    # seeder_product_sale(product_sale_count//10)
-    # seeder_product_sale(product_sale_count//10)
+    make_batch(seed_special_offer, SPECIAL_OFFER)
+    seed_discount() 
+    seed_ticket_type()
 
-    # seeder_term(term_count) # region, regional_manager
+    # wymaga: room
+    make_batch(seed_seat, SEAT)
 
+    # wymaga: ticket_type, discount, payment, seat, screening
+    make_batch(seed_ticket, TICKET)
 
-    
+    # wymaga: ticket, special_offer
+    make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
 
-    # seed_special_offer(SPECIAL_OFFER_COUNT)
-    # seed_discount() 
-    # seed_ticket_type()
-    # seed_seat(SEAT_COUNT) #room 
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    
-     #ticket_type, discount, payment, seat, screening
-    #seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    #seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10) #ticket, special_offer
-    # seed_ticket_with_realistic_price()
+    seed_ticket_with_realistic_price()
