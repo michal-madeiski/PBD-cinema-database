@@ -163,15 +163,23 @@ def seeder_term(n):
     session.close()
     seeder(terms, "term", n)
 
-def seed_version(): 
-    languages=['polish', 'english', 'spanish', 'german'] 
-    ver= ['2D', '3D', 'IMAX']
-    versions=[] 
-    for lang1 in languages: 
-        for lang2 in languages:
-            for v in ver:
-                versions.append(Version(language=lang1, subtitles=lang2, format= v))
+def seed_version():
+    session = SessionLocal()
+    existing = set(
+        (v.language, v.subtitles, v.format)
+        for v in session.query(Version.language, Version.subtitles, Version.format)
+    )
+    languages = ['polish', 'english', 'spanish', 'german']
+    formats = ['2D', '3D', 'IMAX']
+    versions = []
+    for lang in languages:
+        for subs in languages:
+            for fmt in formats:
+                if (lang, subs, fmt) not in existing:
+                    versions.append(Version(language=lang, subtitles=subs, format=fmt))
+
     seeder(versions, "version", len(versions))
+
 
 def seed_license(n):
     session= SessionLocal()
@@ -182,13 +190,16 @@ def seed_license(n):
         while number in already_exists:
             number= faker.random_int(min=1000, max=99999999)
         already_exists.add(number)
+        start_date = faker.date_between(start_date=datetime(2015, 1, 1), end_date="today")
+        delta_days = faker.random_int(min=30, max=365)
+        end_date = start_date + timedelta(days=delta_days)
         lic= License(
             title=faker.sentence(nb_words=2, variable_nb_words=True),
             director=faker.name(),
             duration_minutes=faker.random_int(min=60, max=200),
             license_number=number,
-            start_date=faker.date_this_year(),
-            end_date=faker.date_this_year(before_today=False, after_today=True),
+            start_date=start_date, 
+            end_date=end_date,
             cost=faker.random_int(min=10000, max=100000)
         )
         licenses.append(lic)
@@ -208,10 +219,9 @@ def seed_movie_version(min_vers=1, max_vers=5):
         iter = random.randint(min_vers, max_vers)
         for vr in range(iter):
             pair=(mv, random.choice(version_ids))
-            while pair in already_exists:
-                pair = (mv, random.choice(version_ids))
-            already_exists.add(pair)
-            movie_versions.append(MovieVersion(fk_movie_id=pair[0], fk_version_id=pair[1]))
+            if not pair in already_exists:
+                already_exists.add(pair)
+                movie_versions.append(MovieVersion(fk_movie_id=pair[0], fk_version_id=pair[1]))
     seeder(movie_versions, "movie_version", len(movie_versions))
 
 
@@ -222,7 +232,7 @@ def seed_cinemas(n):
     seeder(cinemas, "cinema", n)
 
 
-def seed_cinema_movie(n):
+def seed_cinema_movie(min_mov=1, max_mov=10):
     session = SessionLocal()
     movie_ver_ids = [m[0] for m in session.query(MovieVersion._id).all()]
     cinema_ids = [c[0] for c in session.query(Cinema._id).all()]
@@ -231,12 +241,13 @@ def seed_cinema_movie(n):
         return
     already_exists = set(session.query(t_cinema_movie_version.c.fk_cinema_id,t_cinema_movie_version.c.fk_movie_version_id  ).all())
     new_records = []
-    for _ in range(n):
-        pair = (random.choice(cinema_ids), random.choice(movie_ver_ids))
-        while pair in already_exists:
-            pair = (random.choice(cinema_ids), random.choice(movie_ver_ids))
-        already_exists.add(pair)
-        new_records.append({'fk_cinema_id': pair[0], 'fk_movie_version_id': pair[1]})  
+    for c in cinema_ids:
+        mv_ct= random.randint(min_mov, max_mov)
+        for i in range(mv_ct): 
+            pair = (c, random.choice(movie_ver_ids))
+            if not pair in already_exists: 
+                already_exists.add(pair)
+                new_records.append({'fk_cinema_id': pair[0], 'fk_movie_version_id': pair[1]}) 
     try:
         session.execute(t_cinema_movie_version.insert(), new_records)
         session.commit()
@@ -247,19 +258,19 @@ def seed_cinema_movie(n):
     finally:
         session.close()
 
-def seed_room(n):
+def seed_room(min=1, max=5):
     session= SessionLocal()
     cinema_ids= [c[0] for c in session.query(Cinema._id).all()]
     already_exists = set(session.query(Room.fk_cinema_id, Room.number))
     rooms=[]
-    for i in range(n):
-        cid= random.choice(cinema_ids)
-        pair=(cid, random.randint(1, 100000))
-        while pair in already_exists:
-            pair=(cid, random.randint(1, 100000))
-        already_exists.add(pair)
-        rooms.append(Room(fk_cinema_id=pair[0], number=pair[1]))
-    seeder(rooms, "room", n)
+    for c in cinema_ids: 
+        room_cts= random.randint(min, max)
+        for i in range(room_cts):
+            pair=(c, random.randint(1, 1000))
+            if not pair in already_exists: 
+                already_exists.add(pair)
+                rooms.append(Room(fk_cinema_id=pair[0], number=pair[1]))
+    seeder(rooms, "room", len(rooms))
 
 #funkcje do pojedynczych tabel:
 def seed_discount():
@@ -657,11 +668,13 @@ if __name__ == "__main__":
 
 
     movie_and_license_count=250_000
-    cinema_movie=20_000
+    min_movie_per_cinema=1; 
+    max_movie_per_cinema=25; 
     min_versions=1
     max_versions=5
     cinema_count=2000
-    room_counts= cinema_count*5
+    min_room_per_cinema=1
+    max_room_per_cinema=5
     SERVICES = 200_000
     SUPERVISORS = 50_000
     CLIENTS = 1_000_000
@@ -676,20 +689,20 @@ if __name__ == "__main__":
     term_count = 2000
     TICKET_COUNT = 5_000_000
     SPECIAL_OFFER_COUNT = 20_000
-    SEAT_COUNT = room_counts*50
+    # SEAT_COUNT = room_counts*50
     TICKET_SPECIAL_OFFER_COUNT = 2_500_000
 
-     # seedery, które nie potrzebują innych tabel
-    # seeder_region(region_count)
+    # seedery, które nie potrzebują innych tabel
+    seeder_region(region_count)
     # seeder_product(product_count)
 
-    # seed_license(movie_and_license_count)
-    # seed_version()
-    #seed_movie_version(min_versions, max_versions)
+    seed_license(movie_and_license_count)
+    seed_version()
+    seed_movie_version(min_versions, max_versions)
     #wymaga regionu
-    #seed_cinemas(cinema_count)
-    #seed_cinema_movie(cinema_movie)
-    #seed_room(room_counts)
+    seed_cinemas(cinema_count)
+    seed_cinema_movie(min_movie_per_cinema, max_movie_per_cinema)
+    seed_room(min_room_per_cinema, max_room_per_cinema)
 
    
     #seed_service(SERVICES)
