@@ -18,7 +18,8 @@ CREATE TYPE ticket_status AS ENUM (
     'valid',
     'reserved',
     'payment_pending',
-    'free'
+    'free',
+    'not_used'
 );
 
 CREATE TYPE languages AS ENUM (
@@ -138,6 +139,8 @@ CREATE TABLE payment (
     fk_client_id INT,
     "type" payment_type NOT NULL,
     amount NUMERIC(10, 2) NOT NULL CHECK (amount >= 0),
+    time_of_sale TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP
+        CHECK (time_of_sale <= CURRENT_TIMESTAMP),
 
     CONSTRAINT c_fk_client_id
         FOREIGN KEY (fk_client_id)
@@ -316,14 +319,14 @@ CREATE TABLE screening (
 
 CREATE TABLE ticket (
     _id SERIAL PRIMARY KEY,
-    fk_ticket_type_id INT NOT NULL,
+    fk_ticket_type_id INT,
     fk_discount_id INT,
     fk_screening_id INT NOT NULL,
     fk_seat_id INT NOT NULL,
     fk_payment_id INT,
     qr_code VARCHAR(100) NOT NULL,
     "status" ticket_status NOT NULL DEFAULT 'free',
-    price INT NOT NULL,
+    price NUMERIC(10, 2) CHECK (price >= 0),
 
     CONSTRAINT c_fk_ticket_type_id
         FOREIGN KEY (fk_ticket_type_id)
@@ -370,8 +373,6 @@ CREATE TABLE product_sale (
     fk_product_id INT NOT NULL,
     fk_payment_id INT NOT NULL,
     fk_cinema_id INT NOT NULL,
-    time_of_sale TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP
-        CHECK (time_of_sale <= CURRENT_TIMESTAMP),
 
     CONSTRAINT c_fk_product_id
         FOREIGN KEY (fk_product_id)

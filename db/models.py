@@ -274,6 +274,7 @@ class Employment(Base):
 class Payment(Base):
     __tablename__ = 'payment'
     __table_args__ = (
+        CheckConstraint('time_of_sale <= CURRENT_TIMESTAMP', name='product_sale_time_of_sale_check'),
         CheckConstraint('amount >= 0::numeric', name='payment_amount_check'),
         ForeignKeyConstraint(['fk_client_id'], ['client._id'], name='c_fk_client_id'),
         PrimaryKeyConstraint('_id', name='payment_pkey')
@@ -282,6 +283,7 @@ class Payment(Base):
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     type: Mapped[str] = mapped_column(Enum('cash', 'card', 'blik', 'online', 'voucher', name='payment_type'), nullable=False)
     amount: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    time_of_sale: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     fk_client_id: Mapped[Optional[int]] = mapped_column(Integer)
 
     fk_client: Mapped[Optional['Client']] = relationship('Client', back_populates='payment')
@@ -365,7 +367,6 @@ class Term(Base):
 class ProductSale(Base):
     __tablename__ = 'product_sale'
     __table_args__ = (
-        CheckConstraint('time_of_sale <= CURRENT_TIMESTAMP', name='product_sale_time_of_sale_check'),
         ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_cinema_id'),
         ForeignKeyConstraint(['fk_payment_id'], ['payment._id'], ondelete='CASCADE', name='c_fk_payment_id'),
         ForeignKeyConstraint(['fk_product_id'], ['product._id'], ondelete='CASCADE', name='c_fk_product_id'),
@@ -376,7 +377,6 @@ class ProductSale(Base):
     fk_product_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_payment_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_cinema_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    time_of_sale: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
 
     fk_cinema: Mapped['Cinema'] = relationship('Cinema', back_populates='product_sale')
     fk_payment: Mapped['Payment'] = relationship('Payment', back_populates='product_sale')
@@ -427,16 +427,17 @@ class Ticket(Base):
         ForeignKeyConstraint(['fk_screening_id'], ['screening._id'], ondelete='CASCADE', name='c_fk_screening_id'),
         ForeignKeyConstraint(['fk_seat_id'], ['seat._id'], ondelete='CASCADE', name='c_fk_seat_id'),
         ForeignKeyConstraint(['fk_ticket_type_id'], ['ticket_type._id'], ondelete='CASCADE', name='c_fk_ticket_type_id'),
-        PrimaryKeyConstraint('_id', name='ticket_pkey')
+        PrimaryKeyConstraint('_id', name='ticket_pkey'),
+        CheckConstraint('price >= 0::numeric', name='ticket_price_check')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    fk_ticket_type_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    fk_ticket_type_id: Mapped[int] = mapped_column(Integer)
     fk_screening_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_seat_id: Mapped[int] = mapped_column(Integer, nullable=False)
     qr_code: Mapped[str] = mapped_column(String(100), nullable=False)
-    status: Mapped[str] = mapped_column(Enum('used', 'valid', 'reserved', 'payment_pending', 'free', name='ticket_status'), nullable=False, server_default=text("'free'::ticket_status"))
-    price: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(Enum('used', 'valid', 'reserved', 'payment_pending', 'free', 'not_used', name='ticket_status'), nullable=False, server_default=text("'free'::ticket_status"))
+    price: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     fk_discount_id: Mapped[Optional[int]] = mapped_column(Integer)
     fk_payment_id: Mapped[Optional[int]] = mapped_column(Integer)
 

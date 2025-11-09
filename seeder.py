@@ -286,7 +286,7 @@ def seed_special_offer(n):
                          )
                          for _ in range(n)), "special_offer", n)
 
-def seed_seat(n):
+def seed_seat():
     session = SessionLocal()
     room_ids = [x[0] for x in session.query(Room._id).all()]
 
@@ -295,29 +295,36 @@ def seed_seat(n):
         session.close()
         return
     
-    seeder((Seat(fk_room_id = random.choice(room_ids),
-                 seat_num = i+1
-                 )
-                 for i in range(n)), "seat", n)
+    seats = []
+    counter = 0
+    for r in room_ids:
+        seat_amount = random.int(10, 50)
+        for _ in range(seat_amount):
+            counter += 1
+            seats.append(Seat(fk_room_id = r,
+                              seat_num = counter))
+        if len(seats) > 50_000:
+            seeder(seats, "seat", len(seats))
+            seats = []
     session.close()
 
-def seed_ticket(n):
+def seed_ticket():
     session = SessionLocal()
-    ticket_type_ids = [x[0] for x in session.query(TicketType._id).all()]
-    seat_ids = [x[0] for x in session.query(Seat._id).all()]
+
     screening_ids = [x[0] for x in session.query(Screening._id).all()]
-    discount_ids = [x[0] for x in session.query(Discount._id).all()]
-    payment_ids = [x[0] for x in session.query(Payment._id).all()]
 
-    statuses = ['used', 'valid', 'reserved', 'payment_pending', 'free']
+    ticket_types = [x for x in session.query(TicketType._id, TicketType.price).all()]
+    ticket_types_dict = {x[0]: x[1] for x in ticket_types}
+    discounts = [x for x in session.query(Discount._id, Discount.percentage).all()]
+    discounts_dict = {x[0]: x[1] for x in discounts}
 
-    if len(ticket_type_ids) == 0 :
+    statuses_past = ['used', 'not_used']
+    statuses_future = ['valid', 'reserved', 'payment_pending', 'free']
+    statuses_future_weights = [1, 1, 1, 5]
+    statuses_without_payment_etc = ['not_used', 'free']
+
+    if len(ticket_types) == 0 :
         print("Brak id w ticket_type")
-        session.close()
-        return
-    
-    if len(seat_ids) == 0 :
-        print("Brak id w seat")
         session.close()
         return
     
@@ -326,31 +333,65 @@ def seed_ticket(n):
         session.close()
         return
     
-    if len(discount_ids) == 0 :
+    if len(discounts) == 0 :
         print("Brak id w discount")
         session.close()
         return
     
-    if len(payment_ids) == 0 :
-        print("Brak id w payment")
-        session.close()
-        return
+    tickets = []
+    for i in range(len(screening_ids)):
+        screening_id = screening_ids[i]
+        screening_stmt = select(Screening).where(Screening._id == screening_id)
+        screening_time = session.scalars(screening_stmt).first().start_time
 
-    seeder((Ticket(fk_ticket_type_id = random.choice(ticket_type_ids),
-                   fk_seat_id = random.choice(seat_ids),
-                   fk_screening_id = random.choice(screening_ids),
-                   fk_discount_id = None if random.random() < 0.5 else random.choice(discount_ids),
-                   fk_payment_id = None if random.random() < 0.25 else random.choice(payment_ids),
-                   qr_code = faker.ean13(),
-                   status = random.choice(statuses),
-                   price = 0
-                   )
-                   for _ in range(n)), "ticket", n)
+        payment_ids = [x[0] for x in session.query(Payment._id).filter(Payment.time_of_sale <= screening_time)]
+        if len(payment_ids) == 0 :
+            print("Brak id w payment")
+            session.close()
+            return
+        
+        room_id = session.scalars(screening_stmt).first().fk_room_id
+        room_stmt = select(Room).where(Room._id == room_id)
+
+        seats = session.scalars(room_stmt).first().seat
+        seat_ids = [s._id for s in seats]
+
+        for j in range(len(seat_ids)):
+            seat_id = seat_ids[j]
+            ticket_type_id = None
+            discount_id = None
+            payment_id = None
+            _price = None
+            _status = random.choices(statuses_future, statuses_future_weights, k=1)[0] if screening_time > datetime.now() else random.choice(statuses_past)             
+            
+            if _status not in statuses_without_payment_etc :
+                discount_id = None if random.random () < 0.5 else random.choice(discounts_dict.keys)
+                discount_percentage = None if discount_id == None else discounts_dict[discount_id]
+                ticket_type_id = random.choice(ticket_types_dict.keys)
+                ticket_type_price = ticket_types_dict[ticket_type_id]
+                _price = ticket_type_price if discount_percentage == None else (discount_percentage/100)*ticket_type_price
+                payment_id = random.choice(payment_ids)   
+            
+            tickets.append(Ticket(
+                fk_ticket_type_id = ticket_type_id,
+                fk_seat_id = seat_id,
+                fk_screening_id = screening_id,
+                fk_discount_id = discount_id,
+                fk_payment_id = payment_id,
+                qr_code = faker.ean13(),
+                status = _status,
+                price = _price
+            ))
+
+            if len(tickets) == 50_000:
+                seeder(tickets, "ticket", len(tickets))
+                tickets = []
+
     session.close()
 
 def seed_ticket_special_offer(n):
     session = SessionLocal()
-    ticket_ids = [x[0] for x in session.query(Ticket._id).all()]
+    ticket_ids = [x[0] for x in session.query(Ticket._id).filter(Ticket.status.notin_(['not_used', 'free'])).all()]
     special_offer_ids = [x[0] for x in session.query(SpecialOffer._id).all()]
 
     if len(ticket_ids) == 0 :
@@ -370,9 +411,12 @@ def seed_ticket_special_offer(n):
     pairs = set()
     pair= ((random.choice(ticket_ids), random.choice(special_offer_ids)))
     while len(pairs) < n:
-        while pair in pairs or pair in existed_pairs:
+        while pair in pairs or pair in existed_pairs or not (session.get(SpecialOffer, pair[1]).end_time >= session.get(Ticket, pair[0]).fk_payment.time_of_sale >= session.get(SpecialOffer, pair[1]).start_time):
             pair= ((random.choice(ticket_ids), random.choice(special_offer_ids)))
         pairs.add(pair)
+        ticket = session.get(Ticket, pair[0])
+        special_offer_amount = session.get(SpecialOffer, pair[1]).amount
+        ticket.price = max(0, ticket.price - special_offer_amount)
 
     data = [{"fk_ticket_id": t, "fk_special_offer_id": s} for t, s in pairs]
 
@@ -618,34 +662,34 @@ def seed_shift(n):
     finally:
         session.close()
 
-def seed_ticket_with_realistic_price():
-    session = SessionLocal()
-    tickets = session.query(Ticket).all()
+# def seed_ticket_with_realistic_price():
+#     session = SessionLocal()
+#     tickets = session.query(Ticket).all()
 
-    try: 
-        for t in tickets:
-            discount_obj = session.query(Discount).filter(Discount._id == t.fk_discount_id).first()
-            dsc = discount_obj.percentage if discount_obj else None
-            type_price = session.query(TicketType).filter(TicketType._id == t.fk_ticket_type_id).first().price
-            special_offers = [s.amount for s in t.fk_special_offer]
+#     try: 
+#         for t in tickets:
+#             discount_obj = session.query(Discount).filter(Discount._id == t.fk_discount_id).first()
+#             dsc = discount_obj.percentage if discount_obj else None
+#             type_price = session.query(TicketType).filter(TicketType._id == t.fk_ticket_type_id).first().price
+#             special_offers = [s.amount for s in t.fk_special_offer]
 
-            new_price_base = type_price
+#             new_price_base = type_price
 
-            for i in range(len(special_offers)):
-                if new_price_base > 0:
-                    new_price_base -= special_offers[i]
+#             for i in range(len(special_offers)):
+#                 if new_price_base > 0:
+#                     new_price_base -= special_offers[i]
 
-            if dsc is not None:
-                new_price = new_price_base - (dsc/100)*new_price_base
+#             if dsc is not None:
+#                 new_price = new_price_base - (dsc/100)*new_price_base
 
-            t.price = new_price
-        session.commit()
-        print("Zmieniono ceny biletów na realistyczne")
-    except Exception as e:
-        session.rollback()
-        print("Błąd podczas zmiany cen biletów:", e)
-    finally: 
-        session.close()
+#             t.price = new_price
+#         session.commit()
+#         print("Zmieniono ceny biletów na realistyczne")
+#     except Exception as e:
+#         session.rollback()
+#         print("Błąd podczas zmiany cen biletów:", e)
+#     finally: 
+#         session.close()
 
 
 def make_batch(function, size):
@@ -680,8 +724,6 @@ if __name__ == "__main__":
     PRODUCT_SALE = 1_000_000
     TERM = 2000
     SPECIAL_OFFER = 20_000
-    SEAT = ROOM*50
-    TICKET = 5_000_000
     TICKET_SPECIAL_OFFER = 2_500_000
     
 
@@ -724,12 +766,12 @@ if __name__ == "__main__":
     seed_ticket_type()
 
     # wymaga: room
-    make_batch(seed_seat, SEAT)
+    seed_seat()
 
     # wymaga: ticket_type, discount, payment, seat, screening
-    make_batch(seed_ticket, TICKET)
+    seed_ticket()
 
     # wymaga: ticket, special_offer
     make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
 
-    seed_ticket_with_realistic_price()
+    # seed_ticket_with_realistic_price()
