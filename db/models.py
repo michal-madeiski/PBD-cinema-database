@@ -276,12 +276,14 @@ class Payment(Base):
     __table_args__ = (
         CheckConstraint('time_of_sale <= CURRENT_TIMESTAMP', name='product_sale_time_of_sale_check'),
         CheckConstraint('amount >= 0::numeric', name='payment_amount_check'),
-        ForeignKeyConstraint(['fk_client_id'], ['client._id'], name='c_fk_client_id'),
+        CheckConstraint('time_of_payment <= CURRENT_TIMESTAMP', name='payment_time_of_payment_check'),
+        ForeignKeyConstraint(['fk_client_id'], ['client._id'], ondelete='SET NULL', name='c_fk_client_id'),
         PrimaryKeyConstraint('_id', name='payment_pkey')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     type: Mapped[str] = mapped_column(Enum('cash', 'card', 'blik', 'online', 'voucher', name='payment_type'), nullable=False)
+    time_of_payment: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     amount: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     time_of_sale: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     fk_client_id: Mapped[Optional[int]] = mapped_column(Integer)
@@ -349,8 +351,8 @@ class Term(Base):
     __tablename__ = 'term'
     __table_args__ = (
         CheckConstraint('end_date IS NULL OR end_date >= start_date', name='term_date_check'),
-        ForeignKeyConstraint(['fk_manager_id'], ['regional_manager._id'], ondelete='CASCADE', name='c_fk_manager_id'),
-        ForeignKeyConstraint(['fk_region_id'], ['region._id'], ondelete='CASCADE', name='c_fk_region_id'),
+        ForeignKeyConstraint(['fk_manager_id'], ['regional_manager._id'], ondelete='RESTRICT', name='c_fk_manager_id'),
+        ForeignKeyConstraint(['fk_region_id'], ['region._id'], ondelete='RESTRICT', name='c_fk_region_id'),
         PrimaryKeyConstraint('_id', name='term_pkey')
     )
 
@@ -367,9 +369,10 @@ class Term(Base):
 class ProductSale(Base):
     __tablename__ = 'product_sale'
     __table_args__ = (
-        ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_cinema_id'),
+        CheckConstraint('price >= 0::numeric', name='product_sale_price_check'),
+        ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='RESTRICT', name='c_fk_cinema_id'),
         ForeignKeyConstraint(['fk_payment_id'], ['payment._id'], ondelete='CASCADE', name='c_fk_payment_id'),
-        ForeignKeyConstraint(['fk_product_id'], ['product._id'], ondelete='CASCADE', name='c_fk_product_id'),
+        ForeignKeyConstraint(['fk_product_id'], ['product._id'], ondelete='RESTRICT', name='c_fk_product_id'),
         PrimaryKeyConstraint('_id', name='product_sale_pkey')
     )
 
@@ -377,6 +380,7 @@ class ProductSale(Base):
     fk_product_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_payment_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_cinema_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
     fk_cinema: Mapped['Cinema'] = relationship('Cinema', back_populates='product_sale')
     fk_payment: Mapped['Payment'] = relationship('Payment', back_populates='product_sale')
@@ -387,8 +391,8 @@ class Screening(Base):
     __tablename__ = 'screening'
     __table_args__ = (
         CheckConstraint('end_time > start_time', name='screening_time_check'),
-        ForeignKeyConstraint(['fk_movie_version_id'], ['movie_version._id'], ondelete='CASCADE', name='c_fk_movie_version_id'),
-        ForeignKeyConstraint(['fk_room_id'], ['room._id'], ondelete='CASCADE', name='c_fk_room_id'),
+        ForeignKeyConstraint(['fk_movie_version_id'], ['movie_version._id'], ondelete='RESTRICT', name='c_fk_movie_version_id'),
+        ForeignKeyConstraint(['fk_room_id'], ['room._id'], ondelete='RESTRICT', name='c_fk_room_id'),
         PrimaryKeyConstraint('_id', name='screening_pkey')
     )
 
@@ -422,6 +426,7 @@ class Seat(Base):
 class Ticket(Base):
     __tablename__ = 'ticket'
     __table_args__ = (
+        CheckConstraint('price >= 0::numeric', name='ticket_price_check'),
         ForeignKeyConstraint(['fk_discount_id'], ['discount._id'], name='c_fk_discount_id'),
         ForeignKeyConstraint(['fk_payment_id'], ['payment._id'], name='c_fk_payment_id'),
         ForeignKeyConstraint(['fk_screening_id'], ['screening._id'], ondelete='CASCADE', name='c_fk_screening_id'),
