@@ -106,11 +106,12 @@ class User(Base):
     __tablename__ = 'user'
     __table_args__ = (
         CheckConstraint('account_create_date <= CURRENT_DATE', name='user_account_create_date_check'),
-        CheckConstraint('birthdate <= CURRENT_DATE', name='user_birthdate_check'),
+        CheckConstraint("birthdate <= (CURRENT_DATE - '16 years'::interval) AND birthdate >= '1900-01-01'::date", name='user_birthdate_check'),
         CheckConstraint('char_length(name::text) > 0', name='user_name_check'),
+        CheckConstraint('char_length(password::text) >= 8', name='user_password_check'),
         CheckConstraint('char_length(surname::text) > 0', name='user_surname_check'),
         CheckConstraint('char_length(username::text) >= 3', name='user_username_check'),
-        CheckConstraint("email::text ~~ '%%@%%'::text", name='user_email_check'),
+        CheckConstraint("email::text ~~ '%%@%%.%%'::text AND char_length(email::text) >= 5", name='user_email_check'),
         CheckConstraint('last_login_time IS NULL OR last_login_time >= account_create_date AND last_login_time <= CURRENT_TIMESTAMP', name='user_check'),
         PrimaryKeyConstraint('_id', name='user_pkey'),
         UniqueConstraint('email', name='user_email_key'),
@@ -123,8 +124,8 @@ class User(Base):
     birthdate: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     username: Mapped[str] = mapped_column(String(50), nullable=False)
     email: Mapped[str] = mapped_column(String(50), nullable=False)
-    password: Mapped[str] = mapped_column(String(50), nullable=False)
-    account_create_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    password: Mapped[str] = mapped_column(String(100), nullable=False)
+    account_create_date: Mapped[datetime.date] = mapped_column(Date, nullable=False, server_default=text('CURRENT_DATE'))
     last_login_time: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP(precision=0), server_default=text('NULL::timestamp without time zone'))
 
 
@@ -132,6 +133,7 @@ class Version(Base):
     __tablename__ = 'version'
     __table_args__ = (
         PrimaryKeyConstraint('_id', name='version_pkey'),
+        UniqueConstraint('language', 'subtitles', 'format', name='no_duplicate_version')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -226,11 +228,13 @@ class RegionalManager(User):
 class Worker(User):
     __tablename__ = 'worker'
     __table_args__ = (
-        CheckConstraint('char_length(bank_account_number::text) = 26', name='worker_bank_account_number_check'),
-        CheckConstraint('char_length(pesel_number::text) = 11', name='worker_pesel_number_check'),
-        CheckConstraint('salary_month > 0::numeric', name='worker_salary_month_check'),
+        CheckConstraint("bank_account_number::text ~ '^[0-9]{26}$'::text", name='worker_bank_account_number_check'),
+        CheckConstraint("pesel_number::text ~ '^[0-9]{11}$'::text", name='worker_pesel_number_check'),
+        CheckConstraint('salary_month > 0::numeric AND salary_month <= 100000::numeric', name='worker_salary_month_check'),
         ForeignKeyConstraint(['_id'], ['user._id'], ondelete='CASCADE', name='fk_worker_user_id'),
-        PrimaryKeyConstraint('_id', name='worker_pkey')
+        PrimaryKeyConstraint('_id', name='worker_pkey'),
+        UniqueConstraint('bank_account_number', name='worker_bank_account_number_key'),
+        UniqueConstraint('pesel_number', name='worker_pesel_number_key')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -255,9 +259,10 @@ t_cinema_movie_version = Table(
 class Employment(Base):
     __tablename__ = 'employment'
     __table_args__ = (
-        CheckConstraint('end_date IS NULL OR end_date >= start_date', name='employment_date_check'),
-        ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='CASCADE', name='c_fk_employment_cinema_id'),
-        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='CASCADE', name='c_fk_employment_worker_id'),
+        CheckConstraint('end_date IS NULL OR end_date >= start_date', name='employment_check'),
+        CheckConstraint("start_date >= '2000-01-01'::date", name='employment_start_date_check'),
+        ForeignKeyConstraint(['fk_cinema_id'], ['cinema._id'], ondelete='RESTRICT', name='c_fk_employment_cinema_id'),
+        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='RESTRICT', name='c_fk_employment_worker_id'),
         PrimaryKeyConstraint('_id', name='employment_pkey')
     )
 
@@ -274,7 +279,6 @@ class Employment(Base):
 class Payment(Base):
     __tablename__ = 'payment'
     __table_args__ = (
-        CheckConstraint('time_of_sale <= CURRENT_TIMESTAMP', name='product_sale_time_of_sale_check'),
         CheckConstraint('amount >= 0::numeric', name='payment_amount_check'),
         CheckConstraint('time_of_payment <= CURRENT_TIMESTAMP', name='payment_time_of_payment_check'),
         ForeignKeyConstraint(['fk_client_id'], ['client._id'], ondelete='SET NULL', name='c_fk_client_id'),
@@ -285,7 +289,6 @@ class Payment(Base):
     type: Mapped[str] = mapped_column(Enum('cash', 'card', 'blik', 'online', 'voucher', name='payment_type'), nullable=False)
     time_of_payment: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     amount: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
-    time_of_sale: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     fk_client_id: Mapped[Optional[int]] = mapped_column(Integer)
 
     fk_client: Mapped[Optional['Client']] = relationship('Client', back_populates='payment')
@@ -323,16 +326,18 @@ class Service(Worker):
 class Shift(Base):
     __tablename__ = 'shift'
     __table_args__ = (
-        CheckConstraint('end_time IS NULL OR end_time > start_time', name='shift_time_check'),
-        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='CASCADE', name='c_fk_shift_worker_id'),
-        PrimaryKeyConstraint('_id', name='shift_pkey')
+        CheckConstraint("end_time IS NULL OR end_time > start_time AND end_time <= (start_time + '24:00:00'::interval)", name='shift_check'),
+        CheckConstraint("start_time >= '2000-01-01 00:00:00'::timestamp without time zone", name='shift_start_time_check'),
+        ForeignKeyConstraint(['fk_worker_id'], ['worker._id'], ondelete='RESTRICT', name='c_fk_shift_worker_id'),
+        PrimaryKeyConstraint('_id', name='shift_pkey'),
+        UniqueConstraint('fk_worker_id', 'start_time', name='c_no_overlapping_shifts')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     fk_worker_id: Mapped[int] = mapped_column(Integer, nullable=False)
     start_time: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=0), nullable=False)
-    type: Mapped[str] = mapped_column(Enum('cashier', 'usher', 'cleaning', 'projection', 'technical_support', name='shift_type'), nullable=False)
     end_time: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP(precision=0))
+    type: Mapped[Optional[str]] = mapped_column(Enum('cashier', 'usher', 'cleaning', 'projection', 'technical_support', name='shift_type'))
 
     fk_worker: Mapped['Worker'] = relationship('Worker', back_populates='shift')
 
@@ -432,26 +437,25 @@ class Ticket(Base):
         ForeignKeyConstraint(['fk_screening_id'], ['screening._id'], ondelete='CASCADE', name='c_fk_screening_id'),
         ForeignKeyConstraint(['fk_seat_id'], ['seat._id'], ondelete='CASCADE', name='c_fk_seat_id'),
         ForeignKeyConstraint(['fk_ticket_type_id'], ['ticket_type._id'], ondelete='CASCADE', name='c_fk_ticket_type_id'),
-        PrimaryKeyConstraint('_id', name='ticket_pkey'),
-        CheckConstraint('price >= 0::numeric', name='ticket_price_check')
+        PrimaryKeyConstraint('_id', name='ticket_pkey')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    fk_ticket_type_id: Mapped[int] = mapped_column(Integer)
     fk_screening_id: Mapped[int] = mapped_column(Integer, nullable=False)
     fk_seat_id: Mapped[int] = mapped_column(Integer, nullable=False)
     qr_code: Mapped[str] = mapped_column(String(100), nullable=False)
     status: Mapped[str] = mapped_column(Enum('used', 'valid', 'reserved', 'payment_pending', 'free', 'not_used', name='ticket_status'), nullable=False, server_default=text("'free'::ticket_status"))
-    price: Mapped[decimal.Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    fk_ticket_type_id: Mapped[Optional[int]] = mapped_column(Integer)
     fk_discount_id: Mapped[Optional[int]] = mapped_column(Integer)
     fk_payment_id: Mapped[Optional[int]] = mapped_column(Integer)
+    price: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(10, 2))
 
     fk_special_offer: Mapped[list['SpecialOffer']] = relationship('SpecialOffer', secondary='ticket_special_offer', back_populates='fk_ticket')
     fk_discount: Mapped[Optional['Discount']] = relationship('Discount', back_populates='ticket')
     fk_payment: Mapped[Optional['Payment']] = relationship('Payment', back_populates='ticket')
     fk_screening: Mapped['Screening'] = relationship('Screening', back_populates='ticket')
     fk_seat: Mapped['Seat'] = relationship('Seat', back_populates='ticket')
-    fk_ticket_type: Mapped['TicketType'] = relationship('TicketType', back_populates='ticket')
+    fk_ticket_type: Mapped[Optional['TicketType']] = relationship('TicketType', back_populates='ticket')
 
 
 t_ticket_special_offer = Table(

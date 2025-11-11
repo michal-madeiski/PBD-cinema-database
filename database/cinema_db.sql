@@ -157,8 +157,6 @@ CREATE TABLE payment (
     time_of_payment TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP
         CHECK (time_of_payment <= CURRENT_TIMESTAMP),
     amount NUMERIC(10, 2) NOT NULL CHECK (amount >= 0),
-    time_of_sale TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP
-        CHECK (time_of_sale <= CURRENT_TIMESTAMP),
 
     CONSTRAINT c_fk_client_id
         FOREIGN KEY (fk_client_id)
@@ -294,9 +292,6 @@ CREATE TABLE employment (
         end_date IS NULL OR 
         (end_date >= "start_date")
     ),
-
-    CONSTRAINT c_one_active_employment_per_worker UNIQUE (fk_worker_id) 
-        WHERE (end_date IS NULL),
 
     CONSTRAINT c_fk_employment_worker_id
         FOREIGN KEY (fk_worker_id)
