@@ -851,72 +851,71 @@ def make_batch(function, size):
 
 
 if __name__ == "__main__":
-    seed_special_offer(1000000); 
-    # print("ZACZYNAM SEEDOWANIE")
+    print("ZACZYNAM SEEDOWANIE")
 
-    # REGION = 16
-    # PRODUCT = 1000
-    # MOVIE_AND_LICENSE = 10_000
-    # min_versions = 1
-    # max_versions = 5
-    # min_cinema_movie_version=10
-    # max_cinema_movie_version=50 
-    # CINEMA = 500
-    # SERVICE = 100_000
-    # SUPERVISOR = 5000
-    # CLIENT = 1_000_000
-    # REGIONAL_MANAGER = 500
-    # # SHIFT = 200_000
-    # EMPLOYMENT = 150_000
-    # SCREENING = 2_000_000
-    # PAYMENT = 10_000_000
-    # PRODUCT_SALE = 1_000_000
-    # TERM = 700
-    # SPECIAL_OFFER = 10_000
-    # TICKET_SPECIAL_OFFER = 2_000_000
+    REGION = 16
+    PRODUCT = 1000
+    MOVIE_AND_LICENSE = 10_000
+    min_versions = 1
+    max_versions = 5
+    min_cinema_movie_version=10
+    max_cinema_movie_version=50 
+    CINEMA = 500
+    SERVICE = 100_000
+    SUPERVISOR = 5000
+    CLIENT = 1_000_000
+    REGIONAL_MANAGER = 500
+    # SHIFT = 200_000
+    EMPLOYMENT = 150_000
+    SCREENING = 2_000_000
+    PAYMENT = 10_000_000
+    PRODUCT_SALE = 1_000_000
+    TERM = 700
+    SPECIAL_OFFER = 10_000
+    TICKET_SPECIAL_OFFER = 2_000_000
     
 
-    # # nie potrzebują innych tabel
-    # make_batch(seeder_region, REGION)
-    # make_batch(seeder_product, PRODUCT)
+    # nie potrzebują innych tabel
+    make_batch(seeder_region, REGION)
+    make_batch(seeder_product, PRODUCT)
 
-    # make_batch(seed_license, MOVIE_AND_LICENSE)
-    # seed_version()
-    # seed_movie_version(min_versions, max_versions)
+    make_batch(seed_license, MOVIE_AND_LICENSE)
+    seed_version()
+    seed_movie_version(min_versions, max_versions)
 
-    # # # wymaga: region
-    # make_batch(seed_cinemas, CINEMA)
-    # seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
-    # seed_room(2, 8)
+    # # wymaga: region
+    make_batch(seed_cinemas, CINEMA)
+    seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
+    seed_room(2, 8)
    
-    # make_batch(seed_service, SERVICE)
-    # make_batch(seed_supervisor, SUPERVISOR)
-    # make_batch(seed_client, CLIENT)
-    # make_batch(seed_regional_manager, REGIONAL_MANAGER)
-    # make_batch(seed_employment_with_shifts, EMPLOYMENT)
+    make_batch(seed_service, SERVICE)
+    make_batch(seed_supervisor, SUPERVISOR)
+    make_batch(seed_client, CLIENT)
+    make_batch(seed_regional_manager, REGIONAL_MANAGER)
+    make_batch(seed_employment_with_shifts, EMPLOYMENT)
 
-    # # # wymaga: room, movie_version
-    # make_batch(seeder_screening, SCREENING)
+    # # wymaga: room, movie_version
+    make_batch(seeder_screening, SCREENING)
 
-    # # # wymaga: client
-    # make_batch(seeder_payment, PAYMENT)
+    # # wymaga: client
+    make_batch(seeder_payment, PAYMENT)
 
-    # # # wymaga: product, payment, cinema
-    # make_batch(seeder_product_sale, PRODUCT_SALE)
+    # # wymaga: product, payment, cinema
+    make_batch(seeder_product_sale, PRODUCT_SALE)
 
-    # # # wymaga: region, regional_manager
-    # make_batch(seeder_term, TERM)
+    # # wymaga: region, regional_manager
+    make_batch(seeder_term, TERM)
 
-    # make_batch(seed_special_offer, SPECIAL_OFFER)
-    # seed_discount() 
-    # seed_ticket_type()
+    make_batch(seed_special_offer, SPECIAL_OFFER)
+    seed_discount() 
+    seed_ticket_type()
 
-    # # # wymaga: room
-    # seed_seat()
+    # # wymaga: room
+    seed_seat()
 
-    # # wymaga: ticket_type, discount, payment, seat, screening
-    # seed_ticket()
+    # wymaga: ticket_type, discount, payment, seat, screening
+    seed_ticket()
 
-    # # wymaga: ticket, special_offer
-    # make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
-    # calculate_payments()
+    # wymaga: ticket, special_offer
+    make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
+    calculate_payments()
