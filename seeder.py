@@ -782,10 +782,9 @@ if __name__ == "__main__":
     make_batch(seed_supervisor, SUPERVISOR)
     make_batch(seed_client, CLIENT)
     make_batch(seed_regional_manager, REGIONAL_MANAGER)
-    make_batch(seed_shift, SHIFT)
-
-    # wymaga: cinema 
-    make_batch(seed_employment, EMPLOYMENT)
+    make_batch(seed_employment_with_shifts, EMPLOYMENT)
+    # make_batch(seed_shift, SHIFT)
+    # make_batch(seed_employment, EMPLOYMENT)
 
     # wymaga: room, movie_version
     make_batch(seeder_screening, SCREENING)
