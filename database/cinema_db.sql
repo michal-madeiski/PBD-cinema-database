@@ -174,7 +174,9 @@ CREATE TABLE "version" (
     _id SERIAL PRIMARY KEY,
     "language" languages NOT NULL, 
     subtitles languages NOT NULL,
-    "format" movie_format NOT NULL  
+    "format" movie_format NOT NULL,
+    CONSTRAINT no_duplicate_version
+        UNIQUE ("language", subtitles, "format")  
 );
 
 CREATE TABLE movie_version (
