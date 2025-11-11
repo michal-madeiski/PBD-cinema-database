@@ -3,8 +3,12 @@ from db.models import *
 from faker import Faker 
 from datetime import timedelta, datetime, date, timezone
 import random
-from sqlalchemy import select, func, update
+from sqlalchemy import select, func, update, exists
 from decimal import Decimal
+from bisect import bisect_right
+from collections import defaultdict
+
+
 
 faker= Faker("pl_PL")
 
@@ -134,57 +138,86 @@ def seeder_payment(n):
         fk_client_id = random.choice(client_ids) if random.random() > 0.2 else None
         payment_type = random.choice(['cash', 'card', 'blik', 'online', 'voucher'])
         end = datetime.now() - timedelta(hours=5)
-        time_of_payment = faker.date_time_between_dates(datetime_start=datetime(1970, 1, 1), datetime_end=end, tzinfo=None)
+        time_of_payment = faker.date_time_between_dates(datetime_start=datetime(2015, 1, 1), datetime_end=end, tzinfo=None)
         amount = Decimal("0.00")
         payments.append(Payment(fk_client_id = fk_client_id, type = payment_type, time_of_payment = time_of_payment, amount = amount))
     session.close()
     seeder(payments, "payment", len(payments))
 
-def calculate_payments():
+def calculate_payments(batch_size=200_000):
     session = SessionLocal()
-    ticket_prices = (
-        session.query(Payment._id, func.coalesce(func.sum(Ticket.price), Decimal("0.00")))
-        .outerjoin(Ticket, Ticket.fk_payment_id == Payment._id)
-        .group_by(Payment._id)
-        .order_by(Payment._id)
-        .all())
+    try:
+        lo, hi = session.query(func.min(Payment._id), func.max(Payment._id)).one()
+        if lo is None:
+            print("Brak rekordów w payment.")
+            return
 
-    product_sale_prices = (
-        session.query(Payment._id, func.coalesce(func.sum(ProductSale.price), Decimal("0.00")))
-        .outerjoin(ProductSale, ProductSale.fk_payment_id == Payment._id)
-        .group_by(Payment._id)
-        .order_by(Payment._id)
-        .all())
-    
-    ticket_dict = dict(ticket_prices)
-    product_sale_dict = dict(product_sale_prices)
+        cur = lo
+        batch_no = 0
+        while cur <= hi:
+            end = min(cur + batch_size - 1, hi)
+            batch_no += 1
 
-    totals = {          
-        payment_id: (ticket_dict.get(payment_id) or Decimal("0.00")) + (product_sale_dict.get(payment_id) or Decimal("0.00"))
-        for payment_id in ticket_dict
-    }
+            # --- AGREGACJE W DB – tylko dla payment_id w przedziale ---
+            t_subq = (
+                session.query(
+                    Ticket.fk_payment_id.label("pid"),
+                    func.sum(Ticket.price).label("sum_t"),
+                )
+                .filter(Ticket.fk_payment_id.between(cur, end))
+                .group_by(Ticket.fk_payment_id)
+                .subquery()
+            )
 
-    updates = [{"_id": payment_id, "amount": totals[payment_id]} for payment_id in totals]
+            p_subq = (
+                session.query(
+                    ProductSale.fk_payment_id.label("pid"),
+                    func.sum(ProductSale.price).label("sum_p"),
+                )
+                .filter(ProductSale.fk_payment_id.between(cur, end))
+                .group_by(ProductSale.fk_payment_id)
+                .subquery()
+            )
 
-    session.bulk_update_mappings(Payment, updates)
-    
-    ticket_exists = (
-        session.query(Ticket._id)
-        .filter(Ticket.fk_payment_id == Payment._id)
-        .exists()
-    )
-    product_exists = (
-        session.query(ProductSale._id)
-        .filter(ProductSale.fk_payment_id == Payment._id)
-        .exists()
-    )
-    (session.query(Payment)
-        .filter(~ticket_exists, ~product_exists)
-        .delete(synchronize_session=False))
+            agg = (
+                session.query(
+                    func.coalesce(t_subq.c.pid, p_subq.c.pid).label("pid"),
+                    func.coalesce(t_subq.c.sum_t, 0).label("sum_t"),
+                    func.coalesce(p_subq.c.sum_p, 0).label("sum_p"),
+                )
+                .select_from(t_subq.outerjoin(p_subq, t_subq.c.pid == p_subq.c.pid))
+                .subquery("agg")
+            )
 
-    session.commit()
-    session.close()
-    print("Zliczono i usunięto paymenty")
+            # --- UPDATE payment.amount = sum_t + sum_p dla batcha ---
+            stmt_upd = (
+                update(Payment)
+                .where(Payment._id == agg.c.pid)
+                .where(Payment._id.between(cur, end))
+                .values(amount=agg.c.sum_t + agg.c.sum_p)
+            )
+            session.execute(stmt_upd)
+
+            # --- DELETE paymentów bez powiązań (tylko w batchu) ---
+            ticket_exists = exists().where(Ticket.fk_payment_id == Payment._id)
+            product_exists = exists().where(ProductSale.fk_payment_id == Payment._id)
+
+            (session.query(Payment)
+                .filter(Payment._id.between(cur, end))
+                .filter(~ticket_exists, ~product_exists)
+                .delete(synchronize_session=False))
+
+            session.commit()
+            print(f"[batch {batch_no}] {cur}–{end} OK")
+
+            cur = end + 1
+
+        print("Zliczono i usunięto paymenty (batched).")
+    except Exception as e:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 def seeder_term(n):
     terms = []
@@ -345,7 +378,7 @@ def seed_ticket_type():
             "ticket_type", 2)
 
 def seed_special_offer(n):
-    start_date_start = datetime.now()-timedelta(days=1000)
+    start_date_start = datetime(2015, 1, 1)
     start_date_end = start_date_start+timedelta(days=900)
 
     seeder((SpecialOffer(name = faker.word(),
@@ -367,7 +400,7 @@ def seed_seat():
     seats = []
     counter = 0
     for r in room_ids:
-        seat_amount = random.randint(10, 50)
+        seat_amount = random.randint(10, 30)
         for _ in range(seat_amount):
             counter += 1
             seats.append(Seat(fk_room_id = r,
@@ -381,84 +414,121 @@ def seed_seat():
 def seed_ticket():
     session = SessionLocal()
 
-    screening_ids = [x[0] for x in session.query(Screening._id).all()]
+    # 1) Słowniki i proste struktury
+    ticket_types = list(session.query(TicketType._id, TicketType.price))
+    if not ticket_types:
+        print("Brak id w ticket_type"); session.close(); return
+    ticket_types_dict = {tid: price for tid, price in ticket_types}
 
-    ticket_types = [x for x in session.query(TicketType._id, TicketType.price).all()]
-    ticket_types_dict = {x[0]: x[1] for x in ticket_types}
-    discounts = [x for x in session.query(Discount._id, Discount.percentage).all()]
-    discounts_dict = {x[0]: x[1] for x in discounts}
+    discounts = list(session.query(Discount._id, Discount.percentage))
+    if not discounts:
+        print("Brak id w discount"); session.close(); return
+    discounts_dict = {did: pct for did, pct in discounts}
 
+    # 2) Siedzenia zindeksowane po sali
+    seats_by_room = defaultdict(list)
+    for seat_id, room_id in session.query(Seat._id, Seat.fk_room_id):
+        seats_by_room[room_id].append(seat_id)
+
+    # 3) Płatności posortowane po czasie + bisect
+    payments_raw = list(session.query(Payment._id, Payment.time_of_payment))
+    if not payments_raw:
+        print("Brak id w payment")
+        session.close()
+        return
+
+    # 🔹 filtr: tylko płatności z ostatniego miesiąca
+    now = datetime.now()
+    month_ago = now - timedelta(days=30)
+    payments_raw = [p for p in payments_raw if p[1] >= month_ago]
+
+    if not payments_raw:
+        print("Brak płatności z ostatniego miesiąca")
+        session.close()
+        return
+
+    # 🔹 sortujemy po czasie, żeby działał bisect
+    payments_raw.sort(key=lambda x: x[1])
+    payment_ids = [p[0] for p in payments_raw]
+    payment_times = [p[1] for p in payments_raw]
+
+    def random_valid_payment_id(t):
+        """Zwraca losowy payment_id, którego czas jest nie późniejszy niż screening_time."""
+        idx = bisect_right(payment_times, t)
+        if idx == 0:
+            return None
+        return payment_ids[random.randrange(idx)]
+
+    # 4) Statusy i wagi
     statuses_past = ['used', 'not_used']
     statuses_future = ['valid', 'reserved', 'payment_pending', 'free']
     statuses_future_weights = [1, 1, 1, 5]
-    statuses_without_payment_etc = ['not_used', 'free']
+    statuses_without_payment_etc = {'not_used', 'free'}  # zbiór tylko do membership O(1)
 
-    if len(ticket_types) == 0 :
-        print("Brak id w ticket_type")
-        session.close()
-        return
-    
-    if len(screening_ids) == 0 :
-        print("Brak id w screening")
-        session.close()
-        return
-    
-    if len(discounts) == 0 :
-        print("Brak id w discount")
-        session.close()
-        return
-    
-    tickets = []
-    for i in range(len(screening_ids)):
-        screening_id = screening_ids[i]
-        screening_stmt = select(Screening).where(Screening._id == screening_id)
-        screening_time = session.scalars(screening_stmt).first().start_time
+    # 5) Iteracja po seansach strumieniowo
+    screenings_q = session.query(
+        Screening._id, Screening.start_time, Screening.fk_room_id
+    ).yield_per(10000)
 
-        payment_ids = [x[0] for x in session.query(Payment._id).filter(Payment.time_of_payment <= screening_time)]
-        if len(payment_ids) == 0 :
-            print("Brak id w payment")
-            session.close()
-            return
-        
-        room_id = session.scalars(screening_stmt).first().fk_room_id
-        room_stmt = select(Room).where(Room._id == room_id)
+    print("Wszystko jest w bazie więc tworzę tickety")
+    tickets_batch = []
+    batch_size = 50_000
+    now = datetime.now()
 
-        seats = session.scalars(room_stmt).first().seat
-        seat_ids = [s._id for s in seats]
+    cnt = 0
+    for screening_id, screening_time, room_id in screenings_q:
+        is_future = screening_time > now
+        seat_ids = seats_by_room.get(room_id)
+        if not seat_ids:
+            continue
 
-        for j in range(len(seat_ids)):
-            seat_id = seat_ids[j]
+        for seat_id in seat_ids:
+            status = (
+                random.choices(statuses_future, statuses_future_weights, k=1)[0]
+                if is_future else random.choice(statuses_past)
+            )
+
             ticket_type_id = None
             discount_id = None
             payment_id = None
-            _price = None
-            _status = random.choices(statuses_future, statuses_future_weights, k=1)[0] if screening_time > datetime.now() else random.choice(statuses_past)             
-            
-            if _status not in statuses_without_payment_etc :
-                discount_id = None if random.random() < 0.5 else random.choice(list(discounts_dict.keys()))
-                discount_percentage = None if discount_id == None else discounts_dict[discount_id]
-                ticket_type_id = random.choice(list(ticket_types_dict.keys()))
-                ticket_type_price = ticket_types_dict[ticket_type_id]
-                _price = ticket_type_price if discount_percentage == None else (discount_percentage/100)*ticket_type_price
-                payment_id = random.choice(payment_ids)   
-            
-            tickets.append(Ticket(
-                fk_ticket_type_id = ticket_type_id,
-                fk_seat_id = seat_id,
-                fk_screening_id = screening_id,
-                fk_discount_id = discount_id,
-                fk_payment_id = payment_id,
-                qr_code = faker.ean13(),
-                status = _status,
-                price = _price
-            ))
+            price = None
 
-            if len(tickets) == 50_000:
-                seeder(tickets, "ticket", len(tickets))
-                tickets = []
-    seeder(tickets, "tickets", len(tickets))
+            if status not in statuses_without_payment_etc:
+                # losowy rabat (albo brak)
+                discount_id = None if random.random() < 0.5 else random.choice(list(discounts_dict.keys()))
+                discount_pct = None if discount_id is None else discounts_dict[discount_id]
+
+                # typ biletu i cena
+                ticket_type_id = random.choice(list(ticket_types_dict.keys()))
+                base_price = ticket_types_dict[ticket_type_id]
+                price = base_price if discount_pct is None else base_price * (1 - discount_pct / 100)
+
+                # płatność przed startem seansu
+                payment_id = random_valid_payment_id(screening_time)
+
+            tickets_batch.append(Ticket(
+                fk_ticket_type_id=ticket_type_id,
+                fk_seat_id=seat_id,
+                fk_screening_id=screening_id,
+                fk_discount_id=discount_id,
+                fk_payment_id=payment_id,
+                qr_code=faker.ean13(),
+                status=status,
+                price=price
+            ))
+            if len(tickets_batch) >= batch_size:
+                seeder(tickets_batch, "ticket", len(tickets_batch))
+                tickets_batch.clear()
+
+        cnt += 1
+        if cnt % 50000 == 0:
+            print(f"Przetworzono {cnt:,} screeningów...")
+
+    if tickets_batch:
+        seeder(tickets_batch, "ticket", len(tickets_batch))
 
     session.close()
+
 
 def seed_ticket_special_offer(n):
     session = SessionLocal()
@@ -482,14 +552,13 @@ def seed_ticket_special_offer(n):
     existed_pairs = {(r.fk_ticket_id, r.fk_special_offer_id) for r in ticket_special_offers}
 
     pairs = set()
-    pair= (random.choice(tickets), random.choice(special_offers))
-    while len(pairs) < n:
-        while (pair[0][0], pair[1][0]) in pairs or (pair[0][0], pair[1][0]) in existed_pairs or not (pair[1][2] >= pair[0][1] >= pair[1][1]):
-            pair= ((random.choice(tickets), random.choice(special_offers)))
-        pairs.add((pair[0][0], pair[1][0]))
-        special_offer_amount = pair[1][3]
-        old_price = pair[0][2]
-        session.execute(update(Ticket).where(Ticket._id == pair[0][0]).values(price = max(0, old_price - special_offer_amount)))
+    for _ in range(n):
+        pair= (random.choice(tickets), random.choice(special_offers))
+        if (pair[0][0], pair[1][0]) not in pairs and (pair[0][0], pair[1][0]) not in existed_pairs and (pair[1][2] >= pair[0][1] >= pair[1][1]):
+            pairs.add((pair[0][0], pair[1][0]))
+            special_offer_amount = pair[1][3]
+            old_price = pair[0][2]
+            session.execute(update(Ticket).where(Ticket._id == pair[0][0]).values(price = max(0, old_price - special_offer_amount)))
 
     data = [{"fk_ticket_id": t, "fk_special_offer_id": s} for t, s in pairs]
 
@@ -502,6 +571,7 @@ def seed_ticket_special_offer(n):
         print("Błąd podczas seedowania:", e)
     finally: 
         session.close()
+
         
 def _seed_users_base(ModelClass, n):
     session = SessionLocal()
@@ -781,71 +851,72 @@ def make_batch(function, size):
 
 
 if __name__ == "__main__":
-    print("ZACZYNAM SEEDOWANIE")
+    seed_special_offer(1000000); 
+    # print("ZACZYNAM SEEDOWANIE")
 
-    REGION = 10
-    PRODUCT = 100
-    MOVIE_AND_LICENSE = 10_000
-    min_versions = 1
-    max_versions = 5
-    CINEMA = 200
-    CINEMA_MOVIE = 2000
-    ROOM = CINEMA*5
-    SERVICE = 2000
-    SUPERVISOR = 500
-    CLIENT = 100_000
-    REGIONAL_MANAGER = 100
-    SHIFT = 200_000
-    EMPLOYMENT = 5000
-    SCREENING = 10_000
-    PAYMENT = 20_000
-    PRODUCT_SALE = 5000
-    TERM = 50
-    SPECIAL_OFFER = 1000
-    TICKET_SPECIAL_OFFER = 100
+    # REGION = 16
+    # PRODUCT = 1000
+    # MOVIE_AND_LICENSE = 10_000
+    # min_versions = 1
+    # max_versions = 5
+    # min_cinema_movie_version=10
+    # max_cinema_movie_version=50 
+    # CINEMA = 500
+    # SERVICE = 100_000
+    # SUPERVISOR = 5000
+    # CLIENT = 1_000_000
+    # REGIONAL_MANAGER = 500
+    # # SHIFT = 200_000
+    # EMPLOYMENT = 150_000
+    # SCREENING = 2_000_000
+    # PAYMENT = 10_000_000
+    # PRODUCT_SALE = 1_000_000
+    # TERM = 700
+    # SPECIAL_OFFER = 10_000
+    # TICKET_SPECIAL_OFFER = 2_000_000
     
 
-    # nie potrzebują innych tabel
-    make_batch(seeder_region, REGION)
-    make_batch(seeder_product, PRODUCT)
+    # # nie potrzebują innych tabel
+    # make_batch(seeder_region, REGION)
+    # make_batch(seeder_product, PRODUCT)
 
-    make_batch(seed_license, MOVIE_AND_LICENSE)
-    seed_version()
-    seed_movie_version(min_versions, max_versions)
+    # make_batch(seed_license, MOVIE_AND_LICENSE)
+    # seed_version()
+    # seed_movie_version(min_versions, max_versions)
 
-    # wymaga: region
-    make_batch(seed_cinemas, CINEMA)
-    seed_cinema_movie(1, 10)
-    seed_room(1, 5)
+    # # # wymaga: region
+    # make_batch(seed_cinemas, CINEMA)
+    # seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
+    # seed_room(2, 8)
    
-    make_batch(seed_service, SERVICE)
-    make_batch(seed_supervisor, SUPERVISOR)
-    make_batch(seed_client, CLIENT)
-    make_batch(seed_regional_manager, REGIONAL_MANAGER)
-    make_batch(seed_employment_with_shifts, EMPLOYMENT)
+    # make_batch(seed_service, SERVICE)
+    # make_batch(seed_supervisor, SUPERVISOR)
+    # make_batch(seed_client, CLIENT)
+    # make_batch(seed_regional_manager, REGIONAL_MANAGER)
+    # make_batch(seed_employment_with_shifts, EMPLOYMENT)
 
-    # wymaga: room, movie_version
-    make_batch(seeder_screening, SCREENING)
+    # # # wymaga: room, movie_version
+    # make_batch(seeder_screening, SCREENING)
 
-    # wymaga: client
-    make_batch(seeder_payment, PAYMENT)
+    # # # wymaga: client
+    # make_batch(seeder_payment, PAYMENT)
 
-    # wymaga: product, payment, cinema
-    make_batch(seeder_product_sale, PRODUCT_SALE)
+    # # # wymaga: product, payment, cinema
+    # make_batch(seeder_product_sale, PRODUCT_SALE)
 
-    # wymaga: region, regional_manager
-    make_batch(seeder_term, TERM)
+    # # # wymaga: region, regional_manager
+    # make_batch(seeder_term, TERM)
 
-    make_batch(seed_special_offer, SPECIAL_OFFER)
-    seed_discount() 
-    seed_ticket_type()
+    # make_batch(seed_special_offer, SPECIAL_OFFER)
+    # seed_discount() 
+    # seed_ticket_type()
 
-    # wymaga: room
-    seed_seat()
+    # # # wymaga: room
+    # seed_seat()
 
-    # wymaga: ticket_type, discount, payment, seat, screening
-    seed_ticket()
+    # # wymaga: ticket_type, discount, payment, seat, screening
+    # seed_ticket()
 
-    # wymaga: ticket, special_offer
-    make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
-    calculate_payments()
+    # # wymaga: ticket, special_offer
+    # make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
+    # calculate_payments()
