@@ -430,7 +430,7 @@ def seed_ticket_special_offer(n):
     finally: 
         session.close()
         
-def seed_users_base(ModelClass, n):
+def _seed_users_base(ModelClass, n):
     session = SessionLocal()
     objects = []
 
@@ -438,22 +438,25 @@ def seed_users_base(ModelClass, n):
     used_usernames = {u for (u,) in session.query(User.username).all()}
 
     for _ in range(n):
+        base_email = faker.email()
 
-   
-        email = faker.email()
-
-        while(email in used_emails):
-            # used_emails.add(email)
-            email += "x"
+        email = base_email
+        email_counter = 1
+        
+        while email in used_emails:
+            local_part, domain = base_email.split('@')
+            email = f"{local_part}{email_counter}@{domain}"
+            email_counter += 1
         used_emails.add(email)
-            
-        username = faker.user_name()
-        while(username in used_usernames):
-            # used_usernames.add(username)
-            username += "x"
-        used_usernames.add(username)
-            
-
+        
+        base_username = faker.user_name()
+        username = base_username
+        username_counter = 1
+        
+        while username in used_usernames:
+            username = f"{base_username}{username_counter}"
+            username_counter += 1
+        used_usernames.add(username)    
 
         account_create_date = faker.date_between(start_date='-5y', end_date='today')
         if random.random() < 0.9:
@@ -466,7 +469,7 @@ def seed_users_base(ModelClass, n):
         data = {
             "name": faker.first_name(),
             "surname": faker.last_name(),
-            "birthdate": faker.date_of_birth(minimum_age=10, maximum_age=60),
+            "birthdate": faker.date_of_birth(minimum_age=16, maximum_age=60),
             "username": username,
             "email": email,
             "password": "$2b$12$hashed_password_example",
@@ -489,7 +492,7 @@ def seed_users_base(ModelClass, n):
         session.close()
 
 
-def seed_workers_base(ModelClass, n):
+def _seed_workers_base(ModelClass, n):
     session = SessionLocal()
     objects = []
 
@@ -500,29 +503,45 @@ def seed_workers_base(ModelClass, n):
 
     for _ in range(n):
 
-        while True:
-            email = faker.email()
-            if email not in used_emails:
-                used_emails.add(email)
-                break
+        base_email = faker.email()
 
-        while True:
-            username = faker.user_name()
-            if username not in used_usernames:
-                used_usernames.add(username)
-                break
+        email = base_email
+        email_counter = 1
         
-        while True:
-            pesel = faker.pesel()
-            if pesel not in used_pesels:
-                used_pesels.add(pesel)
-                break
+        while email in used_emails:
+            local_part, domain = base_email.split('@')
+            email = f"{local_part}{email_counter}@{domain}"
+            email_counter += 1
+        used_emails.add(email)
+        
+        base_username = faker.user_name()
+        username = base_username
+        username_counter = 1
+        
+        while username in used_usernames:
+            username = f"{base_username}{username_counter}"
+            username_counter += 1
+        used_usernames.add(username)
+        
+        base_pesel = faker.pesel()
+        pesel = base_pesel
+        pesel_counter = 1
+        
+        while pesel in used_pesels:
+            base = base_pesel[:-2]
+            pesel = f"{base}{pesel_counter:02d}"
+            pesel_counter += 1
+        used_pesels.add(pesel)
 
-        while True:
-            bank_acc = ''.join([str(random.randint(0, 9)) for _ in range(26)])
-            if bank_acc not in used_bank_account_numbers:
-                used_bank_account_numbers.add(bank_acc)
-                break
+        base_bank_acc = ''.join([str(random.randint(0, 9)) for _ in range(26)])
+        bank_acc = base_bank_acc
+        bank_acc_counter = 1
+        
+        while bank_acc in used_bank_account_numbers:
+            base = base_bank_acc[:-4]
+            bank_acc = f"{base}{bank_acc_counter:04d}"
+            bank_acc_counter += 1
+        used_bank_account_numbers.add(bank_acc)
 
         account_create_date = faker.date_between(start_date='-5y', end_date='today')
         
@@ -561,101 +580,120 @@ def seed_workers_base(ModelClass, n):
         session.close()
 
 def seed_client(n):
-    return seed_users_base(Client, n)
+    return _seed_users_base(Client, n)
 
 def seed_regional_manager(n):
-    return seed_users_base(RegionalManager, n)
+    return _seed_users_base(RegionalManager, n)
     
 def seed_supervisor(n):
-   return seed_workers_base(Supervisor, n)
+   return _seed_workers_base(Supervisor, n)
 
 def seed_service(n):
-   return seed_workers_base(Service, n)
+   return _seed_workers_base(Service, n)
 
 
+def _employment_overlaps(start1, end1, start2, end2):
+    end1_actual = end1 or datetime.today().date()
+    end2_actual = end2 or datetime.today().date()
+    
+    return (start1 < end2_actual) and (start2 < end1_actual)
 
-def seed_employment(n):
+
+def seed_employment_with_shifts(n_employments, min_shifts=10, max_shifts=100):
     session = SessionLocal()
 
     worker_ids = [w[0] for w in session.query(Worker._id).all()]
     cinema_ids = [c[0] for c in session.query(Cinema._id).all()]
+    
+    shift_slots = [('08:00', '16:00'), ('10:00', '18:00')]
+    shift_types = ['cashier', 'usher', 'cleaning', 'projection', 'technical_support']
 
     if not worker_ids or not cinema_ids:
         print("Brakuje workerów lub kin — seeduj je najpierw!")
         session.close()
         return
+    
+    existing_employments = session.query(Employment).all()
+    
+    workers_with_active_employment = set()
+    for emp in existing_employments:
+        if emp.end_date is None:
+            workers_with_active_employment.add(emp.fk_worker_id)
 
     employments = []
-
-    for _ in range(n):
+    all_shifts = []
+    n_all_shifts = 0
+    skipped = 0
+    
+    for _  in range(n_employments):
         worker_id = random.choice(worker_ids)
         cinema_id = random.choice(cinema_ids)
 
 
+        
         start_date = faker.date_between(start_date='-5y', end_date='-1y')
 
 
-        if random.random() < 0.3:
+        if random.random() < 0.3 or worker_id in workers_with_active_employment:
             months = random.randint(6, 24)
             end_date = start_date + timedelta(days=30 * months)
             if end_date > datetime.today().date():
                 end_date = datetime.today().date()
         else:
             end_date = None
-            
+        
+        
+        # SPRAWDZENIE 2: Czy nakłada się z istniejącymi employmentami?
+        worker_existing_emps = [e for e in existing_employments if e.fk_worker_id == worker_id]
+        overlaps = any(
+            _employment_overlaps(start_date, end_date, emp.start_date, emp.end_date)
+            for emp in worker_existing_emps
+        )
+        
+        if overlaps:
+            skipped += 1
+            continue
+        
         emp = Employment(
             fk_worker_id=worker_id,
             fk_cinema_id=cinema_id,
             start_date=start_date,
             end_date=end_date
         )
+        if (end_date == None):
+            workers_with_active_employment.add(worker_id)
+            
         employments.append(emp)
+        existing_employments.append(emp)
+        
+        employment_end = end_date or datetime.today().date()
+        total_days = (employment_end - start_date).days
+        
+        n_shifts = min(total_days, random.randint(min_shifts, max_shifts))
+        n_all_shifts += n_shifts
+        all_days = [start_date + timedelta(days=x) for x in range(total_days)]
+        selected_days = random.sample(all_days, n_shifts)
 
+        for day in selected_days:
+            start_hour, end_hour = random.choice(shift_slots)
+            
+            start_time = datetime.combine(day, datetime.strptime(start_hour, '%H:%M').time())
+            end_time = datetime.combine(day, datetime.strptime(end_hour, '%H:%M').time())
+
+            shift = Shift(
+                fk_worker_id=worker_id,
+                start_time=start_time,
+                end_time=end_time,
+                type=random.choice(shift_types)
+            )
+            all_shifts.append(shift)  
+      
+    print(f"Skipped {skipped} employmentów z powodu nakładania się lub aktywnych employmentów")
     try:
         session.add_all(employments)
+        session.add_all(all_shifts)
         session.commit()
-        print(f"Dodano {n} rekordów do Employment!")
-    except Exception as e:
-        session.rollback()
-        print("Błąd podczas seedowania:", e)
-    finally:
-        session.close()
-
-def seed_shift(n):
-    session = SessionLocal()
-
-    worker_ids = [w[0] for w in session.query(Worker._id).all()]
-    if not worker_ids:
-        print("Brak workerów — seeduj workerów najpierw!")
-        session.close()
-        return
-
-    SHIFT_TYPES = ['cashier', 'usher', 'cleaning', 'projection', 'technical_support']
-
-    shifts = []
-
-    for i in range(n):
-        worker_id = random.choice(worker_ids)
-
-        start = faker.date_time_between(start_date='-60d', end_date='now')
-        end = start + timedelta(hours=random.randint(6, 10))
-        shift_type = random.choice(SHIFT_TYPES)
-
-        shift = Shift(
-            fk_worker_id=worker_id,
-            start_time=start,
-            end_time=end,
-            type=shift_type
-        )
-        shifts.append(shift)
-
-        if (i+1) % 100_000 == 0:
-            print(f"{i}\n")
-
-    try:
-        session.add_all(shifts)
-        session.commit()
-        print(f"Dodano {n} rekordów do Shift!")
+        print(f"Dodano {n_employments - skipped} rekordów do Employment i {n_all_shifts} rekordów do Shift!")
     except Exception as e:
         session.rollback()
         print("Błąd podczas seedowania:", e)
