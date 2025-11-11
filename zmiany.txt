@@ -1,0 +1,56 @@
+Region:
+    SQL:
+        - brak zmian
+    Seeder:
+        - brak zmian
+
+Product:
+    SQL:
+        - dodane is_available
+    Seeder:
+        - dodane is_available, losowany bool
+
+Product_sale:
+    SQL:
+        - dodano price, aby umożliwić odtworzenie ceny produktu w momencie sprzedaży, niezależnie od późniejszych zmian jego aktualnej ceny.
+        - c_fk_product_id -> ON DELETE RESTRICT, aby nie dało się usunąć produktu dopóki ma on jakieś sprzedaże w bazie (zabezpieczenie sprzedaży)
+        - c_fk_cinema_id -> ON DELETE RESTRICT, aby nie dało się usunąć kina dopóki ma ono jakieś sprzedaże w bazie (zabezpieczenie sprzedaży)
+        - usunięto time_of_sale
+    Seeder:
+        - dodano price, pobierane na podstawie wybranego produktu
+        - usunięto time_of_sale
+
+Regional_manager:
+    SQL:
+        - brak zmian
+    Seeder:
+        - brak zmian, bo jest podłączone do seedera Matiego (seed_users_base)
+
+Term:
+    SQL:
+        - c_fk_region_id -> ON DELETE RESTRICT, aby nie dało się usunąć regionu dopóki ma ono jakieś kadencje w bazie (zabezpieczenie kadencji)
+        - c_fk_manager_id -> ON DELETE RESTRICT, aby nie dało się usunąć menadżera dopóki ma on jakieś kadencje w bazie (zabezpieczenie kadencji)
+    Seeder:
+        - nowy sposób generowania kadencji:
+            - end_date -> dzień rozpoczęcia najwcześniejszej kadencji regionu - (minus) 1 dzień
+            - start_date -> end_date - (minus) liczba od 0 do 1825 (0-5 lat)
+        - w rezultacie kadencje są generowane "od końca" czyli najpierw są generowane kadencje najbardziej aktualne, a później są dopisywane kadencje wcześniejsze
+        - najpóźniejsza kadencja może mieć start_date minimalnie 01.01.1970
+
+Payment:
+    SQL:
+        - c_fk_client_id -> ON DELETE SET NULL, aby po usunięciu klienta fk_client_id stawało się nullem
+        - dodane time_of_payment
+    Seeder:
+        - seeder payment ustawia amount na 0.00
+        - dodano funkcję calculate_pyaments, która dla ticketów i product_sale liczy ile wynosiła płatność i aktualizuje amount, usuwa paymenty bez ticketów i product_sale
+
+Screening:
+    SQL:
+        - c_fk_room_id -> ON DELETE RESTRICT, aby nie dało się usunąć sali dopóki ma on jakieś seanse w bazie (zabezpieczenie seansu)
+        - c_fk_movie_version_id -> ON DELETE RESTRICT, aby nie dało się usunąć wersji filmu dopóki ma on jakieś seanse w bazie (zabezpieczenie seansu)
+    Seeder:
+        - nowy sposób generowania saensu:
+            - start_time -> generowany z zakresu od rozpoczęcia do zakończenia licencji
+            - duration -> pobierany z Movie.duration_minutes dla movie version
+            - end_time -> start_time + duration + 40

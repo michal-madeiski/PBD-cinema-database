@@ -1,9 +1,10 @@
 from db.connection import SessionLocal
 from db.models import *
 from faker import Faker 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 import random
-from sqlalchemy import select
+from sqlalchemy import select, func
+from decimal import Decimal
 
 faker= Faker("pl_PL")
 
@@ -63,6 +64,12 @@ def seeder_screening(n):
     screenings = []
     room_ids = [x._id for x in session.query(Room).all()]
     movie_version_ids = [x._id for x in session.query(MovieVersion).all()]
+    movie_version_data = session.query(MovieVersion._id, Movie.duration_minutes ,License.start_date, License.end_date).join(Movie, Movie._id == MovieVersion.fk_movie_id).join(License, License._id == Movie._id).order_by(MovieVersion._id).all()
+
+    movie_version_data = {
+        mv_id: (duration, start_date, end_date)
+        for mv_id, duration, start_date, end_date in movie_version_data
+    }
 
     if(len(room_ids) == 0):
         print("Brak danych w tabeli Room")
@@ -74,27 +81,24 @@ def seeder_screening(n):
         return
     
     for _ in range(n):
+        movie_version_id = random.choice(list(movie_version_data.keys()))
         fk_room_id = random.choice(room_ids)
-        fk_movie_version_id = random.choice(movie_version_ids)
-        start_time = faker.date_time_between( end_date='now')
+        start_time = faker.date_time_between(start_date = movie_version_data[movie_version_id][1], end_date = movie_version_data[movie_version_id][2])
         start_time = start_time.replace(second=0, microsecond=0)
-        # movie_version = session.get(MovieVersion, fk_movie_version_id)
-        # movie = session.get(Movie, movie_version.fk_movie_id)
-        # duration = movie.duration_minutes
-        duration = 120
+        duration = movie_version_data[movie_version_id][0]
         end_time = start_time + timedelta(minutes = duration + 40)
-        screenings.append(Screening(fk_room_id = fk_room_id, fk_movie_version_id = fk_movie_version_id, start_time = start_time, end_time = end_time))
+        screenings.append(Screening(fk_room_id = fk_room_id, fk_movie_version_id = movie_version_id, start_time = start_time, end_time = end_time))
     session.close()
     seeder(screenings, "screening", len(screenings))
 
 def seeder_product_sale(n):
     product_sales = []
     session = SessionLocal()
-    product_ids = [t._id for t in session.query(Product).all()]
+    products = session.query(Product).all()
     payment_ids = [t._id for t in session.query(Payment).all()]
     cinema_ids = [t._id for t in session.query(Cinema).all()]
 
-    if(len(product_ids) == 0):
+    if(len(products) == 0):
         print("Brak danych w tabeli Product")
         session.close()
         return
@@ -108,14 +112,14 @@ def seeder_product_sale(n):
         return
     
     for _ in range(n):
-        fk_product_id = random.choice(product_ids)
+        product = random.choice(products)
+        fk_product_id = product._id
         fk_payment_id = random.choice(payment_ids)
         fk_cinema_id = random.choice(cinema_ids)
-        time_of_sale = faker.date_time_between(end_date='now')
-        time_of_sale = time_of_sale.replace(microsecond=0)
-        product_sales.append(ProductSale(fk_product_id = fk_product_id, fk_payment_id = fk_payment_id, fk_cinema_id = fk_cinema_id, time_of_sale = time_of_sale))
+        price = product.price
+        product_sales.append(ProductSale(fk_product_id = fk_product_id, fk_payment_id = fk_payment_id, fk_cinema_id = fk_cinema_id, price = price))
     session.close()
-    seeder(product_sales, "product_sale", n)
+    seeder(product_sales, "product_sale", len(product_sales))
 
 def seeder_payment(n):
     payments = []
@@ -128,12 +132,47 @@ def seeder_payment(n):
         return
     
     for _ in range(n):
-        fk_client_id = random.choice(client_ids)
-        type = random.choice(['cash', 'card', 'blik', 'online', 'voucher'])
-        amount = faker.pyfloat(min_value=10, max_value=1000, right_digits=2, positive=True)
-        payments.append(Payment(fk_client_id = fk_client_id, type = type, amount = amount))
+        fk_client_id = random.choice(client_ids) if random.random() > 0.2 else None
+        payment_type = random.choice(['cash', 'card', 'blik', 'online', 'voucher'])
+        time_of_payment = faker.date_time_between(start_date=datetime(1970, 1, 1), end_date=datetime.now())
+        amount = Decimal("0.00")
+        payments.append(Payment(fk_client_id = fk_client_id, type = payment_type, time_of_payment = time_of_payment, amount = amount))
     session.close()
-    seeder(payments, "payment", n)
+    seeder(payments, "payment", len(payments))
+
+def calculate_payments():
+    session = SessionLocal()
+    ticket_prices = (
+        session.query(Payment._id, func.sum(Ticket.price))
+        .outerjoin(Ticket, Ticket.fk_payment_id == Payment._id)
+        .group_by(Payment._id)
+        .order_by(Payment._id)
+        .all())
+
+    product_sale_prices = (
+        session.query(Payment._id, func.sum(ProductSale.price))
+        .outerjoin(ProductSale, ProductSale.fk_payment_id == Payment._id)
+        .group_by(Payment._id)
+        .order_by(Payment._id)
+        .all())
+    
+    ticket_dict = dict(ticket_prices)
+    product_sale_dict = dict(product_sale_prices)
+
+    totals = {          
+        payment_id: (ticket_dict.get(payment_id) or Decimal("0.00")) + (product_sale_dict.get(payment_id) or Decimal("0.00"))
+        if (ticket_dict.get(payment_id) is not None or product_sale_dict.get(payment_id) is not None)
+        else None
+        for payment_id in ticket_dict
+    }
+
+    updates = [{"_id": payment_id, "amount": totals[payment_id]} for payment_id in totals]
+
+    session.bulk_update_mappings(Payment, updates)
+    session.query(Payment).filter(Payment.amount.is_(None)).delete(synchronize_session=False)
+    session.commit()
+    session.close()
+    print("Zliczono i usunięto paymenty")
 
 def seeder_term(n):
     terms = []
@@ -151,17 +190,27 @@ def seeder_term(n):
         session.close()
         return
     
+    last_start_dates = session.query(Region._id, func.min(Term.start_date)).outerjoin(Term, Term.fk_region_id == Region._id).group_by(Region._id).order_by(Region._id).all()
+    last_start_dates = dict(last_start_dates)
+    
     for _ in range(n):
-        fk_region_id = random.choice(region_ids)
+        region = random.choice(list(last_start_dates.keys()))
+        last_start_date = last_start_dates[region]
+        fk_region_id = region
         fk_manager_id = random.choice(regional_manager_ids)
-        start_date = faker.date_between(end_date='now')
-        end_date = faker.date_between(end_date='now')
-        if end_date < start_date:
-            end_date = None
+        if last_start_date == date(1970, 1, 1):
+            continue
+        if last_start_date is None:
+            end_date = date.today()
+        else:
+            end_date = last_start_date - timedelta(days=1)
+        days = random.randint(0, 1825)
+        start_date = max(end_date - timedelta(days=days), date(1970, 1, 1))
+        last_start_dates[fk_region_id] = start_date
         terms.append(Term(fk_region_id = fk_region_id, fk_manager_id = fk_manager_id, start_date = start_date, end_date = end_date))
 
     session.close()
-    seeder(terms, "term", n)
+    seeder(terms, "term", len(terms))
 
 def seed_version(): 
     languages=['polish', 'english', 'spanish', 'german'] 
@@ -656,99 +705,97 @@ if __name__ == "__main__":
     print("Zaczynam seedowanie")
 
 
-    movie_and_license_count=250_000
-    cinema_movie=20_000
+    movie_and_license_count=250
+    cinema_movie=20
     min_versions=1
     max_versions=5
-    cinema_count=2000
+    cinema_count=20
     room_counts= cinema_count*5
-    SERVICES = 200_000
-    SUPERVISORS = 50_000
-    CLIENTS = 1_000_000
-    REGIONAL_MANAGERS = 1000
-    SHIFTS = 4_000_000
-    EMPLOYMENTS = 400_000
+    SERVICES = 200
+    SUPERVISORS = 50
+    CLIENTS = 1_000
+    REGIONAL_MANAGERS = 10
+    SHIFTS = 4_000
+    EMPLOYMENTS = 400
     region_count = 100
     product_count = 1000
-    screening_count = 3_000_000
-    product_sale_count = 1_000_000
-    payment_count = 2_000_000
-    term_count = 2000
-    TICKET_COUNT = 5_000_000
-    SPECIAL_OFFER_COUNT = 20_000
+    screening_count = 3_000
+    product_sale_count = 1_000
+    payment_count = 2_000
+    term_count = 200
+    TICKET_COUNT = 5_000
+    SPECIAL_OFFER_COUNT = 200
     SEAT_COUNT = room_counts*50
-    TICKET_SPECIAL_OFFER_COUNT = 2_500_000
+    TICKET_SPECIAL_OFFER_COUNT = 2_500
 
-     # seedery, które nie potrzebują innych tabel
-    # seeder_region(region_count)
-    # seeder_product(product_count)
+    #seedery, które nie potrzebują innych tabel
+    seeder_region(region_count)
+    seeder_product(product_count)
+    seed_client(CLIENTS)
+    seeder_payment(500)
 
-    # seed_license(movie_and_license_count)
-    # seed_version()
-    #seed_movie_version(min_versions, max_versions)
+    seed_license(movie_and_license_count)
+    seed_version()
+    seed_movie_version(min_versions, max_versions)
     #wymaga regionu
-    #seed_cinemas(cinema_count)
-    #seed_cinema_movie(cinema_movie)
-    #seed_room(room_counts)
+    seed_cinemas(cinema_count)
+    seed_cinema_movie(cinema_movie)
+    seed_room(room_counts)
 
    
-    #seed_service(SERVICES)
-    #seed_client(CLIENTS)
-    #seed_regional_manager(REGIONAL_MANAGERS)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
-    # seed_shift(SHIFTS//5)
+    seed_service(SERVICES)
+    seed_regional_manager(REGIONAL_MANAGERS)
+    seed_shift(SHIFTS//5)
+    seed_shift(SHIFTS//5)
+    seed_shift(SHIFTS//5)
+    seed_shift(SHIFTS//5)
+    seed_shift(SHIFTS//5)
 
 
     #WYMAGA CINEMA 
-    #seed_employment(EMPLOYMENTS)
+    seed_employment(EMPLOYMENTS)
 
 
     # seedery, które potrzebują innych tabel
-    # seeder_screening(screening_count//5) # room, movie_version
-    # seeder_screening(screening_count//5)
-    # seeder_screening(screening_count//5)
-    # seeder_screening(screening_count//5)
-    # seeder_screening(screening_count//5)
+    seeder_screening(screening_count//5) # room, movie_version
+    seeder_screening(screening_count//5)
+    seeder_screening(screening_count//5)
+    seeder_screening(screening_count//5)
+    seeder_screening(screening_count//5)
 
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10)
-    # seeder_payment(payment_count//10) # client
 
-    # seeder_product_sale(product_sale_count//10) #product, payment, cinema
-    # seeder_product_sale(product_sale_count//10)
-    # seeder_product_sale(product_sale_count//10)
-    # seeder_product_sale(product_sale_count//10)
-    # seeder_product_sale(product_sale_count//10)
+    seeder_product_sale(product_sale_count//10) #product, payment, cinema
+    seeder_product_sale(product_sale_count//10)
+    seeder_product_sale(product_sale_count//10)
+    seeder_product_sale(product_sale_count//10)
+    seeder_product_sale(product_sale_count//10)
 
-    # seeder_term(term_count) # region, regional_manager
+    seeder_term(term_count) # region, regional_manager
 
 
     
 
-    # seed_special_offer(SPECIAL_OFFER_COUNT)
-    # seed_discount() 
-    # seed_ticket_type()
-    # seed_seat(SEAT_COUNT) #room 
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
-    # seed_ticket(TICKET_COUNT//20)
+    seed_special_offer(SPECIAL_OFFER_COUNT)
+    seed_discount() 
+    seed_ticket_type()
+    seed_seat(SEAT_COUNT) #room 
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
+    seed_ticket(TICKET_COUNT//20)
     
      #ticket_type, discount, payment, seat, screening
-    #seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    #seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10) #ticket, special_offer
-    # seed_ticket_with_realistic_price()
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10)
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER_COUNT//10) #ticket, special_offer
+    seed_ticket_with_realistic_price()
+
+    calculate_payments()
