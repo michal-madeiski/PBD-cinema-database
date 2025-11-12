@@ -1,5 +1,5 @@
 --Total ticket revenue per cinema from the last year
-SELECT c._id, SUM(t.price) AS total_ticket_income
+SELECT c._id, c.city, c.street, c.building_number, SUM(t.price) AS total_ticket_income
 FROM cinema c FULL 
 JOIN room r ON r.fk_cinema_id=c._id
 JOIN screening s ON s.fk_room_id=r._id
