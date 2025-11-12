@@ -1,4 +1,4 @@
--- Obłożenie sal w zależności od miesiąca
+--Room occupancy by month
 WITH room_seats AS (
   SELECT room._id AS room_id, COUNT(seat._id) AS seat_count
   FROM room

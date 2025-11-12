@@ -1,3 +1,4 @@
+--Number of screenings per film format
 SELECT v.format,
        COUNT(s._id) AS screenings
 FROM version v

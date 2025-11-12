@@ -1,3 +1,4 @@
+--Number of free tickets per special offer
 SELECT
     so._id AS special_offer_id,
     so.name,

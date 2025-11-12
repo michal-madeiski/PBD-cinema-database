@@ -1,3 +1,4 @@
+--Every 10,000th customer in the system
 SELECT *
 FROM (
     SELECT 

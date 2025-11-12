@@ -1,3 +1,4 @@
+--Number of tickets sold per movie
 SELECT m._id, m.title, COUNT t._id AS tickets_sold
 FROM ticket t
 JOIN screening s ON t.fk_screening_id = s._id

@@ -1,4 +1,4 @@
--- Średnia liczba seansów dziennie na kino
+--Average daily screenings per cinema
 WITH kino AS(
     SELECT cinema._id AS id, COUNT(screening._id)::numeric AS screening_count, COALESCE(MIN(screening.start_time)::DATE, DATE '2015-01-01') AS min_date
     FROM cinema

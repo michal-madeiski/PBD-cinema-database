@@ -1,3 +1,4 @@
+--Ticket promotion breakdown
 SELECT tt.name AS ticket_type,
 CASE 
 	WHEN t.fk_discount_id IS NOT NULL AND tso.fk_special_offer_id IS NOT NULL THEN 'discount + special offer'

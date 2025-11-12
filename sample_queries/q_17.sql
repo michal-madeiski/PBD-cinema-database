@@ -1,3 +1,4 @@
+--Region breakdown: cinema count, total revenue, revenue per cinema from last month's tickets
 SELECT
     r._id AS region_id,
     r.name AS region_name,

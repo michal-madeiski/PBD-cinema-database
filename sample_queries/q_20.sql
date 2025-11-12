@@ -1,3 +1,4 @@
+--Regional managers who managed 3 or more regions
 SELECT
     u._id AS regional_manager_id,
     u.name,

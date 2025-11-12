@@ -1,3 +1,4 @@
+--Total ticket revenue per cinema from the last year
 SELECT c._id, SUM(t.price) AS total_ticket_income
 FROM cinema c FULL 
 JOIN room r ON r.fk_cinema_id=c._id

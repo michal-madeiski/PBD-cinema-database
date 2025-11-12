@@ -1,4 +1,4 @@
--- Ranking kin według przychodów z biletów z ostatniego miesiąca
+--Cinema ranking by last month's ticket revenue
 SELECT cinema._id AS "Id kina", cinema.city AS "Miasto", cinema.street AS "Ulica", cinema.building_number AS "Nr budynku", COALESCE(SUM(ticket.price), 0) AS "Przychody"
 FROM cinema
 LEFT JOIN room ON room.fk_cinema_id = cinema._id

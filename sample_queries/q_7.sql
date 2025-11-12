@@ -1,4 +1,4 @@
--- Przychody z produktów w stosunku do przychodów z biletów
+--Product revenue vs ticket revenue
 SELECT 
 (
     SELECT COALESCE(Sum(product_sale.price), 0)
