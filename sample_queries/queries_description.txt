@@ -18,3 +18,4 @@
 18 Number of free tickets per special offer.
 19 Employees with the most hours worked last month.
 20 Regional managers who managed 3 or more regions.
+21 Which seats are available for the given screening?
