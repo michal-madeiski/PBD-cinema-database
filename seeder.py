@@ -1,5 +1,5 @@
-from db.connection import SessionLocal
-from db.models import *
+from orm.connection import SessionLocal
+from orm.models import *
 from faker import Faker 
 from datetime import timedelta, datetime, date, timezone
 import random
@@ -853,26 +853,47 @@ def make_batch(function, size):
 if __name__ == "__main__":
     print("ZACZYNAM SEEDOWANIE")
 
+    # REGION = 16
+    # PRODUCT = 1000
+    # MOVIE_AND_LICENSE = 10_000
+    # min_versions = 1
+    # max_versions = 5
+    # min_cinema_movie_version=10
+    # max_cinema_movie_version=50 
+    # CINEMA = 500
+    # SERVICE = 100_000
+    # SUPERVISOR = 5000
+    # CLIENT = 1_000_000
+    # REGIONAL_MANAGER = 500
+    # # SHIFT = 200_000
+    # EMPLOYMENT = 150_000
+    # SCREENING = 2_000_000
+    # PAYMENT = 10_000_000
+    # PRODUCT_SALE = 1_000_000
+    # TERM = 700
+    # SPECIAL_OFFER = 10_000
+    # TICKET_SPECIAL_OFFER = 2_000_000
+
     REGION = 16
-    PRODUCT = 1000
-    MOVIE_AND_LICENSE = 10_000
+    PRODUCT = 100
+    MOVIE_AND_LICENSE = 10_00
     min_versions = 1
     max_versions = 5
     min_cinema_movie_version=10
-    max_cinema_movie_version=50 
-    CINEMA = 500
-    SERVICE = 100_000
-    SUPERVISOR = 5000
-    CLIENT = 1_000_000
-    REGIONAL_MANAGER = 500
+    max_cinema_movie_version=20 
+    CINEMA = 50
+    SERVICE = 100_0
+    SUPERVISOR = 50
+    CLIENT = 1_000_0
+    REGIONAL_MANAGER = 50
     # SHIFT = 200_000
-    EMPLOYMENT = 150_000
-    SCREENING = 2_000_000
-    PAYMENT = 10_000_000
-    PRODUCT_SALE = 1_000_000
-    TERM = 700
-    SPECIAL_OFFER = 10_000
-    TICKET_SPECIAL_OFFER = 2_000_000
+    EMPLOYMENT = 150_0
+    SCREENING = 2_000
+    PAYMENT = 10_000
+    PRODUCT_SALE = 1_000
+    TERM = 70
+    SPECIAL_OFFER = 10_0
+    TICKET_SPECIAL_OFFER = 2_000
     
 
     # nie potrzebują innych tabel
