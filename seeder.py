@@ -8,8 +8,6 @@ from decimal import Decimal
 from bisect import bisect_right, bisect_left
 from collections import defaultdict
 
-
-
 faker= Faker("pl_PL")
 
 def seeder(seed_table, table_name, n):
@@ -24,7 +22,7 @@ def seeder(seed_table, table_name, n):
     finally: 
         session.close()
 
-def seeder_region(n):
+def seed_region(n):
     session = SessionLocal()
     existing_names = set(t.name for t in session.query(Region).all())
     names = set()
@@ -35,7 +33,7 @@ def seeder_region(n):
     session.close()     
     seeder([Region(name = name) for name in names], "region", len(names))
 
-def seeder_product(n):
+def seed_product(n):
     session = SessionLocal()
     names = set()
     barcodes = set()
@@ -63,7 +61,7 @@ def seeder_product(n):
     session.close()
     seeder(products, "product", len(products))
 
-def seeder_screening(n):
+def seed_screening(n):
     session = SessionLocal()
     screenings = []
     room_ids = [x._id for x in session.query(Room).all()]
@@ -94,7 +92,7 @@ def seeder_screening(n):
     session.close()
     seeder(screenings, "screening", len(screenings))
 
-def seeder_product_sale(n):
+def seed_product_sale(n):
     product_sales = []
     session = SessionLocal()
     products = session.query(Product).all()
@@ -124,7 +122,7 @@ def seeder_product_sale(n):
     session.close()
     seeder(product_sales, "product_sale", len(product_sales))
 
-def seeder_payment(n):
+def seed_payment(n):
     payments = []
     session = SessionLocal()
     client_ids = [t._id for t in session.query(Client).all()]
@@ -219,7 +217,7 @@ def calculate_payments(batch_size=200_000):
     finally:
         session.close()
 
-def seeder_term(n):
+def seed_term(n):
     terms = []
     session = SessionLocal()
     region_ids = [t._id for t in session.query(Region).all()]
@@ -443,7 +441,7 @@ def seed_ticket():
     payment_times = [p[1] for p in payments_all]
 
     def random_valid_payment_id(end_t):
-        start_t = end_t - timedelta(days=30)
+        start_t = end_t - timedelta(days=366)
         start_idx = bisect_left(payment_times, start_t)
         end_idx = bisect_right(payment_times, end_t)
         if start_idx >= end_idx:
@@ -507,7 +505,6 @@ def seed_ticket():
 
     session.close()
 
-
 def seed_ticket_special_offer(n):
     session = SessionLocal()
     ticket_ids = [x[0] for x in session.query(Ticket._id).filter(Ticket.status.notin_(['not_used', 'free'])).all()]
@@ -549,8 +546,7 @@ def seed_ticket_special_offer(n):
         print("Błąd podczas seedowania:", e)
     finally: 
         session.close()
-
-        
+    
 def _seed_users_base(ModelClass, n):
     session = SessionLocal()
     objects = []
@@ -831,6 +827,7 @@ def make_batch(function, size):
 if __name__ == "__main__":
     print("ZACZYNAM SEEDOWANIE")
 
+    # COMPLETE DATABASE:
     # REGION = 16
     # PRODUCT = 1000
     # MOVIE_AND_LICENSE = 10_000
@@ -843,7 +840,6 @@ if __name__ == "__main__":
     # SUPERVISOR = 5000
     # CLIENT = 1_000_000
     # REGIONAL_MANAGER = 500
-    # # SHIFT = 200_000
     # EMPLOYMENT = 150_000
     # SCREENING = 2_000_000
     # PAYMENT = 10_000_000
@@ -852,37 +848,37 @@ if __name__ == "__main__":
     # SPECIAL_OFFER = 10_000
     # TICKET_SPECIAL_OFFER = 2_000_000
 
+    # TEST DATABASE:
     REGION = 16
     PRODUCT = 100
-    MOVIE_AND_LICENSE = 10_00
+    MOVIE_AND_LICENSE = 1000
     min_versions = 1
     max_versions = 5
     min_cinema_movie_version=10
     max_cinema_movie_version=20 
     CINEMA = 50
-    SERVICE = 100_0
+    SERVICE = 1000
     SUPERVISOR = 50
-    CLIENT = 1_000_0
+    CLIENT = 10_000
     REGIONAL_MANAGER = 50
-    # SHIFT = 200_000
-    EMPLOYMENT = 150_0
-    SCREENING = 2_000
+    EMPLOYMENT = 1500
+    SCREENING = 2000
     PAYMENT = 10_000
-    PRODUCT_SALE = 1_000
+    PRODUCT_SALE = 1000
     TERM = 70
-    SPECIAL_OFFER = 10_0
-    TICKET_SPECIAL_OFFER = 2_000
+    SPECIAL_OFFER = 100
+    TICKET_SPECIAL_OFFER = 2000
     
 
     # nie potrzebują innych tabel
-    make_batch(seeder_region, REGION)
-    make_batch(seeder_product, PRODUCT)
+    make_batch(seed_region, REGION)
+    make_batch(seed_product, PRODUCT)
 
     make_batch(seed_license, MOVIE_AND_LICENSE)
     seed_version()
     seed_movie_version(min_versions, max_versions)
 
-    # # wymaga: region
+    # wymaga: region
     make_batch(seed_cinemas, CINEMA)
     seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
     seed_room(2, 8)
@@ -893,23 +889,23 @@ if __name__ == "__main__":
     make_batch(seed_regional_manager, REGIONAL_MANAGER)
     make_batch(seed_employment_with_shifts, EMPLOYMENT)
 
-    # # wymaga: room, movie_version
-    make_batch(seeder_screening, SCREENING)
+    # wymaga: room, movie_version
+    make_batch(seed_screening, SCREENING)
 
-    # # wymaga: client
-    make_batch(seeder_payment, PAYMENT)
+    # wymaga: client
+    make_batch(seed_payment, PAYMENT)
 
-    # # wymaga: product, payment, cinema
-    make_batch(seeder_product_sale, PRODUCT_SALE)
+    # wymaga: product, payment, cinema
+    make_batch(seed_product_sale, PRODUCT_SALE)
 
-    # # wymaga: region, regional_manager
-    make_batch(seeder_term, TERM)
+    # wymaga: region, regional_manager
+    make_batch(seed_term, TERM)
 
     make_batch(seed_special_offer, SPECIAL_OFFER)
     seed_discount() 
     seed_ticket_type()
 
-    # # wymaga: room
+    # wymaga: room
     seed_seat()
 
     # wymaga: ticket_type, discount, payment, seat, screening
