@@ -5,7 +5,7 @@ from datetime import timedelta, datetime, date, timezone
 import random
 from sqlalchemy import select, func, update, exists
 from decimal import Decimal
-from bisect import bisect_right
+from bisect import bisect_right, bisect_left
 from collections import defaultdict
 
 
@@ -414,68 +414,55 @@ def seed_seat():
 def seed_ticket():
     session = SessionLocal()
 
-    # 1) Słowniki i proste struktury
     ticket_types = list(session.query(TicketType._id, TicketType.price))
     if not ticket_types:
-        print("Brak id w ticket_type"); session.close(); return
-    ticket_types_dict = {tid: price for tid, price in ticket_types}
+        print("Brak id w ticket_type")
+        session.close()
+        return
+    ticket_types_dict = {t: p for t, p in ticket_types}
 
     discounts = list(session.query(Discount._id, Discount.percentage))
     if not discounts:
-        print("Brak id w discount"); session.close(); return
-    discounts_dict = {did: pct for did, pct in discounts}
+        print("Brak id w discount")
+        session.close()
+        return
+    discounts_dict = {d: p for d, p in discounts}
 
-    # 2) Siedzenia zindeksowane po sali
     seats_by_room = defaultdict(list)
     for seat_id, room_id in session.query(Seat._id, Seat.fk_room_id):
         seats_by_room[room_id].append(seat_id)
 
-    # 3) Płatności posortowane po czasie + bisect
-    payments_raw = list(session.query(Payment._id, Payment.time_of_payment))
-    if not payments_raw:
+    payments_all = list(session.query(Payment._id, Payment.time_of_payment))
+    if not payments_all:
         print("Brak id w payment")
         session.close()
         return
+    
+    payments_all.sort(key=lambda x: x[1])
+    payment_ids = [p[0] for p in payments_all]
+    payment_times = [p[1] for p in payments_all]
 
-    # 🔹 filtr: tylko płatności z ostatniego miesiąca
-    now = datetime.now()
-    month_ago = now - timedelta(days=30)
-    payments_raw = [p for p in payments_raw if p[1] >= month_ago]
-
-    if not payments_raw:
-        print("Brak płatności z ostatniego miesiąca")
-        session.close()
-        return
-
-    # 🔹 sortujemy po czasie, żeby działał bisect
-    payments_raw.sort(key=lambda x: x[1])
-    payment_ids = [p[0] for p in payments_raw]
-    payment_times = [p[1] for p in payments_raw]
-
-    def random_valid_payment_id(t):
-        """Zwraca losowy payment_id, którego czas jest nie późniejszy niż screening_time."""
-        idx = bisect_right(payment_times, t)
-        if idx == 0:
+    def random_valid_payment_id(end_t):
+        start_t = end_t - timedelta(days=30)
+        start_idx = bisect_left(payment_times, start_t)
+        end_idx = bisect_right(payment_times, end_t)
+        if start_idx >= end_idx:
             return None
-        return payment_ids[random.randrange(idx)]
+        return payment_ids[random.randrange(start_idx, end_idx)]
 
-    # 4) Statusy i wagi
     statuses_past = ['used', 'not_used']
     statuses_future = ['valid', 'reserved', 'payment_pending', 'free']
     statuses_future_weights = [1, 1, 1, 5]
-    statuses_without_payment_etc = {'not_used', 'free'}  # zbiór tylko do membership O(1)
+    statuses_without_payment_etc = ['not_used', 'free']
 
-    # 5) Iteracja po seansach strumieniowo
-    screenings_q = session.query(
-        Screening._id, Screening.start_time, Screening.fk_room_id
-    ).yield_per(10000)
+    screenings_q = session.query(Screening._id, Screening.start_time, Screening.fk_room_id).yield_per(10000)
 
-    print("Wszystko jest w bazie więc tworzę tickety")
+    print("Zaczynam ticketowanie")
     tickets_batch = []
     batch_size = 50_000
     now = datetime.now()
 
-    cnt = 0
+    screening_count = 0
     for screening_id, screening_time, room_id in screenings_q:
         is_future = screening_time > now
         seat_ids = seats_by_room.get(room_id)
@@ -483,27 +470,18 @@ def seed_ticket():
             continue
 
         for seat_id in seat_ids:
-            status = (
-                random.choices(statuses_future, statuses_future_weights, k=1)[0]
-                if is_future else random.choice(statuses_past)
-            )
-
+            status = random.choices(statuses_future, statuses_future_weights, k=1)[0] if is_future else random.choice(statuses_past)
             ticket_type_id = None
             discount_id = None
             payment_id = None
             price = None
 
             if status not in statuses_without_payment_etc:
-                # losowy rabat (albo brak)
                 discount_id = None if random.random() < 0.5 else random.choice(list(discounts_dict.keys()))
                 discount_pct = None if discount_id is None else discounts_dict[discount_id]
-
-                # typ biletu i cena
                 ticket_type_id = random.choice(list(ticket_types_dict.keys()))
                 base_price = ticket_types_dict[ticket_type_id]
                 price = base_price if discount_pct is None else base_price * (1 - discount_pct / 100)
-
-                # płatność przed startem seansu
                 payment_id = random_valid_payment_id(screening_time)
 
             tickets_batch.append(Ticket(
@@ -520,9 +498,9 @@ def seed_ticket():
                 seeder(tickets_batch, "ticket", len(tickets_batch))
                 tickets_batch.clear()
 
-        cnt += 1
-        if cnt % 50000 == 0:
-            print(f"Przetworzono {cnt:,} screeningów...")
+        screening_count += 1
+        if screening_count % 50000 == 0:
+            print(f"Przetworzono {screening_count} screening")
 
     if tickets_batch:
         seeder(tickets_batch, "ticket", len(tickets_batch))
