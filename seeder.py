@@ -182,16 +182,16 @@ def calculate_payments(batch_size=100_000):
 
     session.commit()
 
-    # query_delete = (
-    #     delete(Payment)
-    #     .where(
-    #         ~exists().where(Ticket.fk_payment_id == Payment._id),
-    #         ~exists().where(ProductSale.fk_payment_id == Payment._id),
-    #     )
-    # )
+    query_delete = (
+        delete(Payment)
+        .where(
+            ~exists().where(Ticket.fk_payment_id == Payment._id),
+            ~exists().where(ProductSale.fk_payment_id == Payment._id),
+        )
+    )
 
-    # session.execute(query_delete)
-    # session.commit()
+    session.execute(query_delete)
+    session.commit()
     session.close()
 
 def seed_term(n):
