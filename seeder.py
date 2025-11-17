@@ -897,4 +897,6 @@ if __name__ == "__main__":
 
     # wymaga: ticket, special_offer
     make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
-    calculate_payments(batch_size=PAYMENT)
+
+    calculate_payments() # COMPLETE DATABASE
+    # calculate_payments(batch_size=10_000)  # TEST DATABASE
