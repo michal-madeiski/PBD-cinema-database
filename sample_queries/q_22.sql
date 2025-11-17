@@ -1,3 +1,4 @@
+--Which screenings are available in the given cinema?
 PREPARE get_screening_details (int, date) AS
 SELECT 
     m.title,
