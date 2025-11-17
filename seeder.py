@@ -3,7 +3,7 @@ from orm.models import *
 from faker import Faker 
 from datetime import timedelta, datetime, date, timezone
 import random
-from sqlalchemy import select, func, update, exists
+from sqlalchemy import select, func, update, exists, delete
 from decimal import Decimal
 from bisect import bisect_right, bisect_left
 from collections import defaultdict
@@ -142,80 +142,57 @@ def seed_payment(n):
     session.close()
     seeder(payments, "payment", len(payments))
 
-def calculate_payments(batch_size=200_000):
+def calculate_payments(batch_size=100_000):
     session = SessionLocal()
-    try:
-        lo, hi = session.query(func.min(Payment._id), func.max(Payment._id)).one()
-        if lo is None:
-            print("Brak rekordów w payment.")
-            return
+    
+    payment_tickets = session.query(Payment._id, func.sum(Ticket.price)).outerjoin(Ticket, Ticket.fk_payment_id == Payment._id).group_by(Payment._id).all()
 
-        cur = lo
-        batch_no = 0
-        while cur <= hi:
-            end = min(cur + batch_size - 1, hi)
-            batch_no += 1
+    payment_product_sales = session.query(Payment._id, func.sum(ProductSale.price)).outerjoin(ProductSale, ProductSale.fk_payment_id == Payment._id).group_by(Payment._id).all()
 
-            # --- AGREGACJE W DB – tylko dla payment_id w przedziale ---
-            t_subq = (
-                session.query(
-                    Ticket.fk_payment_id.label("pid"),
-                    func.sum(Ticket.price).label("sum_t"),
-                )
-                .filter(Ticket.fk_payment_id.between(cur, end))
-                .group_by(Ticket.fk_payment_id)
-                .subquery()
-            )
-
-            p_subq = (
-                session.query(
-                    ProductSale.fk_payment_id.label("pid"),
-                    func.sum(ProductSale.price).label("sum_p"),
-                )
-                .filter(ProductSale.fk_payment_id.between(cur, end))
-                .group_by(ProductSale.fk_payment_id)
-                .subquery()
-            )
-
-            agg = (
-                session.query(
-                    func.coalesce(t_subq.c.pid, p_subq.c.pid).label("pid"),
-                    func.coalesce(t_subq.c.sum_t, 0).label("sum_t"),
-                    func.coalesce(p_subq.c.sum_p, 0).label("sum_p"),
-                )
-                .select_from(t_subq.outerjoin(p_subq, t_subq.c.pid == p_subq.c.pid))
-                .subquery("agg")
-            )
-
-            # --- UPDATE payment.amount = sum_t + sum_p dla batcha ---
-            stmt_upd = (
-                update(Payment)
-                .where(Payment._id == agg.c.pid)
-                .where(Payment._id.between(cur, end))
-                .values(amount=agg.c.sum_t + agg.c.sum_p)
-            )
-            session.execute(stmt_upd)
-
-            # --- DELETE paymentów bez powiązań (tylko w batchu) ---
-            ticket_exists = exists().where(Ticket.fk_payment_id == Payment._id)
-            product_exists = exists().where(ProductSale.fk_payment_id == Payment._id)
-
-            (session.query(Payment)
-                .filter(Payment._id.between(cur, end))
-                .filter(~ticket_exists, ~product_exists)
-                .delete(synchronize_session=False))
-
-            session.commit()
-            print(f"[batch {batch_no}] {cur}–{end} OK")
-
-            cur = end + 1
-
-        print("Zliczono i usunięto paymenty (batched).")
-    except Exception as e:
-        session.rollback()
-        raise
-    finally:
+    if(len(payment_tickets) == 0):
+        print("Brak danych w tabeli payment")
         session.close()
+        return
+
+    ticket_sum_by_payment = {pid: total for pid, total in payment_tickets}
+    product_sum_by_payment = {pid: total for pid, total in payment_product_sales}
+
+    count = 0
+    
+    for pid in ticket_sum_by_payment.keys():
+        if ticket_sum_by_payment[pid] is None and product_sum_by_payment[pid] is None:
+            total = None
+        elif ticket_sum_by_payment[pid] is None:
+            total = product_sum_by_payment[pid]
+        elif product_sum_by_payment[pid] is None:
+            total = ticket_sum_by_payment[pid]
+        else:
+            total = ticket_sum_by_payment[pid] + product_sum_by_payment[pid]
+        if total is not None:
+            session.execute(
+                update(Payment)
+                .where(Payment._id == pid)
+                .values(amount=total)
+                )
+
+        count += 1
+        if(count % batch_size == 0):
+            session.commit()
+            print(f"Przeliczono {batch_size} paymentów")
+
+    session.commit()
+
+    query_delete = (
+        delete(Payment)
+        .where(
+            ~exists().where(Ticket.fk_payment_id == Payment._id),
+            ~exists().where(ProductSale.fk_payment_id == Payment._id),
+        )
+    )
+
+    session.execute(query_delete)
+    session.commit()
+    session.close()
 
 def seed_term(n):
     terms = []
