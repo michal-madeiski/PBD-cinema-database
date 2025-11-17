@@ -6,7 +6,7 @@ SELECT
     TO_CHAR(s.end_time, 'HH24:MI') as end_time,
     v.language, 
     v.subtitles, 
-    v.format,
+    v.format
 FROM 
     screening s
 JOIN
