@@ -184,11 +184,11 @@ class License(Movie):
         CheckConstraint('end_date >= start_date', name='license_date_check'),
         ForeignKeyConstraint(['_id'], ['movie._id'], ondelete='CASCADE', name='c_id'),
         PrimaryKeyConstraint('_id', name='license_pkey'),
-        UniqueConstraint('license_number', name='license_license_number_key')
+        UniqueConstraint('number', name='license_number_key')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    license_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    number: Mapped[int] = mapped_column(Integer, nullable=False)
     start_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     end_date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
     cost: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(10, 2))
@@ -415,14 +415,14 @@ class Screening(Base):
 class Seat(Base):
     __tablename__ = 'seat'
     __table_args__ = (
-        CheckConstraint('seat_num > 0', name='seat_seat_num_check'),
+        CheckConstraint('number > 0', name='seat_number_check'),
         ForeignKeyConstraint(['fk_room_id'], ['room._id'], ondelete='CASCADE', name='c_fk_room_id'),
         PrimaryKeyConstraint('_id', name='seat_pkey')
     )
 
     _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     fk_room_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    seat_num: Mapped[int] = mapped_column(Integer, nullable=False)
+    number: Mapped[int] = mapped_column(Integer, nullable=False)
 
     fk_room: Mapped['Room'] = relationship('Room', back_populates='seat')
     ticket: Mapped[list['Ticket']] = relationship('Ticket', back_populates='fk_seat')

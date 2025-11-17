@@ -1,7 +1,7 @@
 --Which seats are available for the given screening?
 PREPARE q (int) AS
 SELECT
-    s.seat_num as "seat number"
+    s.number as "seat number"
 FROM
     seat s
 JOIN
@@ -20,6 +20,6 @@ WHERE
 GROUP BY
     s._id
 ORDER BY
-    s.seat_num ASC;
+    s.number ASC;
 EXECUTE q(17);
 EXECUTE q(61);

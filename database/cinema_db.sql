@@ -200,7 +200,7 @@ CREATE TABLE movie_version (
 
 CREATE TABLE license (
     _id INT PRIMARY KEY, 
-    license_number INT NOT NULL UNIQUE,
+    "number" INT NOT NULL UNIQUE,
     "start_date" DATE NOT NULL,
     end_date DATE NOT NULL,
     "cost"  NUMERIC(10,2) CHECK ("cost" > 0),
@@ -256,7 +256,7 @@ CREATE TABLE room (
 CREATE TABLE seat (
     _id SERIAL PRIMARY KEY,
     fk_room_id INT NOT NULL,
-    seat_num INT NOT NULL CHECK (seat_num > 0),
+    "number" INT NOT NULL CHECK ("number" > 0),
 
     CONSTRAINT c_fk_room_id
         FOREIGN KEY (fk_room_id)

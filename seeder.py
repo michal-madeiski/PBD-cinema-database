@@ -251,13 +251,13 @@ def seed_version():
 
 def seed_license(n):
     session= SessionLocal()
-    already_exists=set(l[0] for l in session.query(License.license_number).all())
+    already_exists=set(l[0] for l in session.query(License.number).all())
     licenses=[]
     for i in range(n):
-        number= faker.random_int(min=1000, max=99999999)
-        while number in already_exists:
-            number= faker.random_int(min=1000, max=99999999)
-        already_exists.add(number)
+        num= faker.random_int(min=1000, max=99999999)
+        while num in already_exists:
+            num= faker.random_int(min=1000, max=99999999)
+        already_exists.add(num)
         start_date = faker.date_between(start_date=datetime(2015, 1, 1), end_date="today")
         delta_days = faker.random_int(min=30, max=365)
         end_date = start_date + timedelta(days=delta_days)
@@ -265,7 +265,7 @@ def seed_license(n):
             title=faker.sentence(nb_words=2, variable_nb_words=True),
             director=faker.name(),
             duration_minutes=faker.random_int(min=60, max=200),
-            license_number=number,
+            number=num,
             start_date=start_date, 
             end_date=end_date,
             cost=faker.random_int(min=10000, max=100000)
@@ -329,13 +329,16 @@ def seed_room(min=1, max=5):
     cinema_ids= [c[0] for c in session.query(Cinema._id).all()]
     already_exists = set(session.query(Room.fk_cinema_id, Room.number))
     rooms=[]
-    for c in cinema_ids: 
+    for c in cinema_ids:
+        room_num = 1 
         room_cts= random.randint(min, max)
         for i in range(room_cts):
             pair=(c, random.randint(1, 1000))
             if not pair in already_exists: 
                 already_exists.add(pair)
-                rooms.append(Room(fk_cinema_id=pair[0], number=pair[1]))
+                #rooms.append(Room(fk_cinema_id=pair[0], number=pair[1]))
+                rooms.append(Room(fk_cinema_id=pair[0], number=room_num))
+                room_num += 1
     seeder(rooms, "room", len(rooms))
 
 def seed_discount():
@@ -376,10 +379,10 @@ def seed_seat():
     counter = 0
     for r in room_ids:
         seat_amount = random.randint(10, 30)
-        for _ in range(seat_amount):
+        for i in range(seat_amount):
             counter += 1
-            seats.append(Seat(fk_room_id = r,
-                              seat_num = counter))
+            #seats.append(Seat(fk_room_id = r, number = counter))
+            seats.append(Seat(fk_room_id = r, number = i + 1))
         if len(seats) > 50_000:
             seeder(seats, "seat", len(seats))
             seats = []
@@ -810,8 +813,10 @@ if __name__ == "__main__":
     # MOVIE_AND_LICENSE = 10_000
     # min_versions = 1
     # max_versions = 5
-    # min_cinema_movie_version=10
-    # max_cinema_movie_version=50 
+    # min_cinema_movie_version = 10
+    # max_cinema_movie_version = 50 
+    # min_room = 2
+    # max_room = 8
     # CINEMA = 500
     # SERVICE = 100_000
     # SUPERVISOR = 5000
@@ -832,7 +837,9 @@ if __name__ == "__main__":
     min_versions = 1
     max_versions = 5
     min_cinema_movie_version=10
-    max_cinema_movie_version=20 
+    max_cinema_movie_version=20
+    min_room = 2
+    max_room = 5
     CINEMA = 50
     SERVICE = 1000
     SUPERVISOR = 50
@@ -858,7 +865,7 @@ if __name__ == "__main__":
     # wymaga: region
     make_batch(seed_cinemas, CINEMA)
     seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
-    seed_room(2, 8)
+    seed_room(min_room, max_room)
    
     make_batch(seed_service, SERVICE)
     make_batch(seed_supervisor, SUPERVISOR)
@@ -890,4 +897,4 @@ if __name__ == "__main__":
 
     # wymaga: ticket, special_offer
     make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
-    calculate_payments()
+    calculate_payments(batch_size=PAYMENT)

@@ -5,7 +5,7 @@ SELECT
     screening.start_time::DATE AS "Data",
     screening.start_time::TIME AS "Godzina",
     room.number AS "Sala",
-    seat.seat_num AS "Miejsce",
+    seat.number AS "Miejsce",
     ticket.status AS "Status",
     ticket.price AS "Cena"
 FROM
