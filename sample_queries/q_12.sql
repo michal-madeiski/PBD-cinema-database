@@ -25,4 +25,4 @@ FROM movie_version_screening_count mvsc
     JOIN movie m ON mvsc.fk_movie_id = m._id
     JOIN version v ON mvsc.fk_version_id = v._id
 ORDER BY mvsc.screening_count DESC,
-    m.title ASC
+    m.title ASC;

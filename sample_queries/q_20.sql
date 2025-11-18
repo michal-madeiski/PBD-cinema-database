@@ -9,4 +9,4 @@ FROM "user" u
     JOIN region r ON r._id = t.fk_region_id
 GROUP BY u._id
 HAVING COUNT(r._id) >= 3
-ORDER BY number_of_regions DESC
+ORDER BY number_of_regions DESC;

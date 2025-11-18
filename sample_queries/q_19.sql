@@ -9,4 +9,4 @@ FROM "user" u
 WHERE s.start_time >= date_trunc('month', CURRENT_DATE - interval '1 month')
     AND s.start_time < date_trunc('month', CURRENT_DATE)
 GROUP BY u._id
-ORDER BY hours_of_work DESC
+ORDER BY hours_of_work DESC;
