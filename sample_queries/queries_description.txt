@@ -21,3 +21,4 @@
 21 Which seats are available for the given screening?
 22 Which screenings are available in the given cinema?
 23 Client's ticket history.
+24 Cinemas in city.
