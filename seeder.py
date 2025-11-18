@@ -528,7 +528,7 @@ def seed_ticket_special_offer(n, batch_size=50_000):
             print("Błąd podczas seedowania:", e)
         finally: 
             session.close()
-    
+   
 def _seed_users_base(ModelClass, n):
     session = SessionLocal()
     objects = []
@@ -841,45 +841,22 @@ if __name__ == "__main__":
     # min_cinema_movie_version=10
     # max_cinema_movie_version=20
     # min_room = 2
-    # max_room = 8
-    # CINEMA = 500
-    # SERVICE = 100_000
-    # SUPERVISOR = 5000
-    # CLIENT = 1_000_000
-    # REGIONAL_MANAGER = 500
-    # EMPLOYMENT = 150_000
-    # SCREENING = 2_000_000
-    # PAYMENT = 10_000_000
-    # PRODUCT_SALE = 1_000_000
-    # TERM = 700
-    # SPECIAL_OFFER = 10_000
-    # TICKET_SPECIAL_OFFER = 2_000_000
-
-    # TEST DATABASE:
-    REGION = 16
-    PRODUCT = 100
-    MOVIE_AND_LICENSE = 1000
-    min_versions = 1
-    max_versions = 5
-    min_cinema_movie_version=10
-    max_cinema_movie_version=20
-    min_room = 2
-    max_room = 5
-    CINEMA = 50
-    SERVICE = 1000
-    SUPERVISOR = 50
-    CLIENT = 10_000
-    REGIONAL_MANAGER = 50
-    EMPLOYMENT = 1500
-    SCREENING = 2000
-    PAYMENT = 10_000
-    PRODUCT_SALE = 1000
-    TERM = 70
-    SPECIAL_OFFER = 250
-    TICKET_SPECIAL_OFFER = 10_000
+    # max_room = 5
+    # CINEMA = 50
+    # SERVICE = 1000
+    # SUPERVISOR = 50
+    # CLIENT = 10_000
+    # REGIONAL_MANAGER = 50
+    # EMPLOYMENT = 1500
+    # SCREENING = 2000
+    # PAYMENT = 10_000
+    # PRODUCT_SALE = 1000
+    # TERM = 70
+    # SPECIAL_OFFER = 250
+    # TICKET_SPECIAL_OFFER = 10_000
     
 
-    # nie potrzebują innych tabel
+    # # nie potrzebują innych tabel
     # make_batch(seed_region, REGION)
     # make_batch(seed_product, PRODUCT)
 
@@ -904,25 +881,25 @@ if __name__ == "__main__":
     # # wymaga: client
     # make_batch(seed_payment, PAYMENT)
 
-    # wymaga: product, payment, cinema
-    make_batch(seed_product_sale, PRODUCT_SALE)
+    # # wymaga: product, payment, cinema
+    # make_batch(seed_product_sale, PRODUCT_SALE)
 
-    # wymaga: region, regional_manager
-    make_batch(seed_term, TERM)
+    # # wymaga: region, regional_manager
+    # make_batch(seed_term, TERM)
 
-    make_batch(seed_special_offer, SPECIAL_OFFER)
-    seed_discount() 
-    seed_ticket_type()
+    # make_batch(seed_special_offer, SPECIAL_OFFER)
+    # seed_discount() 
+    # seed_ticket_type()
 
-    # wymaga: room
-    seed_seat()
+    # # wymaga: room
+    # seed_seat()
 
-    # wymaga: ticket_type, discount, payment, seat, screening
-    seed_ticket()
+    # # wymaga: ticket_type, discount, payment, seat, screening
+    # seed_ticket()
 
     # wymaga: ticket, special_offer
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=100_000) # COMPLETE DATABASE
-    seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=2000) # TEST DATABASE
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=100_000) # COMPLETE DATABASE
+    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=2000) # TEST DATABASE
 
-    # calculate_payments() # COMPLETE DATABASE
-    calculate_payments(batch_size=10_000)  # TEST DATABASE
+    calculate_payments() # COMPLETE DATABASE
+    # calculate_payments(batch_size=10_000)  # TEST DATABASE
