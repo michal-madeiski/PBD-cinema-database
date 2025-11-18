@@ -5,7 +5,6 @@ SELECT CONCAT(u.name, ' ', u.surname, ' (', u.username, ')') AS worker,
 FROM worker w
     JOIN "user" u ON u._id = w._id
     JOIN (
-        -- employment_current
         SELECT e.fk_worker_id AS worker,
             e.start_date,
             EXTRACT(
@@ -16,7 +15,6 @@ FROM worker w
         WHERE e.end_date IS NULL
     ) AS ec ON ec.worker = w._id
     CROSS JOIN (
-        -- average_years
         SELECT AVG(
                 EXTRACT(
                     YEAR
