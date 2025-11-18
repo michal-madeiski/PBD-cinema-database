@@ -96,8 +96,8 @@ def seed_product_sale(n):
     product_sales = []
     session = SessionLocal()
     products = session.query(Product).all()
-    payment_ids = [t._id for t in session.query(Payment).all()]
-    cinema_ids = [t._id for t in session.query(Cinema).all()]
+    payment_ids = [t[0] for t in session.query(Payment._id).all()]
+    cinema_ids = [t[0] for t in session.query(Cinema._id).all()]
 
     if(len(products) == 0):
         print("Brak danych w tabeli Product")
@@ -808,76 +808,76 @@ if __name__ == "__main__":
     print("ZACZYNAM SEEDOWANIE")
 
     # COMPLETE DATABASE:
-    # REGION = 16
-    # PRODUCT = 1000
-    # MOVIE_AND_LICENSE = 10_000
-    # min_versions = 1
-    # max_versions = 5
-    # min_cinema_movie_version = 10
-    # max_cinema_movie_version = 50 
-    # min_room = 2
-    # max_room = 8
-    # CINEMA = 500
-    # SERVICE = 100_000
-    # SUPERVISOR = 5000
-    # CLIENT = 1_000_000
-    # REGIONAL_MANAGER = 500
-    # EMPLOYMENT = 150_000
-    # SCREENING = 2_000_000
-    # PAYMENT = 10_000_000
-    # PRODUCT_SALE = 1_000_000
-    # TERM = 700
-    # SPECIAL_OFFER = 10_000
-    # TICKET_SPECIAL_OFFER = 2_000_000
-
-    # TEST DATABASE:
-    REGION = 16
-    PRODUCT = 100
-    MOVIE_AND_LICENSE = 1000
+    REGION = 100
+    PRODUCT = 1000
+    MOVIE_AND_LICENSE = 10_000
     min_versions = 1
     max_versions = 5
-    min_cinema_movie_version=10
-    max_cinema_movie_version=20
+    min_cinema_movie_version = 10
+    max_cinema_movie_version = 50 
     min_room = 2
-    max_room = 5
-    CINEMA = 50
-    SERVICE = 1000
-    SUPERVISOR = 50
-    CLIENT = 10_000
-    REGIONAL_MANAGER = 50
-    EMPLOYMENT = 1500
-    SCREENING = 2000
-    PAYMENT = 10_000
-    PRODUCT_SALE = 1000
-    TERM = 70
-    SPECIAL_OFFER = 100
-    TICKET_SPECIAL_OFFER = 2000
+    max_room = 8
+    CINEMA = 500
+    SERVICE = 100_000
+    SUPERVISOR = 5000
+    CLIENT = 1_000_000
+    REGIONAL_MANAGER = 500
+    EMPLOYMENT = 150_000
+    SCREENING = 2_000_000
+    PAYMENT = 10_000_000
+    PRODUCT_SALE = 1_000_000
+    TERM = 700
+    SPECIAL_OFFER = 10_000
+    TICKET_SPECIAL_OFFER = 2_000_000
+
+    # TEST DATABASE:
+    # REGION = 16
+    # PRODUCT = 100
+    # MOVIE_AND_LICENSE = 1000
+    # min_versions = 1
+    # max_versions = 5
+    # min_cinema_movie_version=10
+    # max_cinema_movie_version=20
+    # min_room = 2
+    # max_room = 5
+    # CINEMA = 50
+    # SERVICE = 1000
+    # SUPERVISOR = 50
+    # CLIENT = 10_000
+    # REGIONAL_MANAGER = 50
+    # EMPLOYMENT = 1500
+    # SCREENING = 2000
+    # PAYMENT = 10_000
+    # PRODUCT_SALE = 1000
+    # TERM = 70
+    # SPECIAL_OFFER = 100
+    # TICKET_SPECIAL_OFFER = 2000
     
 
     # nie potrzebują innych tabel
-    make_batch(seed_region, REGION)
-    make_batch(seed_product, PRODUCT)
+    # make_batch(seed_region, REGION)
+    # make_batch(seed_product, PRODUCT)
 
-    make_batch(seed_license, MOVIE_AND_LICENSE)
-    seed_version()
-    seed_movie_version(min_versions, max_versions)
+    # make_batch(seed_license, MOVIE_AND_LICENSE)
+    # seed_version()
+    # seed_movie_version(min_versions, max_versions)
 
-    # wymaga: region
-    make_batch(seed_cinemas, CINEMA)
-    seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
-    seed_room(min_room, max_room)
+    # # wymaga: region
+    # make_batch(seed_cinemas, CINEMA)
+    # seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
+    # seed_room(min_room, max_room)
    
-    make_batch(seed_service, SERVICE)
-    make_batch(seed_supervisor, SUPERVISOR)
-    make_batch(seed_client, CLIENT)
-    make_batch(seed_regional_manager, REGIONAL_MANAGER)
-    make_batch(seed_employment_with_shifts, EMPLOYMENT)
+    # make_batch(seed_service, SERVICE)
+    # make_batch(seed_supervisor, SUPERVISOR)
+    # make_batch(seed_client, CLIENT)
+    # make_batch(seed_regional_manager, REGIONAL_MANAGER)
+    # make_batch(seed_employment_with_shifts, EMPLOYMENT)
 
-    # wymaga: room, movie_version
-    make_batch(seed_screening, SCREENING)
+    # # wymaga: room, movie_version
+    # make_batch(seed_screening, SCREENING)
 
-    # wymaga: client
-    make_batch(seed_payment, PAYMENT)
+    # # wymaga: client
+    # make_batch(seed_payment, PAYMENT)
 
     # wymaga: product, payment, cinema
     make_batch(seed_product_sale, PRODUCT_SALE)
