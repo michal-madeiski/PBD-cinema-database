@@ -485,7 +485,7 @@ def seed_ticket():
 
     session.close()
 
-def seed_ticket_special_offer(n):
+def seed_ticket_special_offer(n, batch_size=50_000):
     session = SessionLocal()
     ticket_ids = [x[0] for x in session.query(Ticket._id).filter(Ticket.status.notin_(['not_used', 'free'])).all()]
     tickets = [x for x in session.query(Ticket._id, Payment.time_of_payment, Ticket.price).join(Ticket.fk_payment).filter(Ticket.status.notin_(["not_used", "free"])).all()]
@@ -501,31 +501,33 @@ def seed_ticket_special_offer(n):
         print("Brak id w special_offer")
         session.close()
         return
+    
+    for _ in range(0, n, batch_size):
 
-    stmt = select(t_ticket_special_offer.c.fk_ticket_id, t_ticket_special_offer.c.fk_special_offer_id)
-    ticket_special_offers = session.execute(stmt).fetchall()
-    existed_pairs = {(r.fk_ticket_id, r.fk_special_offer_id) for r in ticket_special_offers}
+        stmt = select(t_ticket_special_offer.c.fk_ticket_id, t_ticket_special_offer.c.fk_special_offer_id)
+        ticket_special_offers = session.execute(stmt).fetchall()
+        existed_pairs = {(r.fk_ticket_id, r.fk_special_offer_id) for r in ticket_special_offers}
 
-    pairs = set()
-    for _ in range(n):
-        pair= (random.choice(tickets), random.choice(special_offers))
-        if (pair[0][0], pair[1][0]) not in pairs and (pair[0][0], pair[1][0]) not in existed_pairs and (pair[1][2] >= pair[0][1] >= pair[1][1]):
-            pairs.add((pair[0][0], pair[1][0]))
-            special_offer_amount = pair[1][3]
-            old_price = pair[0][2]
-            session.execute(update(Ticket).where(Ticket._id == pair[0][0]).values(price = max(0, old_price - special_offer_amount)))
+        pairs = set()
+        for _ in range(batch_size):
+            pair= (random.choice(tickets), random.choice(special_offers))
+            if (pair[0][0], pair[1][0]) not in pairs and (pair[0][0], pair[1][0]) not in existed_pairs and (pair[1][2] >= pair[0][1] >= pair[1][1]):
+                pairs.add((pair[0][0], pair[1][0]))
+                special_offer_amount = pair[1][3]
+                old_price = pair[0][2]
+                session.execute(update(Ticket).where(Ticket._id == pair[0][0]).values(price = max(0, old_price - special_offer_amount)))
 
-    data = [{"fk_ticket_id": t, "fk_special_offer_id": s} for t, s in pairs]
+        data = [{"fk_ticket_id": t, "fk_special_offer_id": s} for t, s in pairs]
 
-    try: 
-        session.execute(t_ticket_special_offer.insert(), data)
-        session.commit()
-        print(f"Dodano {len(data)} ticket_special_offer do bazy danych!")
-    except Exception as e:
-        session.rollback()
-        print("Błąd podczas seedowania:", e)
-    finally: 
-        session.close()
+        try: 
+            session.execute(t_ticket_special_offer.insert(), data)
+            session.commit()
+            print(f"Dodano {len(data)} ticket_special_offer do bazy danych!")
+        except Exception as e:
+            session.rollback()
+            print("Błąd podczas seedowania:", e)
+        finally: 
+            session.close()
     
 def _seed_users_base(ModelClass, n):
     session = SessionLocal()
@@ -839,19 +841,42 @@ if __name__ == "__main__":
     # min_cinema_movie_version=10
     # max_cinema_movie_version=20
     # min_room = 2
-    # max_room = 5
-    # CINEMA = 50
-    # SERVICE = 1000
-    # SUPERVISOR = 50
-    # CLIENT = 10_000
-    # REGIONAL_MANAGER = 50
-    # EMPLOYMENT = 1500
-    # SCREENING = 2000
-    # PAYMENT = 10_000
-    # PRODUCT_SALE = 1000
-    # TERM = 70
-    # SPECIAL_OFFER = 100
-    # TICKET_SPECIAL_OFFER = 2000
+    # max_room = 8
+    # CINEMA = 500
+    # SERVICE = 100_000
+    # SUPERVISOR = 5000
+    # CLIENT = 1_000_000
+    # REGIONAL_MANAGER = 500
+    # EMPLOYMENT = 150_000
+    # SCREENING = 2_000_000
+    # PAYMENT = 10_000_000
+    # PRODUCT_SALE = 1_000_000
+    # TERM = 700
+    # SPECIAL_OFFER = 10_000
+    # TICKET_SPECIAL_OFFER = 2_000_000
+
+    # TEST DATABASE:
+    REGION = 16
+    PRODUCT = 100
+    MOVIE_AND_LICENSE = 1000
+    min_versions = 1
+    max_versions = 5
+    min_cinema_movie_version=10
+    max_cinema_movie_version=20
+    min_room = 2
+    max_room = 5
+    CINEMA = 50
+    SERVICE = 1000
+    SUPERVISOR = 50
+    CLIENT = 10_000
+    REGIONAL_MANAGER = 50
+    EMPLOYMENT = 1500
+    SCREENING = 2000
+    PAYMENT = 10_000
+    PRODUCT_SALE = 1000
+    TERM = 70
+    SPECIAL_OFFER = 250
+    TICKET_SPECIAL_OFFER = 10_000
     
 
     # nie potrzebują innych tabel
@@ -896,7 +921,8 @@ if __name__ == "__main__":
     seed_ticket()
 
     # wymaga: ticket, special_offer
-    make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
+    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=100_000) # COMPLETE DATABASE
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=2000) # TEST DATABASE
 
-    calculate_payments() # COMPLETE DATABASE
-    # calculate_payments(batch_size=10_000)  # TEST DATABASE
+    # calculate_payments() # COMPLETE DATABASE
+    calculate_payments(batch_size=10_000)  # TEST DATABASE
