@@ -158,10 +158,11 @@ def calculate_payments(batch_size=100_000):
     product_sum_by_payment = {pid: total for pid, total in payment_product_sales}
 
     count = 0
+    # to_delete = set()
     
     for pid in ticket_sum_by_payment.keys():
         if ticket_sum_by_payment[pid] is None and product_sum_by_payment[pid] is None:
-            total = None
+            total = faker.pyfloat(min_value=2, max_value=100, right_digits=2, positive=True)
         elif ticket_sum_by_payment[pid] is None:
             total = product_sum_by_payment[pid]
         elif product_sum_by_payment[pid] is None:
@@ -177,21 +178,33 @@ def calculate_payments(batch_size=100_000):
 
         count += 1
         if(count % batch_size == 0):
+            # if to_delete:
+            #     session.execute(
+            #         delete(Payment)
+            #         .where(Payment._id.in_(to_delete))
+            #     )
+            #     to_delete.clear()
             session.commit()
             print(f"Przeliczono {batch_size} paymentów")
 
     session.commit()
 
-    query_delete = (
-        delete(Payment)
-        .where(
-            ~exists().where(Ticket.fk_payment_id == Payment._id),
-            ~exists().where(ProductSale.fk_payment_id == Payment._id),
-        )
-    )
+    # query_delete = (
+    #     delete(Payment)
+    #     .where(
+    #         ~exists().where(Ticket.fk_payment_id == Payment._id),
+    #         ~exists().where(ProductSale.fk_payment_id == Payment._id),
+    #     )
+    # )
 
-    session.execute(query_delete)
-    session.commit()
+    # session.execute(query_delete)
+    # if to_delete:
+    #     session.execute(
+    #         delete(Payment)
+    #         .where(Payment._id.in_(to_delete))
+    #     )
+    #     to_delete.clear()
+    # session.commit()
     session.close()
 
 def seed_term(n):
