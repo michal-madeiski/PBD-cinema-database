@@ -159,6 +159,7 @@ def calculate_payments(batch_size=100_000):
 
     count = 0
     # to_delete = set()
+    print("siems")
     
     for pid in ticket_sum_by_payment.keys():
         if ticket_sum_by_payment[pid] is None and product_sum_by_payment[pid] is None:
@@ -893,23 +894,23 @@ if __name__ == "__main__":
     # make_batch(seed_payment, PAYMENT)
 
     # wymaga: product, payment, cinema
-    make_batch(seed_product_sale, PRODUCT_SALE)
+    #make_batch(seed_product_sale, PRODUCT_SALE)
 
     # wymaga: region, regional_manager
-    make_batch(seed_term, TERM)
+    # make_batch(seed_term, TERM)
 
-    make_batch(seed_special_offer, SPECIAL_OFFER)
-    seed_discount() 
-    seed_ticket_type()
+    # make_batch(seed_special_offer, SPECIAL_OFFER)
+    # seed_discount() 
+    # seed_ticket_type()
 
-    # wymaga: room
-    seed_seat()
+    # # wymaga: room
+    # seed_seat()
 
-    # wymaga: ticket_type, discount, payment, seat, screening
-    seed_ticket()
+    # # wymaga: ticket_type, discount, payment, seat, screening
+    # seed_ticket()
 
-    # wymaga: ticket, special_offer
-    make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
+    # # wymaga: ticket, special_offer
+    # make_batch(seed_ticket_special_offer, TICKET_SPECIAL_OFFER)
 
     calculate_payments() # COMPLETE DATABASE
     # calculate_payments(batch_size=10_000)  # TEST DATABASE

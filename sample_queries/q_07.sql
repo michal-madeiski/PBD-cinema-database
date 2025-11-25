@@ -1,4 +1,5 @@
 --Product revenue vs ticket revenue
+--EXPLAIN ANALYZE
 SELECT 
     (
         SELECT 

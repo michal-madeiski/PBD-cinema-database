@@ -1,4 +1,5 @@
 --Average daily screenings per cinema
+--EXPLAIN ANALYZE
 SELECT
     cinema._id AS "Id kina",
     cinema.city || ', ul. ' || cinema.street || ' ' || cinema.building_number AS "Adres",

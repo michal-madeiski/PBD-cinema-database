@@ -1,4 +1,5 @@
 --Top 10 best-selling products
+--EXPLAIN ANALYZE
 SELECT 
     product.name AS "Nazwa", 
     COUNT(product_sale._id) AS "Sprzedanych"

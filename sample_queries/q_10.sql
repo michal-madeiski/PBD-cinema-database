@@ -1,4 +1,5 @@
 --Room occupancy by month
+--EXPLAIN ANALYZE
 SELECT
     EXTRACT(MONTH FROM screening.start_time) AS "Miesiąc",
     ROUND(
