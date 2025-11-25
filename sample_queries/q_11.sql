@@ -1,4 +1,5 @@
 --Cash payments percentage: tickets, products, total.
+--EXPLAIN ANALYZE
 SELECT ROUND((tp.cash_count / tp.total) * 100.0, 2) AS percent_tickets_cash,
     ROUND((pp.cash_count / pp.total) * 100.0, 2) AS percent_products_cash,
     ROUND(
