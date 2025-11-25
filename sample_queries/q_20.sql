@@ -1,5 +1,5 @@
 --Regional managers who managed 3 or more regions
-EXPLAIN
+-- EXPLAIN ANALYZE
 SELECT u._id AS regional_manager_id,
     u.name,
     u.surname,
