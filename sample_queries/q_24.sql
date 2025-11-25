@@ -1,4 +1,5 @@
 --Cinemas in city.
+EXPLAIN
 SELECT c._id AS cinema_id,
     c.city,
     r.name AS region_name,
