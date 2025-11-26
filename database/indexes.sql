@@ -19,7 +19,6 @@ CREATE INDEX idx_screening_fk_movie_version_id ON screening(fk_movie_version_id)
 --q_05 
 --średnia potrzeba optymalizacji, kwerenda o charakterze statystycznym 
 CREATE INDEX idx_ticket_covering ON ticket(status, fk_ticket_type_id, fk_discount_id, _id);
-DROP INDEX idx_ticket_covering;
 
 --q_06
 --silnik postgresql zawsze przejdzie po obu tabelach dokładnie 1 raz
