@@ -1,4 +1,5 @@
 --Top 10 movie incomes.
+--EXPLAIN ANALYZE
 SELECT m._id,
     m.title,
     SUM(evi.version_income) - l.cost AS balance

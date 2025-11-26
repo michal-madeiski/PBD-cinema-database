@@ -1,4 +1,5 @@
 --Most screened version for each movie.
+--EXPLAIN ANALYZE
 WITH movie_version_screening_count AS (
     SELECT mv.fk_movie_id,
         mv.fk_version_id,

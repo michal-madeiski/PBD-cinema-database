@@ -1,4 +1,5 @@
 --Workers with above-average employment time.
+--EXPLAIN ANALYZE
 SELECT CONCAT(u.name, ' ', u.surname, ' (', u.username, ')') AS worker,
     ec.start_date,
     ec.years_worked

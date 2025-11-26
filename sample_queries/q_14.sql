@@ -1,4 +1,5 @@
 --Overall number of workers per shift type in each cinema.
+--EXPLAIN ANALYZE
 SELECT CONCAT(c.city, ', ', c.street, ' ', c.building_number) AS cinema_address,
     COUNT(s.fk_worker_id) FILTER (
         WHERE s.type = 'cashier'

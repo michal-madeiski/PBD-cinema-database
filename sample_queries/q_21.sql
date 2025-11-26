@@ -9,5 +9,5 @@ WHERE t.status = 'free'
     AND sc._id = $1
 GROUP BY s._id
 ORDER BY s.number ASC;
-EXECUTE q(17);
-EXECUTE q(61);
+EXECUTE q(1236861);
+--EXPLAIN ANALYZE EXECUTE q(1236861);
