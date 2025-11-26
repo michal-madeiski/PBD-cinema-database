@@ -1,5 +1,5 @@
 --Every 10,000th customer in the system
-EXPLAIN ANALYZE
+--EXPLAIN ANALYZE
 SELECT *
 FROM (
         SELECT ROW_NUMBER() OVER (

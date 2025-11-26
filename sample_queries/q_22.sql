@@ -15,3 +15,4 @@ WHERE r.fk_cinema_id = $1
     AND DATE(s.start_time) = $2
 ORDER BY s.start_time;
 EXECUTE get_screening_details(89, '2023-07-13');
+--EXPLAIN ANALYZE EXECUTE get_screening_details(89, '2023-07-13');

@@ -1,5 +1,5 @@
 --Ticket promotion breakdown
-EXPLAIN ANALYZE
+--EXPLAIN ANALYZE
 WITH ticket_data AS (
     SELECT 
         fk_ticket_type_id,

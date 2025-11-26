@@ -1,4 +1,5 @@
 --Workers with the highest monthly salary
+--EXPLAIN ANALYZE
 SELECT w._id,
     u.name || ' ' || u.surname,
     w.salary_month as salary

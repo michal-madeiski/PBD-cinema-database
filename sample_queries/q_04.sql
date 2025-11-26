@@ -1,4 +1,5 @@
 --Total ticket revenue per cinema from the last year
+--EXPLAIN ANALYZE
 SELECT c._id,
     c.city,
     c.street,

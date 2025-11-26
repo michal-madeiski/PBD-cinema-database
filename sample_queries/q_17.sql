@@ -1,5 +1,5 @@
 --Region breakdown: cinema count, total revenue, revenue per cinema from last month's tickets
-EXPLAIN ANALYZE
+--EXPLAIN ANALYZE
 SELECT r._id AS region_id,
   r.name AS region_name,
   COUNT(DISTINCT c._id) AS cinemas_count,

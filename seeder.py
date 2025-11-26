@@ -358,7 +358,6 @@ def seed_room(min=1, max=5):
             pair=(c, random.randint(1, 1000))
             if not pair in already_exists: 
                 already_exists.add(pair)
-                #rooms.append(Room(fk_cinema_id=pair[0], number=pair[1]))
                 rooms.append(Room(fk_cinema_id=pair[0], number=room_num))
                 room_num += 1
     seeder(rooms, "room", len(rooms))
@@ -403,7 +402,6 @@ def seed_seat():
         seat_amount = random.randint(10, 30)
         for i in range(seat_amount):
             counter += 1
-            #seats.append(Seat(fk_room_id = r, number = counter))
             seats.append(Seat(fk_room_id = r, number = i + 1))
         if len(seats) > 50_000:
             seeder(seats, "seat", len(seats))
@@ -878,7 +876,7 @@ if __name__ == "__main__":
     TICKET_SPECIAL_OFFER = 10_000
     
 
-    # nie potrzebują innych tabel
+    # does not require other tables
     make_batch(seed_region, REGION)
     make_batch(seed_product, PRODUCT)
 
@@ -886,7 +884,7 @@ if __name__ == "__main__":
     seed_version()
     seed_movie_version(min_versions, max_versions)
 
-    # wymaga: region
+    # requires: region
     make_batch(seed_cinemas, CINEMA)
     seed_cinema_movie(min_cinema_movie_version, max_cinema_movie_version)
     seed_room(min_room, max_room)
@@ -897,29 +895,29 @@ if __name__ == "__main__":
     make_batch(seed_regional_manager, REGIONAL_MANAGER)
     make_batch(seed_employment_with_shifts, EMPLOYMENT)
 
-    # wymaga: room, movie_version
+    # requires: room, movie_version
     make_batch(seed_screening, SCREENING)
 
-    # wymaga: client
+    # requires: client
     make_batch(seed_payment, PAYMENT)
 
-    # wymaga: product, payment, cinema
-    #make_batch(seed_product_sale, PRODUCT_SALE)
+    # requires: product, payment, cinema
+    make_batch(seed_product_sale, PRODUCT_SALE)
 
-    # wymaga: region, regional_manager
-    # make_batch(seed_term, TERM)
+    # requires: region, regional_manager
+    make_batch(seed_term, TERM)
 
-    # make_batch(seed_special_offer, SPECIAL_OFFER)
-    # seed_discount() 
-    # seed_ticket_type()
+    make_batch(seed_special_offer, SPECIAL_OFFER)
+    seed_discount() 
+    seed_ticket_type()
 
-    # # wymaga: room
-    # seed_seat()
+    # requires: room
+    seed_seat()
 
-    # # wymaga: ticket_type, discount, payment, seat, screening
-    # seed_ticket()
+    # requires: ticket_type, discount, payment, seat, screening
+    seed_ticket()
 
-    # wymaga: ticket, special_offer
+    # requires: ticket, special_offer
     # seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=100_000) # COMPLETE DATABASE
     seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=2000) # TEST DATABASE
 
