@@ -13,3 +13,7 @@ CREATE INDEX idx_ticket_fk_screening_id ON ticket(fk_screening_id);
 
 -- q_10
 -- Nie opłaca się robić żadnego indexu, ponieważ silnik PostgreSQL i tak musi przejść po 98% screeningów, więc nie użyje indexów dla ticketów.
+
+-- q_23
+CREATE INDEX idx_payment_fk_client_id ON payment(fk_client_id);
+CREATE INDEX idx_ticket_fk_payment_id ON ticket(fk_payment_id);
