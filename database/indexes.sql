@@ -17,4 +17,4 @@ CREATE INDEX idx_employment_fk_worker ON employment(fk_worker_id);
 
 --q_21
 CREATE INDEX idx_seat_room ON seat(fk_room_id);
-CREATE INDEX idx_ticket_screening_status ON ticket(fk_screening_id, status);
+CREATE INDEX idx_ticket_screening_status ON ticket(fk_screening_id);
