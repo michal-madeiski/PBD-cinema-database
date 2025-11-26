@@ -1,8 +1,7 @@
 --Room occupancy by month
-SELECT EXTRACT(
-        MONTH
-        FROM screening.start_time
-    ) AS "Miesiąc",
+--EXPLAIN ANALYZE
+SELECT
+    EXTRACT(MONTH FROM screening.start_time) AS "Miesiąc",
     ROUND(
         100 * COUNT(ticket._id) FILTER (
             WHERE ticket.status = 'used'

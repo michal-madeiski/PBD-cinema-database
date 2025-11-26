@@ -1,5 +1,7 @@
 --Average daily screenings per cinema
-SELECT cinema._id AS "Id kina",
+--EXPLAIN ANALYZE
+SELECT
+    cinema._id AS "Id kina",
     cinema.city || ', ul. ' || cinema.street || ' ' || cinema.building_number AS "Adres",
     ROUND(
         COUNT(screening._id)::numeric / COALESCE(

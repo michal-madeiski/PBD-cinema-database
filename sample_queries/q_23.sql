@@ -1,5 +1,7 @@
 --Client's ticket history.
-SELECT movie.title AS "Tytuł",
+--EXPLAIN ANALYZE
+SELECT
+    movie.title AS "Tytuł",
     cinema.city || ', ul. ' || cinema.street || ' ' || cinema.building_number AS "Adres kina",
     screening.start_time::DATE AS "Data",
     screening.start_time::TIME AS "Godzina",

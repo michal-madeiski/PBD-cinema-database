@@ -163,6 +163,7 @@ def calculate_payments(batch_size=100_000):
     for pid in ticket_sum_by_payment.keys():
         if ticket_sum_by_payment[pid] is None and product_sum_by_payment[pid] is None:
             total = faker.pyfloat(min_value=2, max_value=100, right_digits=2, positive=True)
+            total = faker.pyfloat(min_value=2, max_value=100, right_digits=2, positive=True)
         elif ticket_sum_by_payment[pid] is None:
             total = product_sum_by_payment[pid]
         elif product_sum_by_payment[pid] is None:
@@ -197,6 +198,14 @@ def calculate_payments(batch_size=100_000):
     #     )
     # )
 
+    # session.execute(query_delete)
+    # if to_delete:
+    #     session.execute(
+    #         delete(Payment)
+    #         .where(Payment._id.in_(to_delete))
+    #     )
+    #     to_delete.clear()
+    # session.commit()
     # session.execute(query_delete)
     # if to_delete:
     #     session.execute(
@@ -895,20 +904,20 @@ if __name__ == "__main__":
     make_batch(seed_payment, PAYMENT)
 
     # wymaga: product, payment, cinema
-    make_batch(seed_product_sale, PRODUCT_SALE)
+    #make_batch(seed_product_sale, PRODUCT_SALE)
 
     # wymaga: region, regional_manager
-    make_batch(seed_term, TERM)
+    # make_batch(seed_term, TERM)
 
-    make_batch(seed_special_offer, SPECIAL_OFFER)
-    seed_discount() 
-    seed_ticket_type()
+    # make_batch(seed_special_offer, SPECIAL_OFFER)
+    # seed_discount() 
+    # seed_ticket_type()
 
-    # wymaga: room
-    seed_seat()
+    # # wymaga: room
+    # seed_seat()
 
-    # wymaga: ticket_type, discount, payment, seat, screening
-    seed_ticket()
+    # # wymaga: ticket_type, discount, payment, seat, screening
+    # seed_ticket()
 
     # wymaga: ticket, special_offer
     # seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=100_000) # COMPLETE DATABASE
