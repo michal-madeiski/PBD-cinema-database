@@ -1,0 +1,501 @@
+﻿_id,city,street,building_number,total_ticket_income
+17,Wałcz,Górnicza,2,214936.80
+277,Kędzierzyn-Koźle,Wiślana,8,213185.70
+214,Tychy,Klasztorna,12,205755.95
+202,Gorzów Wielkopolski,Starowiejska,26,203755.50
+406,Tarnobrzeg,Powstańców Śląskich,17,199727.00
+143,Kędzierzyn-Koźle,Poprzeczna,8,199161.05
+270,Warszawa,Jaśminowa,1,198456.40
+242,Jarocin,Gdańska,5,197031.25
+327,Żywiec,Willowa,4,194585.15
+240,Kalisz,Jesionowa,18,193531.45
+205,Kołobrzeg,Turkusowa,16,188146.45
+430,Polkowice,Rejtana,11,185832.10
+128,Oława,Szpitalna,15,185826.35
+293,Zduńska Wola,Ludowa,18,185600.50
+389,Gorzów Wielkopolski,Popiełuszki,4,184776.65
+325,Chojnice,Kamienna,11,184356.60
+160,Kwidzyn,Azaliowa,14,183048.05
+107,Brodnica,Wiatraczna,14,182380.55
+75,Mielec,Mokra,22,182066.05
+427,Jarocin,Krakowska,12,181476.15
+421,Biała Podlaska,Tuwima,24,181130.25
+184,Kościan,Broniewskiego,28,180866.95
+316,Bielsk Podlaski,Jarzębinowa,15,180600.50
+294,Gorlice,Promienna,16,180397.55
+114,Puławy,Brzozowa,10,179769.85
+286,Płońsk,Staszica,21,179423.55
+88,Nowy Sącz,Wiosenna,12,179354.20
+55,Szczecin,Długosza,25,178232.80
+431,Wieluń,Chełmońskiego,9,178130.55
+29,Stargard Szczeciński,Lwowska,9,177709.30
+320,Oświęcim,Wiejska,13,176584.85
+175,Tomaszów Mazowiecki,Pułaskiego,20,176025.10
+70,Łaziska Górne,Fabryczna,23,175675.75
+237,Inowrocław,Szkolna,16,175546.40
+189,Gdańsk,Agrestowa,14,175536.35
+311,Biłgoraj,Parkowa,25,175504.10
+135,Kielce,Stefana Batorego,27,173756.45
+97,Siemianowice Śląskie,Zachodnia,30,172820.10
+215,Płock,Dolna,29,172166.80
+213,Sieradz,Szeroka,13,171543.05
+216,Rumia,Witosa,2,171444.60
+111,Jastrzębie-Zdrój,Pocztowa,22,170788.50
+285,Płock,Kwiatowa,14,170548.65
+251,Białystok,Sosnowa,11,170532.30
+352,Żagań,Solidarnosci,27,170531.75
+485,Lębork,Ludowa,21,170328.30
+340,Starogard Gdański,Malinowa,30,170176.45
+465,Biała Podlaska,Kalinowa,25,169529.15
+76,Częstochowa,Boczna,30,169077.45
+35,Starogard Gdański,Długosza,7,168064.20
+265,Jelenia Góra,Kolorowa,6,167850.10
+104,Czeladź,Szarych Szeregów,30,167383.50
+94,Wołomin,Stolarska,1,167252.80
+26,Olsztyn,Średnia,3,166525.80
+261,Lubartów,Ludowa,8,166266.05
+149,Słupsk,Tęczowa,25,165668.00
+321,Pruszcz Gdański,Wierzbowa,2,165553.35
+140,Poznań,Matejki,10,165398.35
+223,Konin,Swierkowa,4,165142.55
+241,Żary,Malinowa,28,164689.15
+404,Gorlice,Drzymały,9,164267.30
+333,Kalisz,Szmaragdowa,15,163970.05
+165,Kluczbork,Sarnia,30,163714.85
+323,Płońsk,Broniewskiego,11,162659.45
+43,Września,Jesionowa,2,161865.15
+171,Iława,Zaciszna,16,161398.85
+489,Koło,Prosta,7,161331.45
+455,Lublin,Wspólna,27,160844.45
+157,Puławy,Perłowa,18,160572.50
+353,Żary,Nałkowskiej,3,160280.60
+246,Ostrów Mazowiecka,Sarnia,21,160183.70
+269,Czeladź,Toruńska,15,160123.70
+48,Śrem,Tartaczna,25,159330.80
+102,Lubliniec,Topolowa,20,158752.40
+392,Jelenia Góra,Przechodnia,29,158603.20
+281,Bełchatów,Rzemieślnicza,2,158033.55
+328,Stalowa Wola,Ptasia,25,157832.10
+74,Piaseczno,Chabrowa,17,157783.10
+12,Gliwice,Niepodległości,9,156676.65
+131,Świnoujście,Podmiejska,8,156645.70
+295,Rybnik,Zbożowa,19,156098.60
+73,Sopot,Odrzańska,5,155579.20
+24,Kraśnik,Sosnowa,21,155257.30
+348,Zduńska Wola,Fredry,14,155066.50
+429,Radom,Skrajna,5,154847.15
+364,Mikołów,Wyszyńskiego,7,154729.70
+113,Gorzów Wielkopolski,Jana Pawła II,11,153789.00
+39,Mińsk Mazowiecki,Sienkiewicza,18,153787.75
+230,Mielec,Tysiąclecia,2,153150.55
+41,Oleśnica,Brzozowa,10,153003.25
+28,Ostrowiec Świętokrzyski,Lipowa,3,152930.00
+381,Bielsk Podlaski,Kolorowa,29,152427.95
+449,Krotoszyn,Jana,7,151875.60
+11,Sieradz,Rubinowa,6,151849.45
+419,Goleniów,Maczka,19,151551.95
+415,Tarnów,Zaciszna,14,151059.60
+280,Zawiercie,Bolesława Chrobrego,19,150903.35
+4,Sosnowiec,Agrestowa,7,150644.00
+483,Rzeszów,Fredry,29,149693.75
+473,Żyrardów,Wierzbowa,23,149687.60
+290,Inowrocław,Piękna,6,149510.05
+500,Ostrów Mazowiecka,Popiełuszki,10,149451.05
+457,Czerwionka-Leszczyny,Rzemieślnicza,9,149217.95
+326,Bełchatów,Lawendowa,7,149014.30
+443,Rybnik,Radosna,18,148680.50
+138,Sochaczew,Jeżynowa,9,147919.30
+49,Bielsko-Biała,Ogrodowa,25,147906.50
+95,Jarosław,Dworska,11,147322.75
+424,Świebodzice,Powstańców,28,147184.10
+297,Białystok,Orzechowa,30,146335.30
+22,Szczecin,Graniczna,21,146202.75
+395,Inowrocław,Krasickiego,13,145698.50
+250,Chełm,Średnia,2,145501.70
+274,Chełm,Bydgoska,23,145206.25
+291,Goleniów,Klonowa,28,145185.70
+370,Ełk,Chabrowa,26,144851.00
+477,Tarnów,Słowicza,5,144847.35
+196,Jarosław,Rubinowa,28,144713.60
+98,Marki,Agrestowa,27,144377.40
+397,Bełchatów,Żwirki i Wigury,18,144274.75
+420,Kościerzyna,Dobra,19,142728.15
+249,Kalisz,Rzeczna,8,142610.55
+126,Bolesławiec,Podmiejska,4,142513.80
+382,Mikołów,Sosnowa,27,141924.40
+356,Kołobrzeg,Opolska,21,141629.85
+272,Płońsk,Piastowska,9,141011.50
+496,Olkusz,Władysława Jagiełły,17,139814.95
+10,Tarnobrzeg,Warszawska,6,139394.85
+434,Brzeg,Strażacka,12,139386.95
+27,Tychy,Mickiewicza,18,138892.50
+330,Olsztyn,Szkolna,10,138668.75
+211,Elbląg,Jaworowa,12,138627.00
+151,Zakopane,Graniczna,11,138456.65
+451,Czerwionka-Leszczyny,Słonecznikowa,26,138437.15
+329,Bielawa,Tylna,14,137802.80
+42,Zambrów,Jaskółcza,2,137562.30
+63,Knurów,Olchowa,7,137559.05
+91,Piła,Polna,24,137171.95
+418,Ciechanów,Żabia,26,136371.60
+38,Jasło,Pogodna,19,135664.90
+71,Krotoszyn,Pocztowa,30,135474.10
+14,Siedlce,Maczka,23,135402.95
+96,Puławy,Długa,24,135323.10
+312,Oława,Królewska,22,135147.40
+377,Iława,Ciasna,15,135090.80
+159,Świdnica,Grzybowa,7,134396.25
+99,Częstochowa,Solidarnosci,8,133268.80
+69,Gorlice,Bukowa,12,132130.35
+439,Zambrów,Narcyzowa,18,131957.15
+342,Kętrzyn,Dąbrowskiego,14,131788.15
+454,Kraśnik,Zielona,5,131562.80
+304,Starogard Gdański,Azaliowa,13,131337.55
+378,Skawina,Sybiraków,12,130757.95
+263,Starogard Gdański,Kochanowskiego,21,130500.70
+264,Oleśnica,Wrocławska,2,130287.80
+61,Zgierz,Listopada,18,129966.50
+52,Ełk,Źródlana,2,129716.55
+260,Świdnik,Stroma,14,129662.85
+367,Lębork,Stroma,13,128645.65
+170,Brzeg,Kilińskiego,18,127873.25
+305,Piła,Kolorowa,13,127776.10
+359,Mikołów,Graniczna,18,127531.15
+253,Świętochłowice,Górska,12,127185.70
+173,Sanok,Kolonia,18,127102.30
+232,Białogard,Jana Pawła II,28,127010.65
+497,Głogów,Jałowcowa,29,126668.25
+470,Środa Wielkopolska,Grottgera,24,126645.90
+172,Konin,Koralowa,6,126392.50
+209,Kraków,Dolna,7,126387.25
+239,Białystok,Borówkowa,19,126304.70
+390,Nysa,Narutowicza,30,125928.60
+119,Kędzierzyn-Koźle,Żurawia,19,125777.30
+423,Płońsk,Młyńska,16,125434.10
+68,Katowice,Zakątek,22,125293.40
+262,Toruń,Reja,22,124757.55
+386,Suwałki,Sowia,22,124336.30
+361,Ostróda,Jaśminowa,12,124224.50
+147,Wałcz,Olchowa,5,123747.10
+207,Płońsk,Mieszka I,7,123566.20
+118,Łuków,Powstańców Wielkopolskich,28,123469.15
+124,Sieradz,Wodna,2,123466.05
+471,Augustów,Skośna,6,123110.45
+422,Pabianice,Nowa,6,122984.35
+180,Piła,Dobra,21,122896.30
+318,Wrocław,Szczęśliwa,15,122538.00
+37,Brzeg,Jesionowa,17,122394.30
+57,Szczytno,Odrzańska,22,121950.95
+447,Białogard,Kaszubska,20,121017.75
+391,Płońsk,Leśna,1,120820.95
+21,Wejherowo,Rolnicza,19,120634.50
+220,Jastrzębie-Zdrój,Orla,30,120528.15
+398,Płońsk,Okrężna,21,120527.20
+194,Żary,Tęczowa,16,120193.25
+226,Warszawa,Królewska,19,120175.45
+153,Dzierżoniów,Rolnicza,8,119845.40
+93,Stalowa Wola,Wiśniowa,9,119406.55
+373,Świecie,Robotnicza,22,119359.85
+442,Zambrów,Żurawia,20,118748.65
+58,Zabrze,Ściegiennego,1,118632.05
+379,Biłgoraj,Zapolskiej,1,118217.10
+150,Ząbki,Lipowa,15,118087.90
+5,Jasło,Wrzosowa,30,117365.20
+287,Wołomin,Piwna,17,117176.95
+313,Sieradz,Niecała,15,117121.95
+349,Szczecin,Szczęśliwa,14,117061.85
+158,Łaziska Górne,Łączna,14,116934.85
+67,Będzin,Piastowska,27,115859.20
+459,Katowice,Sportowa,25,115772.95
+2,Tarnowskie Góry,Kościuszki,19,115712.65
+195,Racibórz,Szczęśliwa,10,115400.00
+182,Kętrzyn,Kochanowskiego,25,115213.75
+409,Gliwice,Bolesława Krzywoustego,23,114433.70
+85,Knurów,Irysowa,20,114430.05
+346,Lubartów,Bolesława Chrobrego,29,114206.70
+275,Rzeszów,Wróblewskiego,17,114134.20
+417,Łowicz,Wyszyńskiego,16,113774.55
+374,Kraków,Jastrzębia,4,113183.60
+413,Kościan,Willowa,25,112857.05
+105,Jastrzębie-Zdrój,Wiśniowa,17,112179.10
+204,Tychy,Broniewskiego,14,111454.40
+125,Radom,Borówkowa,5,111381.25
+167,Rzeszów,Stycznia,18,111197.10
+234,Katowice,Zapolskiej,23,110341.05
+20,Marki,Okrężna,13,110066.80
+188,Płońsk,Wiosenna,19,109840.70
+298,Zakopane,Częstochowska,24,109679.25
+192,Gdynia,Zachodnia,24,109157.65
+478,Żory,Łączna,6,108969.00
+332,Luboń,Truskawkowa,2,108776.50
+115,Bielsko-Biała,Agrestowa,21,108749.40
+247,Świnoujście,Urocza,18,108598.35
+243,Kłodzko,Bukowa,4,108504.50
+495,Zabrze,Kolonia,15,108429.90
+141,Zielona Góra,Działkowa,11,107035.10
+403,Suwałki,Wojciecha,24,107023.10
+82,Ostrów Mazowiecka,Wróblewskiego,13,106785.20
+492,Legionowo,Klonowa,7,106686.10
+156,Pabianice,Narutowicza,26,106394.20
+3,Nowy Sącz,Młynarska,28,106319.05
+402,Nysa,Orzechowa,23,106083.65
+152,Nowy Targ,Nałkowskiej,6,105813.90
+393,Zgorzelec,Kusocińskiego,6,105708.35
+467,Malbork,Willowa,1,105418.25
+376,Jelenia Góra,Krasickiego,5,104983.10
+8,Bydgoszcz,Niepodległości,3,104196.20
+435,Piła,Piwna,27,103679.85
+219,Piotrków Trybunalski,Dojazdowa,14,103674.65
+155,Starogard Gdański,Ogrodowa,29,103507.85
+319,Świnoujście,Bociania,17,103221.00
+162,Ełk,Andersa,16,103012.80
+40,Toruń,Kruczkowskiego,25,102747.20
+144,Sosnowiec,Krzywa,3,102489.75
+360,Kalisz,Powstańców,18,102343.45
+121,Chrzanów,Składowa,30,102149.15
+59,Sanok,Ptasia,8,101762.75
+296,Warszawa,Władysława Łokietka,6,101676.55
+9,Białogard,Górska,24,101528.70
+51,Ostrów Mazowiecka,Powstańców Śląskich,7,101427.65
+369,Mysłowice,Mała,12,100577.45
+198,Grudziądz,Miłosza,19,100457.55
+334,Zabrze,Stycznia,12,100401.05
+401,Czeladź,Stefana Batorego,19,99995.90
+116,Świdnica,Miła,1,99878.70
+394,Stalowa Wola,Chmielna,20,99290.75
+436,Leszno,Sosnowa,23,99098.40
+339,Grodzisk Mazowiecki,Gałczynskiego,11,99048.40
+396,Środa Wielkopolska,Podwale,4,98851.65
+371,Tarnów,Promienna,30,98695.85
+177,Żywiec,Żwirki i Wigury,6,98681.90
+23,Bochnia,Lelewela,26,97846.90
+164,Dębica,Solidarnosci,1,97731.00
+203,Kalisz,Rajska,6,97466.85
+53,Przemyśl,Pocztowa,8,97195.15
+475,Mikołów,Żytnia,9,97070.35
+266,Ostrowiec Świętokrzyski,Krakowska,5,96889.25
+375,Jaworzno,Lubelska,27,96829.45
+343,Katowice,Pułaskiego,8,96630.10
+72,Opole,Okrężna,30,96543.00
+89,Jelenia Góra,Zakole,22,96270.60
+176,Łaziska Górne,Długa,21,95991.50
+56,Zielona Góra,Warszawska,27,95963.80
+231,Tarnowskie Góry,Narutowicza,26,95600.30
+292,Mińsk Mazowiecki,Makowa,9,95504.45
+463,Kętrzyn,Cmentarna,18,95308.95
+18,Stalowa Wola,Wrzosowa,4,95068.60
+200,Radomsko,Widok,8,95066.35
+426,Zabrze,Chmielna,13,95017.65
+469,Racibórz,Reymonta,20,94592.90
+273,Jawor,Baczynskiego,4,94325.25
+440,Bolesławiec,Działkowa,26,93940.30
+46,Płońsk,Młyńska,3,93550.40
+368,Koszalin,Rumiankowa,28,93363.20
+279,Kętrzyn,Cegielniana,24,93323.20
+168,Bydgoszcz,Malczewskiego,25,93018.45
+197,Police,Cedrowa,30,92900.70
+122,Puławy,Drzymały,24,92834.60
+366,Otwock,Reymonta,5,92834.40
+453,Jasło,Listopada,23,92426.40
+92,Świdnica,Maja,18,92406.45
+80,Kalisz,Handlowa,10,91932.65
+47,Szczytno,Klonowa,20,91487.80
+347,Gdynia,Maja,20,91250.40
+181,Tarnobrzeg,Mazurska,27,90929.10
+400,Police,Morelowa,15,90783.15
+458,Oława,Zielna,19,90582.40
+336,Kluczbork,Krótka,23,90412.55
+15,Bytom,Topolowa,6,90233.85
+498,Piła,Żeromskiego,12,90030.50
+494,Brodnica,Owocowa,15,89999.60
+136,Dzierżoniów,Stolarska,24,89668.30
+77,Sochaczew,Lubelska,6,89444.30
+344,Bochnia,Lipca,15,89069.25
+464,Swarzędz,Mokra,1,88602.90
+208,Rybnik,Skrajna,11,88184.15
+450,Gliwice,Jagiellońska,8,87772.05
+227,Oleśnica,Traugutta,19,87744.70
+271,Skawina,Pocztowa,10,87638.70
+145,Lubin,Makowa,9,86516.35
+441,Augustów,Wesoła,7,86509.35
+384,Myszków,Korfantego,3,86279.85
+87,Czeladź,Władysława Łokietka,2,86189.20
+199,Otwock,Lipca,11,85891.20
+308,Kościerzyna,Srebrna,1,85750.30
+212,Tczew,Powstańców,11,85308.40
+120,Czerwionka-Leszczyny,Podleśna,5,84830.55
+1,Malbork,Modrzewiowa,22,84791.85
+302,Szczytno,Krasińskiego,19,84355.25
+385,Płońsk,Wojska Polskiego,4,84024.95
+354,Kędzierzyn-Koźle,Azaliowa,10,83639.35
+25,Wrocław,Chmielna,14,83322.15
+351,Konin,Zamkowa,25,83258.80
+221,Głogów,Waryńskiego,23,82991.55
+303,Warszawa,Boczna,2,82551.45
+16,Gorzów Wielkopolski,Północna,23,81799.10
+388,Stalowa Wola,Zaułek,16,81789.75
+476,Pszczyna,Ceglana,6,81468.75
+338,Świdnik,Krucza,11,81081.95
+288,Świnoujście,Krzywa,17,81064.35
+307,Legionowo,Piaskowa,19,80257.15
+206,Marki,Wrocławska,26,79772.75
+411,Wałcz,Jałowcowa,13,79705.25
+236,Tomaszów Mazowiecki,Irysowa,7,79401.45
+90,Lublin,Jana III Sobieskiego,6,79264.90
+154,Wrocław,Chmielna,5,79035.55
+146,Bielawa,Topolowa,8,78252.55
+365,Legionowo,Graniczna,6,77539.40
+479,Łuków,Jabłoniowa,24,76860.25
+222,Gdańsk,Narcyzowa,27,76698.30
+13,Kraków,Łanowa,14,76599.50
+137,Białystok,Kolejowa,12,76350.45
+32,Czeladź,Lazurowa,9,76254.40
+358,Otwock,Kusocińskiego,27,76107.55
+31,Mysłowice,Wysoka,23,75767.10
+407,Polkowice,Narutowicza,14,75723.25
+462,Głogów,Irysowa,22,75255.90
+355,Skawina,Wyszyńskiego,1,75222.75
+491,Piotrków Trybunalski,Sucharskiego,19,75123.95
+460,Iława,Lwowska,10,74965.35
+66,Iława,Krucza,5,74512.10
+480,Chełm,Owocowa,30,74298.80
+109,Płońsk,Borowa,3,74142.50
+255,Ciechanów,Tysiąclecia,24,72694.85
+438,Świebodzice,Wrzosowa,2,72477.15
+130,Otwock,Jagiellońska,15,72298.00
+432,Myszków,Staszica,17,72040.70
+123,Ostrów Mazowiecka,Wałowa,5,72040.55
+412,Augustów,Narutowicza,2,71751.40
+127,Gniezno,Długosza,3,71631.40
+210,Gorzów Wielkopolski,Cedrowa,11,71264.90
+276,Inowrocław,Drzymały,10,71201.95
+444,Siedlce,Kaliska,30,71037.05
+229,Nowa Sól,Górnicza,4,70490.35
+166,Koszalin,Kilińskiego,8,70487.10
+283,Mysłowice,Dąbrowskiego,6,70364.20
+267,Nowa Ruda,Reymonta,19,70213.10
+362,Tarnów,Staffa,27,68631.85
+428,Rzeszów,Lazurowa,12,67956.85
+481,Ruda Śląska,Kaszubska,26,67402.00
+317,Oleśnica,Strzelecka,1,66510.80
+300,Sochaczew,Owocowa,1,66473.55
+258,Nowa Ruda,Graniczna,30,66220.05
+414,Legionowo,Stefana Batorego,9,66188.20
+486,Bielawa,Kasprowicza,6,66040.95
+437,Skawina,Podleśna,26,66014.50
+36,Leszno,Daleka,8,65871.65
+134,Giżycko,Kraszewskiego,6,65806.60
+185,Żary,Rynek,4,65711.95
+408,Olkusz,Zakole,28,64739.45
+456,Olsztyn,Młyńska,18,64387.00
+191,Pabianice,Moniuszki,4,63895.85
+218,Częstochowa,Orzechowa,17,63571.80
+405,Zgierz,Sybiraków,18,63440.45
+488,Pabianice,Szafirowa,2,63109.05
+487,Chojnice,Kilińskiego,15,63105.15
+433,Środa Wielkopolska,Widok,17,62644.60
+228,Goleniów,Agrestowa,23,62240.85
+324,Oława,Szkolna,6,62110.15
+425,Sochaczew,Długosza,11,62021.45
+179,Łomża,Lisia,12,61636.45
+65,Kościan,Konwaliowa,11,61211.30
+472,Katowice,Mazowiecka,10,60743.35
+301,Szczecin,Piwna,16,60227.80
+133,Knurów,Paderewskiego,25,60208.30
+341,Piaseczno,Szmaragdowa,16,60175.50
+337,Dąbrowa Górnicza,Bolesława Chrobrego,16,59964.30
+174,Sanok,Widokowa,20,59615.40
+190,Sopot,Jaworowa,29,59437.10
+186,Sanok,Strzelecka,25,59369.45
+83,Ostróda,Zbożowa,22,59116.85
+314,Szczytno,Lipowa,29,58695.90
+466,Puławy,Podwale,11,58538.90
+357,Tychy,Gołębia,17,58429.90
+257,Lębork,Północna,12,58303.25
+331,Skawina,Popiełuszki,5,58254.75
+148,Łomża,Dobra,21,58144.75
+6,Siedlce,Wąska,5,58010.80
+139,Kraśnik,Jasna,9,57791.35
+278,Poznań,Kochanowskiego,20,57782.95
+299,Gniezno,Podmiejska,8,57593.45
+416,Stalowa Wola,Rzeczna,11,57506.15
+79,Piastów,Wałowa,22,57414.65
+499,Świętochłowice,Ściegiennego,1,57054.75
+268,Rybnik,Leszczynowa,2,56733.40
+445,Swarzędz,Jagiellońska,5,56680.00
+100,Zduńska Wola,Przechodnia,16,56245.00
+117,Środa Wielkopolska,Bursztynowa,11,56241.25
+235,Biała Podlaska,Bolesława Chrobrego,8,55720.90
+84,Szczecin,Daszyńskiego,6,55580.85
+183,Jaworzno,Szafirowa,26,55548.40
+54,Police,Wspólna,5,55428.85
+306,Tomaszów Mazowiecki,Kossaka,21,54647.05
+380,Racibórz,Majowa,3,54596.00
+484,Chojnice,Klonowa,12,54157.85
+363,Pruszków,Bociania,6,53674.30
+310,Bełchatów,Prusa,20,53612.45
+50,Starachowice,Okrężna,7,53436.75
+19,Tczew,Jeziorna,23,53394.05
+289,Opole,Żurawia,24,52966.70
+452,Wejherowo,Wierzbowa,15,52900.75
+372,Radom,Korfantego,8,52776.75
+64,Włocławek,Wolności,19,52508.70
+101,Polkowice,Hallera,29,52452.90
+106,Starachowice,Nałkowskiej,24,52354.00
+224,Grodzisk Mazowiecki,Wodna,3,52232.45
+86,Szczecinek,Pomorska,12,52137.75
+103,Szczecin,Czereśniowa,22,51568.35
+238,Radom,Porzeczkowa,3,51434.95
+482,Lębork,Rybacka,22,51353.50
+383,Żyrardów,Żwirowa,11,50792.60
+259,Pabianice,Pogodna,9,50266.35
+129,Wrocław,Sosnowa,23,50110.00
+493,Słupsk,Andersa,22,49452.35
+142,Legnica,Browarna,14,48548.95
+350,Rybnik,Kalinowa,11,48184.80
+387,Tomaszów Mazowiecki,Bydgoska,4,47898.80
+112,Inowrocław,Wysoka,15,47773.40
+178,Czeladź,Orzeszkowej,2,47618.05
+256,Stargard Szczeciński,Willowa,14,47123.00
+233,Gorzów Wielkopolski,Podmiejska,30,46458.10
+474,Zakopane,Chełmońskiego,28,46245.80
+490,Gdynia,Słowackiego,1,46242.15
+244,Lubliniec,Mostowa,1,45703.50
+309,Inowrocław,Akacjowa,22,45470.55
+315,Piastów,Borowa,8,45385.55
+245,Marki,Tysiąclecia,4,45268.25
+132,Sandomierz,Władysława Łokietka,9,45214.40
+468,Polkowice,Jagiellońska,4,44719.15
+34,Kluczbork,Poniatowskiego,26,44510.90
+322,Świętochłowice,Solidarnosci,5,44343.85
+446,Reda,Podmiejska,9,44253.60
+248,Środa Wielkopolska,Błękitna,9,43612.25
+45,Nowa Sól,Osiedlowa,30,43338.95
+193,Ząbki,Sosnowa,5,43263.70
+345,Kutno,Kraszewskiego,29,43161.55
+62,Toruń,Jadwigi,28,42954.00
+163,Bełchatów,Kowalska,13,42536.35
+284,Lębork,Dolna,29,42347.15
+187,Rumia,Leśna,13,42091.40
+81,Oława,Chmielna,30,42043.15
+335,Pruszcz Gdański,Sokola,27,41981.50
+33,Września,Malczewskiego,25,41973.95
+252,Pszczyna,Prosta,4,40577.20
+169,Szczytno,Warszawska,15,40561.50
+399,Brodnica,Azaliowa,20,40289.10
+44,Świdnik,Powstańców Śląskich,5,39453.15
+461,Police,Owocowa,20,39176.15
+78,Kołobrzeg,Świerczewskiego,2,38211.75
+110,Krosno,Powstańców Śląskich,7,38193.50
+201,Bielsk Podlaski,Kielecka,21,38075.25
+225,Lubliniec,Kossaka,15,37244.45
+108,Świebodzice,Szarych Szeregów,21,36640.40
+217,Iława,Wiosenna,17,36638.40
+7,Sochaczew,Wróblewskiego,4,36015.20
+448,Brodnica,Dąbrowskiego,19,33706.95
+254,Tomaszów Mazowiecki,Wschodnia,12,32413.00
+282,Chrzanów,Daleka,17,32135.30
+60,Mysłowice,Górna,5,29093.65
+410,Świdnik,Wyspiańskiego,6,26735.25
+30,Oświęcim,Słowianska,2,25378.20
+161,Jasło,Fiołkowa,9,24005.25
