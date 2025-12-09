@@ -1,33 +1,37 @@
 --Ticket promotion breakdown
 --EXPLAIN ANALYZE
 WITH ticket_data AS (
-    SELECT 
-        fk_ticket_type_id,
-        fk_discount_id,
-        _id as ticket_id
-    FROM ticket 
-    WHERE status IN ('used', 'valid') 
+    SELECT
+        ss.fk_seat_screening_type_id AS type_id,
+        ss.fk_discount_id AS discount_id,
+        t._id AS ticket_id
+    FROM seat_screening ss
+    JOIN ticket t ON ss.fk_ticket_id = t._id
+    WHERE t.status IN ('used', 'valid')
 ),
 aggregated AS (
     SELECT 
-        tt.name AS ticket_type,
+        st.name AS ticket_type,
         CASE
-            WHEN td.fk_discount_id IS NOT NULL AND tso.fk_special_offer_id IS NOT NULL 
-                THEN 'discount + special offer'
-            WHEN td.fk_discount_id IS NOT NULL AND tso.fk_special_offer_id IS NULL 
-                THEN 'only discount'
-            WHEN td.fk_discount_id IS NULL AND tso.fk_special_offer_id IS NOT NULL 
-                THEN 'only special offer'
+            WHEN discount_id IS NOT NULL 
+                 AND tso.fk_special_offer_id IS NOT NULL THEN 'discount + special offer'
+            WHEN discount_id IS NOT NULL 
+                 AND tso.fk_special_offer_id IS NULL THEN 'only discount'
+            WHEN discount_id IS NULL 
+                 AND tso.fk_special_offer_id IS NOT NULL THEN 'only special offer'
             ELSE 'none'
         END AS reductions_applied,
         COUNT(td.ticket_id) AS ticket_count
     FROM ticket_data td
-    LEFT JOIN ticket_type tt ON td.fk_ticket_type_id = tt._id
-    LEFT JOIN ticket_special_offer tso ON td.ticket_id = tso.fk_ticket_id
-    GROUP BY tt.name, reductions_applied
+    LEFT JOIN seat_screening_type st 
+           ON td.type_id = st._id
+    LEFT JOIN ticket_special_offer tso 
+           ON td.ticket_id = tso.fk_ticket_id
+    GROUP BY st.name, reductions_applied
 ),
 total_count AS (
-    SELECT SUM(ticket_count) as total FROM aggregated
+    SELECT SUM(ticket_count) AS total
+    FROM aggregated
 )
 SELECT 
     ticket_type,
