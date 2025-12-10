@@ -11,12 +11,11 @@ FROM movie m
             JOIN (
                 SELECT s._id,
                     s.fk_movie_version_id AS version,
-                    SUM(t.price) FILTER (
-                        WHERE t.status <> 'free'
-                            AND t.status <> 'not_used'
+                    SUM(s_sc.price) FILTER (
+                        WHERE s_sc.fk_ticket_id IS NOT NULL
                     ) AS screening_income
                 FROM screening s
-                    JOIN ticket t ON t.fk_screening_id = s._id
+                    JOIN seat_screening s_sc ON s_sc.fk_screening_id = s._id
                 GROUP BY s._id
             ) AS esi ON mv.fk_version_id = esi.version
         GROUP BY mv.fk_movie_id
