@@ -1,0 +1,16 @@
+﻿QUERY PLAN
+Limit  (cost=24072.76..24072.78 rows=10 width=16) (actual time=1837.668..1837.674 rows=10 loops=1)
+  ->  Sort  (cost=24072.76..24074.73 rows=788 width=16) (actual time=1837.665..1837.669 rows=10 loops=1)
+        Sort Key: (count(product_sale._id)) DESC
+        Sort Method: top-N heapsort  Memory: 25kB
+        ->  HashAggregate  (cost=24047.85..24055.73 rows=788 width=16) (actual time=1836.119..1837.470 rows=788 loops=1)
+              Group Key: product.name
+              Batches: 1  Memory Usage: 105kB
+              ->  Hash Right Join  (cost=24.73..19047.85 rows=1000000 width=12) (actual time=1.611..1531.313 rows=1000000 loops=1)
+                    Hash Cond: (product_sale.fk_product_id = product._id)
+                    ->  Seq Scan on product_sale  (cost=0.00..16384.00 rows=1000000 width=8) (actual time=0.396..1228.678 rows=1000000 loops=1)
+                    ->  Hash  (cost=14.88..14.88 rows=788 width=12) (actual time=1.196..1.197 rows=788 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 44kB
+                          ->  Seq Scan on product  (cost=0.00..14.88 rows=788 width=12) (actual time=0.016..1.107 rows=788 loops=1)
+Planning Time: 14.031 ms
+Execution Time: 1837.726 ms

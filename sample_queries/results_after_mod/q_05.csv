@@ -1,0 +1,9 @@
+﻿ticket_type,reductions_applied,ticket_sale_percentage,count
+standard,discount + special offer,1.35%,266375
+standard,none,23.66%,4678155
+standard,only discount,23.65%,4676000
+standard,only special offer,1.35%,265982
+reduced,discount + special offer,1.35%,266202
+reduced,none,23.65%,4676107
+reduced,only discount,23.64%,4673488
+reduced,only special offer,1.35%,266617

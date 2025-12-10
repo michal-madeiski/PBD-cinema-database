@@ -1,0 +1,30 @@
+﻿QUERY PLAN
+Sort  (cost=485133.14..485134.39 rows=500 width=68) (actual time=10306.935..10320.118 rows=500 loops=1)
+"  Sort Key: (COALESCE(sum(seat_screening.price), '0'::numeric)) DESC"
+  Sort Method: quicksort  Memory: 53kB
+  ->  HashAggregate  (cost=485096.97..485110.72 rows=500 width=68) (actual time=10306.106..10319.787 rows=500 loops=1)
+        Group Key: cinema._id
+        Batches: 1  Memory Usage: 297kB
+        ->  Hash Right Join  (cost=1458.15..483643.77 rows=290641 width=33) (actual time=7.475..10193.138 rows=301277 loops=1)
+              Hash Cond: (room.fk_cinema_id = cinema._id)
+              ->  Hash Right Join  (cost=1442.90..482859.12 rows=290641 width=9) (actual time=7.324..10096.802 rows=301277 loops=1)
+                    Hash Cond: (screening.fk_room_id = room._id)
+                    ->  Gather  (cost=1373.03..482025.02 rows=290641 width=9) (actual time=7.005..9978.598 rows=301272 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          ->  Nested Loop Left Join  (cost=373.03..451960.92 rows=121100 width=9) (actual time=5.601..10093.405 rows=100424 loops=3)
+                                ->  Parallel Bitmap Heap Scan on screening  (cost=372.59..15698.97 rows=6022 width=8) (actual time=1.722..739.652 rows=4994 loops=3)
+                                      Recheck Cond: ((start_time >= (CURRENT_DATE - '1 mon'::interval)) AND (start_time < (CURRENT_DATE + '1 day'::interval)))
+                                      Heap Blocks: exact=3129
+                                      ->  Bitmap Index Scan on idx_screening_start_time_id  (cost=0.00..368.98 rows=14454 width=0) (actual time=3.329..3.329 rows=14981 loops=1)
+                                            Index Cond: ((start_time >= (CURRENT_DATE - '1 mon'::interval)) AND (start_time < (CURRENT_DATE + '1 day'::interval)))
+                                ->  Index Scan using idx_seat_screening_fk_screening_id on seat_screening  (cost=0.44..71.77 rows=67 width=9) (actual time=0.452..1.863 rows=20 loops=14981)
+                                      Index Cond: (fk_screening_id = screening._id)
+                    ->  Hash  (cost=38.83..38.83 rows=2483 width=8) (actual time=0.305..0.308 rows=2483 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 129kB
+                          ->  Seq Scan on room  (cost=0.00..38.83 rows=2483 width=8) (actual time=0.004..0.135 rows=2483 loops=1)
+              ->  Hash  (cost=9.00..9.00 rows=500 width=28) (actual time=0.139..0.140 rows=500 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 39kB
+                    ->  Seq Scan on cinema  (cost=0.00..9.00 rows=500 width=28) (actual time=0.039..0.079 rows=500 loops=1)
+Planning Time: 2.309 ms
+Execution Time: 10320.587 ms

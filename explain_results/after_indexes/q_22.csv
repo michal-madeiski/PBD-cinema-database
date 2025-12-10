@@ -1,0 +1,30 @@
+﻿QUERY PLAN
+Gather Merge  (cost=28282.35..28283.99 rows=14 width=97) (actual time=359.358..363.474 rows=1 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  ->  Sort  (cost=27282.33..27282.35 rows=7 width=97) (actual time=306.597..306.600 rows=0 loops=3)
+        Sort Key: s.start_time
+        Sort Method: quicksort  Memory: 25kB
+        Worker 0:  Sort Method: quicksort  Memory: 25kB
+        Worker 1:  Sort Method: quicksort  Memory: 25kB
+        ->  Nested Loop  (cost=45.80..27282.23 rows=7 width=97) (actual time=230.761..306.560 rows=0 loops=3)
+              ->  Nested Loop  (cost=45.66..27281.09 rows=7 width=33) (actual time=229.744..305.541 rows=0 loops=3)
+                    ->  Nested Loop  (cost=45.38..27278.86 rows=7 width=24) (actual time=229.669..305.466 rows=0 loops=3)
+                          ->  Hash Join  (cost=45.09..27276.05 rows=7 width=20) (actual time=229.323..305.119 rows=0 loops=3)
+                                Hash Cond: (s.fk_room_id = r._id)
+                                ->  Parallel Seq Scan on screening s  (cost=0.00..27220.00 rows=4167 width=24) (actual time=2.032..304.426 rows=176 loops=3)
+                                      Filter: (date(start_time) = '2023-07-13'::date)
+                                      Rows Removed by Filter: 666491
+                                ->  Hash  (cost=45.04..45.04 rows=4 width=4) (actual time=0.318..0.319 rows=4 loops=3)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      ->  Seq Scan on room r  (cost=0.00..45.04 rows=4 width=4) (actual time=0.104..0.310 rows=4 loops=3)
+                                            Filter: (fk_cinema_id = 89)
+                                            Rows Removed by Filter: 2479
+                          ->  Index Scan using movie_version_pkey on movie_version mv  (cost=0.29..0.40 rows=1 width=12) (actual time=1.016..1.016 rows=1 loops=1)
+                                Index Cond: (_id = s.fk_movie_version_id)
+                    ->  Index Scan using movie_pkey on movie m  (cost=0.29..0.32 rows=1 width=17) (actual time=0.217..0.217 rows=1 loops=1)
+                          Index Cond: (_id = mv.fk_movie_id)
+              ->  Index Scan using version_pkey on version v  (cost=0.14..0.16 rows=1 width=16) (actual time=0.456..0.456 rows=1 loops=1)
+                    Index Cond: (_id = mv.fk_version_id)
+Planning Time: 3.483 ms
+Execution Time: 363.539 ms

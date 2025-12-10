@@ -1,0 +1,14 @@
+﻿QUERY PLAN
+Sort  (cost=12.88..12.88 rows=2 width=146) (actual time=0.828..0.829 rows=3 loops=1)
+  Sort Key: c._id
+  Sort Method: quicksort  Memory: 25kB
+  ->  Hash Join  (cost=1.36..12.87 rows=2 width=146) (actual time=0.580..0.819 rows=3 loops=1)
+        Hash Cond: (c.fk_region_id = r._id)
+        ->  Seq Scan on cinema c  (cost=0.00..11.50 rows=2 width=32) (actual time=0.551..0.788 rows=3 loops=1)
+              Filter: (lower((city)::text) = 'świdnica'::text)
+              Rows Removed by Filter: 497
+        ->  Hash  (cost=1.16..1.16 rows=16 width=122) (actual time=0.018..0.018 rows=16 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 9kB
+              ->  Seq Scan on region r  (cost=0.00..1.16 rows=16 width=122) (actual time=0.009..0.011 rows=16 loops=1)
+Planning Time: 0.170 ms
+Execution Time: 0.859 ms

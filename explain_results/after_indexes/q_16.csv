@@ -1,0 +1,24 @@
+﻿QUERY PLAN
+Sort  (cost=267669.40..267681.90 rows=5000 width=108) (actual time=2187.609..2277.047 rows=100 loops=1)
+  Sort Key: sub.row_number
+  Sort Method: quicksort  Memory: 37kB
+  ->  Subquery Scan on sub  (cost=118395.87..267362.21 rows=5000 width=108) (actual time=1459.320..2276.899 rows=100 loops=1)
+        Filter: ((sub.row_number % '10000'::bigint) = 0)
+        Rows Removed by Filter: 999900
+        ->  WindowAgg  (cost=118395.87..252362.21 rows=1000000 width=112) (actual time=1451.090..2210.609 rows=1000000 loops=1)
+              ->  Gather Merge  (cost=118395.73..234862.21 rows=1000000 width=104) (actual time=1451.069..1851.933 rows=1000000 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    ->  Sort  (cost=117395.71..118437.38 rows=416667 width=104) (actual time=1396.390..1515.157 rows=333333 loops=3)
+"                          Sort Key: u.account_create_date, c._id"
+                          Sort Method: external merge  Disk: 41256kB
+                          Worker 0:  Sort Method: external merge  Disk: 38936kB
+                          Worker 1:  Sort Method: external merge  Disk: 38152kB
+                          ->  Parallel Hash Join  (cost=15435.00..55714.39 rows=416667 width=104) (actual time=684.169..1068.534 rows=333333 loops=3)
+                                Hash Cond: (u._id = c._id)
+"                                ->  Parallel Seq Scan on ""user"" u  (cost=0.00..23046.25 rows=460625 width=100) (actual time=0.010..339.099 rows=368500 loops=3)"
+                                ->  Parallel Hash  (cost=8598.67..8598.67 rows=416667 width=4) (actual time=173.617..173.618 rows=333333 loops=3)
+                                      Buckets: 262144  Batches: 8  Memory Usage: 6976kB
+                                      ->  Parallel Seq Scan on client c  (cost=0.00..8598.67 rows=416667 width=4) (actual time=0.206..98.451 rows=333333 loops=3)
+Planning Time: 4.046 ms
+Execution Time: 2281.961 ms

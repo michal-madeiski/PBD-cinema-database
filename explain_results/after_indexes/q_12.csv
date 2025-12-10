@@ -1,0 +1,41 @@
+﻿QUERY PLAN
+Sort  (cost=36163.59..36163.62 rows=12 width=33) (actual time=1083.245..1084.129 rows=10417 loops=1)
+"  Sort Key: mvsc.screening_count DESC, m.title"
+  Sort Method: quicksort  Memory: 920kB
+  CTE movie_version_screening_count
+    ->  Finalize HashAggregate  (cost=35562.71..35662.71 rows=10000 width=16) (actual time=933.875..941.937 rows=29403 loops=1)
+"          Group Key: mv.fk_movie_id, mv.fk_version_id"
+          Batches: 1  Memory Usage: 3601kB
+          ->  Gather  (cost=33312.71..35412.71 rows=20000 width=16) (actual time=857.295..883.264 rows=88209 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                ->  Partial HashAggregate  (cost=32312.71..32412.71 rows=10000 width=16) (actual time=804.249..815.208 rows=29403 loops=3)
+"                      Group Key: mv.fk_movie_id, mv.fk_version_id"
+                      Batches: 1  Memory Usage: 3601kB
+                      Worker 0:  Batches: 1  Memory Usage: 3601kB
+                      Worker 1:  Batches: 1  Memory Usage: 3601kB
+                      ->  Hash Join  (cost=821.57..26062.71 rows=833333 width=12) (actual time=15.876..525.692 rows=666667 loops=3)
+                            Hash Cond: (s.fk_movie_version_id = mv._id)
+                            ->  Parallel Seq Scan on screening s  (cost=0.00..23053.33 rows=833333 width=8) (actual time=0.249..207.063 rows=666667 loops=3)
+                            ->  Hash  (cost=454.03..454.03 rows=29403 width=12) (actual time=15.494..15.496 rows=29403 loops=3)
+                                  Buckets: 32768  Batches: 1  Memory Usage: 1520kB
+                                  ->  Seq Scan on movie_version mv  (cost=0.00..454.03 rows=29403 width=12) (actual time=0.113..8.317 rows=29403 loops=3)
+  ->  Nested Loop  (cost=257.37..500.67 rows=12 width=33) (actual time=969.312..1030.284 rows=10417 loops=1)
+        ->  Hash Join  (cost=257.08..496.49 rows=12 width=24) (actual time=969.098..993.910 rows=10417 loops=1)
+              Hash Cond: ((mvsc.fk_movie_id = movie_version_screening_count.fk_movie_id) AND (mvsc.screening_count = (max(movie_version_screening_count.screening_count))))
+              ->  Hash Join  (cost=2.08..228.89 rows=2400 width=20) (actual time=934.130..947.820 rows=29403 loops=1)
+                    Hash Cond: (mvsc.fk_version_id = v._id)
+                    ->  CTE Scan on movie_version_screening_count mvsc  (cost=0.00..200.00 rows=10000 width=16) (actual time=933.882..937.486 rows=29403 loops=1)
+                    ->  Hash  (cost=1.48..1.48 rows=48 width=12) (actual time=0.195..0.196 rows=48 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                          ->  Seq Scan on version v  (cost=0.00..1.48 rows=48 width=12) (actual time=0.151..0.166 rows=48 loops=1)
+              ->  Hash  (cost=252.00..252.00 rows=200 width=12) (actual time=34.628..34.629 rows=10000 loops=1)
+                    Buckets: 16384 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 597kB
+                    ->  HashAggregate  (cost=250.00..252.00 rows=200 width=12) (actual time=31.226..33.023 rows=10000 loops=1)
+                          Group Key: movie_version_screening_count.fk_movie_id
+                          Batches: 1  Memory Usage: 1185kB
+                          ->  CTE Scan on movie_version_screening_count  (cost=0.00..200.00 rows=10000 width=12) (actual time=0.002..17.555 rows=29403 loops=1)
+        ->  Index Scan using movie_pkey on movie m  (cost=0.29..0.35 rows=1 width=17) (actual time=0.003..0.003 rows=1 loops=10417)
+              Index Cond: (_id = mvsc.fk_movie_id)
+Planning Time: 10.789 ms
+Execution Time: 1087.674 ms

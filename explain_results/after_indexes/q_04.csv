@@ -1,0 +1,46 @@
+﻿QUERY PLAN
+Sort  (cost=924289.08..924290.33 rows=500 width=36) (actual time=61199.163..61495.957 rows=500 loops=1)
+  Sort Key: (sum(t.total_price)) DESC
+  Sort Method: quicksort  Memory: 52kB
+  ->  Finalize GroupAggregate  (cost=924139.99..924266.67 rows=500 width=36) (actual time=61198.151..61495.532 rows=500 loops=1)
+        Group Key: c._id
+        ->  Gather Merge  (cost=924139.99..924256.67 rows=1000 width=36) (actual time=61198.138..61495.193 rows=1500 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              ->  Sort  (cost=923139.97..923141.22 rows=500 width=36) (actual time=61146.963..61146.998 rows=500 loops=3)
+                    Sort Key: c._id
+                    Sort Method: quicksort  Memory: 52kB
+                    Worker 0:  Sort Method: quicksort  Memory: 52kB
+                    Worker 1:  Sort Method: quicksort  Memory: 52kB
+                    ->  Partial HashAggregate  (cost=923112.56..923117.56 rows=500 width=36) (actual time=61146.741..61146.832 rows=500 loops=3)
+                          Group Key: c._id
+                          Batches: 1  Memory Usage: 105kB
+                          Worker 0:  Batches: 1  Memory Usage: 105kB
+                          Worker 1:  Batches: 1  Memory Usage: 105kB
+                          ->  Hash Left Join  (cost=525439.17..913939.87 rows=1834537 width=36) (actual time=56837.530..60878.625 rows=1476553 loops=3)
+                                Hash Cond: (r.fk_cinema_id = c._id)
+                                ->  Parallel Hash Right Join  (cost=525423.92..909068.14 rows=1834537 width=12) (actual time=56837.113..60547.268 rows=1476553 loops=3)
+                                      Hash Cond: (t._id = ss.fk_ticket_id)
+                                      ->  Parallel Seq Scan on ticket t  (cost=0.00..249797.58 rows=8326158 width=12) (actual time=0.417..19678.789 rows=6660926 loops=3)
+                                      ->  Parallel Hash  (cost=495325.21..495325.21 rows=1834537 width=8) (actual time=33742.740..33742.744 rows=1476553 loops=3)
+                                            Buckets: 262144 (originally 262144)  Batches: 64 (originally 32)  Memory Usage: 94912kB
+                                            ->  Hash Join  (cost=22596.28..495325.21 rows=1834537 width=8) (actual time=4490.419..33238.582 rows=1476553 loops=3)
+                                                  Hash Cond: (s.fk_room_id = r._id)
+                                                  ->  Parallel Hash Join  (cost=22526.41..490431.46 rows=1834537 width=8) (actual time=4489.577..32729.397 rows=1476553 loops=3)
+                                                        Hash Cond: (ss.fk_screening_id = s._id)
+                                                        ->  Parallel Seq Scan on seat_screening ss  (cost=0.00..423918.70 rows=16756670 width=8) (actual time=0.631..24360.717 rows=13405335 loops=3)
+                                                        ->  Parallel Hash  (cost=21385.99..21385.99 rows=91234 width=8) (actual time=4488.275..4488.276 rows=73434 loops=3)
+                                                              Buckets: 262144  Batches: 1  Memory Usage: 10720kB
+                                                              ->  Parallel Bitmap Heap Scan on screening s  (cost=5069.39..21385.99 rows=91234 width=8) (actual time=194.453..4432.745 rows=73434 loops=3)
+                                                                    Recheck Cond: (start_time >= (CURRENT_DATE - '1 year'::interval))
+                                                                    Heap Blocks: exact=4955
+                                                                    ->  Bitmap Index Scan on idx_screening_start_time_id  (cost=0.00..5014.65 rows=218962 width=0) (actual time=233.937..233.937 rows=220302 loops=1)
+                                                                          Index Cond: (start_time >= (CURRENT_DATE - '1 year'::interval))
+                                                  ->  Hash  (cost=38.83..38.83 rows=2483 width=8) (actual time=0.821..0.821 rows=2483 loops=3)
+                                                        Buckets: 4096  Batches: 1  Memory Usage: 129kB
+                                                        ->  Seq Scan on room r  (cost=0.00..38.83 rows=2483 width=8) (actual time=0.099..0.457 rows=2483 loops=3)
+                                ->  Hash  (cost=9.00..9.00 rows=500 width=28) (actual time=0.375..0.376 rows=500 loops=3)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 39kB
+                                      ->  Seq Scan on cinema c  (cost=0.00..9.00 rows=500 width=28) (actual time=0.094..0.232 rows=500 loops=3)
+Planning Time: 8.213 ms
+Execution Time: 61496.137 ms

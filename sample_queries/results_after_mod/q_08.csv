@@ -1,0 +1,501 @@
+﻿Id kina,Adres,Średnia ilość seansów na dzień
+241,"Żary, ul. Malinowa 28",1.64
+230,"Mielec, ul. Tysiąclecia 2",1.63
+214,"Tychy, ul. Klasztorna 12",1.63
+55,"Szczecin, ul. Długosza 25",1.62
+43,"Września, ul. Jesionowa 2",1.61
+75,"Mielec, ul. Mokra 22",1.61
+165,"Kluczbork, ul. Sarnia 30",1.61
+97,"Siemianowice Śląskie, ul. Zachodnia 30",1.60
+389,"Gorzów Wielkopolski, ul. Popiełuszki 4",1.60
+286,"Płońsk, ul. Staszica 21",1.60
+128,"Oława, ul. Szpitalna 15",1.60
+114,"Puławy, ul. Brzozowa 10",1.60
+202,"Gorzów Wielkopolski, ul. Starowiejska 26",1.60
+251,"Białystok, ul. Sosnowa 11",1.60
+352,"Żagań, ul. Solidarnosci 27",1.59
+135,"Kielce, ul. Stefana Batorego 27",1.59
+223,"Konin, ul. Swierkowa 4",1.59
+111,"Jastrzębie-Zdrój, ul. Pocztowa 22",1.59
+277,"Kędzierzyn-Koźle, ul. Wiślana 8",1.59
+281,"Bełchatów, ul. Rzemieślnicza 2",1.59
+216,"Rumia, ul. Witosa 2",1.59
+160,"Kwidzyn, ul. Azaliowa 14",1.59
+104,"Czeladź, ul. Szarych Szeregów 30",1.59
+138,"Sochaczew, ul. Jeżynowa 9",1.59
+427,"Jarocin, ul. Krakowska 12",1.59
+340,"Starogard Gdański, ul. Malinowa 30",1.58
+274,"Chełm, ul. Bydgoska 23",1.58
+406,"Tarnobrzeg, ul. Powstańców Śląskich 17",1.58
+431,"Wieluń, ul. Chełmońskiego 9",1.58
+70,"Łaziska Górne, ul. Fabryczna 23",1.58
+421,"Biała Podlaska, ul. Tuwima 24",1.58
+76,"Częstochowa, ul. Boczna 30",1.58
+390,"Nysa, ul. Narutowicza 30",1.58
+325,"Chojnice, ul. Kamienna 11",1.58
+348,"Zduńska Wola, ul. Fredry 14",1.58
+311,"Biłgoraj, ul. Parkowa 25",1.58
+107,"Brodnica, ul. Wiatraczna 14",1.57
+35,"Starogard Gdański, ul. Długosza 7",1.57
+149,"Słupsk, ul. Tęczowa 25",1.57
+184,"Kościan, ul. Broniewskiego 28",1.57
+327,"Żywiec, ul. Willowa 4",1.57
+270,"Warszawa, ul. Jaśminowa 1",1.57
+250,"Chełm, ul. Średnia 2",1.57
+294,"Gorlice, ul. Promienna 16",1.57
+143,"Kędzierzyn-Koźle, ul. Poprzeczna 8",1.57
+73,"Sopot, ul. Odrzańska 5",1.57
+17,"Wałcz, ul. Górnicza 2",1.57
+430,"Polkowice, ul. Rejtana 11",1.57
+213,"Sieradz, ul. Szeroka 13",1.57
+333,"Kalisz, ul. Szmaragdowa 15",1.57
+131,"Świnoujście, ul. Podmiejska 8",1.56
+94,"Wołomin, ul. Stolarska 1",1.56
+242,"Jarocin, ul. Gdańska 5",1.56
+102,"Lubliniec, ul. Topolowa 20",1.56
+489,"Koło, ul. Prosta 7",1.56
+175,"Tomaszów Mazowiecki, ul. Pułaskiego 20",1.56
+465,"Biała Podlaska, ul. Kalinowa 25",1.56
+240,"Kalisz, ul. Jesionowa 18",1.55
+285,"Płock, ul. Kwiatowa 14",1.55
+29,"Stargard Szczeciński, ul. Lwowska 9",1.55
+269,"Czeladź, ul. Toruńska 15",1.53
+312,"Oława, ul. Królewska 22",1.44
+24,"Kraśnik, ul. Sosnowa 21",1.43
+173,"Sanok, ul. Kolonia 18",1.42
+382,"Mikołów, ul. Sosnowa 27",1.42
+20,"Marki, ul. Okrężna 13",1.41
+291,"Goleniów, ul. Klonowa 28",1.41
+74,"Piaseczno, ul. Chabrowa 17",1.41
+500,"Ostrów Mazowiecka, ul. Popiełuszki 10",1.41
+39,"Mińsk Mazowiecki, ul. Sienkiewicza 18",1.41
+189,"Gdańsk, ul. Agrestowa 14",1.41
+48,"Śrem, ul. Tartaczna 25",1.41
+42,"Zambrów, ul. Jaskółcza 2",1.41
+12,"Gliwice, ul. Niepodległości 9",1.41
+52,"Ełk, ul. Źródlana 2",1.41
+395,"Inowrocław, ul. Krasickiego 13",1.40
+457,"Czerwionka-Leszczyny, ul. Rzemieślnicza 9",1.40
+320,"Oświęcim, ul. Wiejska 13",1.40
+69,"Gorlice, ul. Bukowa 12",1.40
+88,"Nowy Sącz, ul. Wiosenna 12",1.40
+483,"Rzeszów, ul. Fredry 29",1.40
+304,"Starogard Gdański, ul. Azaliowa 13",1.40
+11,"Sieradz, ul. Rubinowa 6",1.40
+57,"Szczytno, ul. Odrzańska 22",1.40
+126,"Bolesławiec, ul. Podmiejska 4",1.39
+451,"Czerwionka-Leszczyny, ul. Słonecznikowa 26",1.39
+196,"Jarosław, ul. Rubinowa 28",1.39
+295,"Rybnik, ul. Zbożowa 19",1.39
+330,"Olsztyn, ul. Szkolna 10",1.39
+443,"Rybnik, ul. Radosna 18",1.39
+378,"Skawina, ul. Sybiraków 12",1.39
+323,"Płońsk, ul. Broniewskiego 11",1.39
+287,"Wołomin, ul. Piwna 17",1.39
+293,"Zduńska Wola, ul. Ludowa 18",1.39
+381,"Bielsk Podlaski, ul. Kolorowa 29",1.39
+226,"Warszawa, ul. Królewska 19",1.39
+95,"Jarosław, ul. Dworska 11",1.39
+28,"Ostrowiec Świętokrzyski, ul. Lipowa 3",1.39
+10,"Tarnobrzeg, ul. Warszawska 6",1.39
+439,"Zambrów, ul. Narcyzowa 18",1.39
+14,"Siedlce, ul. Maczka 23",1.39
+58,"Zabrze, ul. Ściegiennego 1",1.39
+63,"Knurów, ul. Olchowa 7",1.38
+305,"Piła, ul. Kolorowa 13",1.38
+91,"Piła, ul. Polna 24",1.38
+353,"Żary, ul. Nałkowskiej 3",1.38
+37,"Brzeg, ul. Jesionowa 17",1.38
+171,"Iława, ul. Zaciszna 16",1.38
+265,"Jelenia Góra, ul. Kolorowa 6",1.38
+26,"Olsztyn, ul. Średnia 3",1.38
+370,"Ełk, ul. Chabrowa 26",1.38
+316,"Bielsk Podlaski, ul. Jarzębinowa 15",1.38
+392,"Jelenia Góra, ul. Przechodnia 29",1.38
+22,"Szczecin, ul. Graniczna 21",1.38
+159,"Świdnica, ul. Grzybowa 7",1.38
+249,"Kalisz, ul. Rzeczna 8",1.38
+473,"Żyrardów, ul. Wierzbowa 23",1.38
+49,"Bielsko-Biała, ul. Ogrodowa 25",1.38
+419,"Goleniów, ul. Maczka 19",1.38
+140,"Poznań, ul. Matejki 10",1.37
+326,"Bełchatów, ul. Lawendowa 7",1.37
+404,"Gorlice, ul. Drzymały 9",1.37
+496,"Olkusz, ul. Władysława Jagiełły 17",1.37
+205,"Kołobrzeg, ul. Turkusowa 16",1.37
+290,"Inowrocław, ul. Piękna 6",1.37
+367,"Lębork, ul. Stroma 13",1.37
+155,"Starogard Gdański, ul. Ogrodowa 29",1.37
+297,"Białystok, ul. Orzechowa 30",1.37
+68,"Katowice, ul. Zakątek 22",1.36
+98,"Marki, ul. Agrestowa 27",1.36
+209,"Kraków, ul. Dolna 7",1.36
+41,"Oleśnica, ul. Brzozowa 10",1.36
+253,"Świętochłowice, ul. Górska 12",1.36
+215,"Płock, ul. Dolna 29",1.36
+420,"Kościerzyna, ul. Dobra 19",1.35
+261,"Lubartów, ul. Ludowa 8",1.35
+328,"Stalowa Wola, ul. Ptasia 25",1.35
+321,"Pruszcz Gdański, ul. Wierzbowa 2",1.34
+485,"Lębork, ul. Ludowa 21",1.34
+342,"Kętrzyn, ul. Dąbrowskiego 14",1.23
+237,"Inowrocław, ul. Szkolna 16",1.22
+118,"Łuków, ul. Powstańców Wielkopolskich 28",1.22
+454,"Kraśnik, ul. Zielona 5",1.22
+375,"Jaworzno, ul. Lubelska 27",1.22
+398,"Płońsk, ul. Okrężna 21",1.22
+332,"Luboń, ul. Truskawkowa 2",1.21
+442,"Zambrów, ul. Żurawia 20",1.21
+150,"Ząbki, ul. Lipowa 15",1.21
+356,"Kołobrzeg, ul. Opolska 21",1.21
+477,"Tarnów, ul. Słowicza 5",1.21
+203,"Kalisz, ul. Rajska 6",1.21
+377,"Iława, ul. Ciasna 15",1.21
+415,"Tarnów, ul. Zaciszna 14",1.21
+239,"Białystok, ul. Borówkowa 19",1.21
+422,"Pabianice, ul. Nowa 6",1.20
+343,"Katowice, ul. Pułaskiego 8",1.20
+497,"Głogów, ul. Jałowcowa 29",1.20
+207,"Płońsk, ul. Mieszka I 7",1.20
+92,"Świdnica, ul. Maja 18",1.20
+27,"Tychy, ul. Mickiewicza 18",1.20
+429,"Radom, ul. Skrajna 5",1.19
+397,"Bełchatów, ul. Żwirki i Wigury 18",1.19
+152,"Nowy Targ, ul. Nałkowskiej 6",1.19
+246,"Ostrów Mazowiecka, ul. Sarnia 21",1.19
+280,"Zawiercie, ul. Bolesława Chrobrego 19",1.19
+151,"Zakopane, ul. Graniczna 11",1.19
+441,"Augustów, ul. Wesoła 7",1.19
+211,"Elbląg, ul. Jaworowa 12",1.19
+455,"Lublin, ul. Wspólna 27",1.19
+232,"Białogard, ul. Jana Pawła II 28",1.19
+470,"Środa Wielkopolska, ul. Grottgera 24",1.18
+272,"Płońsk, ul. Piastowska 9",1.18
+234,"Katowice, ul. Zapolskiej 23",1.18
+364,"Mikołów, ul. Wyszyńskiego 7",1.18
+93,"Stalowa Wola, ul. Wiśniowa 9",1.18
+413,"Kościan, ul. Willowa 25",1.18
+263,"Starogard Gdański, ul. Kochanowskiego 21",1.18
+113,"Gorzów Wielkopolski, ul. Jana Pawła II 11",1.18
+418,"Ciechanów, ul. Żabia 26",1.18
+71,"Krotoszyn, ul. Pocztowa 30",1.18
+359,"Mikołów, ul. Graniczna 18",1.18
+402,"Nysa, ul. Orzechowa 23",1.18
+401,"Czeladź, ul. Stefana Batorego 19",1.17
+172,"Konin, ul. Koralowa 6",1.17
+373,"Świecie, ul. Robotnicza 22",1.17
+379,"Biłgoraj, ul. Zapolskiej 1",1.17
+298,"Zakopane, ul. Częstochowska 24",1.17
+38,"Jasło, ul. Pogodna 19",1.17
+96,"Puławy, ul. Długa 24",1.17
+4,"Sosnowiec, ul. Agrestowa 7",1.17
+157,"Puławy, ul. Perłowa 18",1.17
+424,"Świebodzice, ul. Powstańców 28",1.17
+386,"Suwałki, ul. Sowia 22",1.17
+260,"Świdnik, ul. Stroma 14",1.17
+471,"Augustów, ul. Skośna 6",1.16
+449,"Krotoszyn, ul. Jana 7",1.16
+469,"Racibórz, ul. Reymonta 20",1.16
+435,"Piła, ul. Piwna 27",1.16
+141,"Zielona Góra, ul. Działkowa 11",1.16
+329,"Bielawa, ul. Tylna 14",1.16
+5,"Jasło, ul. Wrzosowa 30",1.15
+125,"Radom, ul. Borówkowa 5",1.03
+77,"Sochaczew, ul. Lubelska 6",1.02
+61,"Zgierz, ul. Listopada 18",1.02
+147,"Wałcz, ul. Olchowa 5",1.02
+167,"Rzeszów, ul. Stycznia 18",1.01
+67,"Będzin, ul. Piastowska 27",1.01
+122,"Puławy, ul. Drzymały 24",1.01
+195,"Racibórz, ul. Szczęśliwa 10",1.01
+180,"Piła, ul. Dobra 21",1.01
+204,"Tychy, ul. Broniewskiego 14",1.01
+156,"Pabianice, ul. Narutowicza 26",1.01
+313,"Sieradz, ul. Niecała 15",1.00
+266,"Ostrowiec Świętokrzyski, ul. Krakowska 5",1.00
+349,"Szczecin, ul. Szczęśliwa 14",1.00
+262,"Toruń, ul. Reja 22",1.00
+346,"Lubartów, ul. Bolesława Chrobrego 29",1.00
+355,"Skawina, ul. Wyszyńskiego 1",1.00
+360,"Kalisz, ul. Powstańców 18",1.00
+192,"Gdynia, ul. Zachodnia 24",1.00
+3,"Nowy Sącz, ul. Młynarska 28",1.00
+275,"Rzeszów, ul. Wróblewskiego 17",1.00
+403,"Suwałki, ul. Wojciecha 24",1.00
+82,"Ostrów Mazowiecka, ul. Wróblewskiego 13",1.00
+376,"Jelenia Góra, ul. Krasickiego 5",1.00
+264,"Oleśnica, ul. Wrocławska 2",0.99
+220,"Jastrzębie-Zdrój, ul. Orla 30",0.99
+2,"Tarnowskie Góry, ul. Kościuszki 19",0.99
+170,"Brzeg, ul. Kilińskiego 18",0.99
+59,"Sanok, ul. Ptasia 8",0.99
+153,"Dzierżoniów, ul. Rolnicza 8",0.99
+21,"Wejherowo, ul. Rolnicza 19",0.99
+194,"Żary, ul. Tęczowa 16",0.99
+495,"Zabrze, ul. Kolonia 15",0.99
+116,"Świdnica, ul. Miła 1",0.99
+188,"Płońsk, ul. Wiosenna 19",0.99
+447,"Białogard, ul. Kaszubska 20",0.99
+361,"Ostróda, ul. Jaśminowa 12",0.99
+105,"Jastrzębie-Zdrój, ul. Wiśniowa 17",0.99
+369,"Mysłowice, ul. Mała 12",0.99
+339,"Grodzisk Mazowiecki, ul. Gałczynskiego 11",0.99
+124,"Sieradz, ul. Wodna 2",0.99
+72,"Opole, ul. Okrężna 30",0.99
+198,"Grudziądz, ul. Miłosza 19",0.99
+221,"Głogów, ul. Waryńskiego 23",0.99
+158,"Łaziska Górne, ul. Łączna 14",0.99
+459,"Katowice, ul. Sportowa 25",0.99
+478,"Żory, ul. Łączna 6",0.98
+434,"Brzeg, ul. Strażacka 12",0.98
+292,"Mińsk Mazowiecki, ul. Makowa 9",0.98
+423,"Płońsk, ul. Młyńska 16",0.98
+492,"Legionowo, ul. Klonowa 7",0.98
+176,"Łaziska Górne, ul. Długa 21",0.98
+119,"Kędzierzyn-Koźle, ul. Żurawia 19",0.98
+99,"Częstochowa, ul. Solidarnosci 8",0.98
+121,"Chrzanów, ul. Składowa 30",0.98
+168,"Bydgoszcz, ul. Malczewskiego 25",0.98
+181,"Tarnobrzeg, ul. Mazurska 27",0.98
+409,"Gliwice, ul. Bolesława Krzywoustego 23",0.98
+391,"Płońsk, ul. Leśna 1",0.98
+467,"Malbork, ul. Willowa 1",0.98
+85,"Knurów, ul. Irysowa 20",0.98
+255,"Ciechanów, ul. Tysiąclecia 24",0.98
+396,"Środa Wielkopolska, ul. Podwale 4",0.98
+46,"Płońsk, ul. Młyńska 3",0.98
+247,"Świnoujście, ul. Urocza 18",0.97
+25,"Wrocław, ul. Chmielna 14",0.97
+40,"Toruń, ul. Kruczkowskiego 25",0.97
+374,"Kraków, ul. Jastrzębia 4",0.97
+463,"Kętrzyn, ul. Cmentarna 18",0.97
+279,"Kętrzyn, ul. Cegielniana 24",0.97
+334,"Zabrze, ul. Stycznia 12",0.97
+417,"Łowicz, ul. Wyszyńskiego 16",0.97
+460,"Iława, ul. Lwowska 10",0.97
+318,"Wrocław, ul. Szczęśliwa 15",0.96
+1,"Malbork, ul. Modrzewiowa 22",0.84
+436,"Leszno, ul. Sosnowa 23",0.83
+90,"Lublin, ul. Jana III Sobieskiego 6",0.83
+66,"Iława, ul. Krucza 5",0.82
+498,"Piła, ul. Żeromskiego 12",0.82
+464,"Swarzędz, ul. Mokra 1",0.82
+32,"Czeladź, ul. Lazurowa 9",0.82
+371,"Tarnów, ul. Promienna 30",0.82
+414,"Legionowo, ul. Stefana Batorego 9",0.82
+314,"Szczytno, ul. Lipowa 29",0.81
+338,"Świdnik, ul. Krucza 11",0.81
+227,"Oleśnica, ul. Traugutta 19",0.81
+385,"Płońsk, ul. Wojska Polskiego 4",0.81
+450,"Gliwice, ul. Jagiellońska 8",0.81
+267,"Nowa Ruda, ul. Reymonta 19",0.81
+8,"Bydgoszcz, ul. Niepodległości 3",0.81
+276,"Inowrocław, ul. Drzymały 10",0.81
+53,"Przemyśl, ul. Pocztowa 8",0.80
+494,"Brodnica, ul. Owocowa 15",0.80
+476,"Pszczyna, ul. Ceglana 6",0.80
+200,"Radomsko, ul. Widok 8",0.80
+197,"Police, ul. Cedrowa 30",0.80
+344,"Bochnia, ul. Lipca 15",0.80
+319,"Świnoujście, ul. Bociania 17",0.80
+206,"Marki, ul. Wrocławska 26",0.80
+428,"Rzeszów, ul. Lazurowa 12",0.80
+347,"Gdynia, ul. Maja 20",0.80
+258,"Nowa Ruda, ul. Graniczna 30",0.80
+47,"Szczytno, ul. Klonowa 20",0.80
+296,"Warszawa, ul. Władysława Łokietka 6",0.80
+354,"Kędzierzyn-Koźle, ul. Azaliowa 10",0.80
+177,"Żywiec, ul. Żwirki i Wigury 6",0.80
+182,"Kętrzyn, ul. Kochanowskiego 25",0.80
+89,"Jelenia Góra, ul. Zakole 22",0.80
+480,"Chełm, ul. Owocowa 30",0.80
+212,"Tczew, ul. Powstańców 11",0.80
+400,"Police, ul. Morelowa 15",0.80
+123,"Ostrów Mazowiecka, ul. Wałowa 5",0.80
+368,"Koszalin, ul. Rumiankowa 28",0.80
+144,"Sosnowiec, ul. Krzywa 3",0.80
+394,"Stalowa Wola, ul. Chmielna 20",0.79
+23,"Bochnia, ul. Lelewela 26",0.79
+426,"Zabrze, ul. Chmielna 13",0.79
+236,"Tomaszów Mazowiecki, ul. Irysowa 7",0.79
+393,"Zgorzelec, ul. Kusocińskiego 6",0.79
+407,"Polkowice, ul. Narutowicza 14",0.79
+56,"Zielona Góra, ul. Warszawska 27",0.79
+302,"Szczytno, ul. Krasińskiego 19",0.79
+9,"Białogard, ul. Górska 24",0.79
+31,"Mysłowice, ul. Wysoka 23",0.79
+115,"Bielsko-Biała, ul. Agrestowa 21",0.79
+199,"Otwock, ul. Lipca 11",0.79
+243,"Kłodzko, ul. Bukowa 4",0.79
+145,"Lubin, ul. Makowa 9",0.79
+146,"Bielawa, ul. Topolowa 8",0.79
+162,"Ełk, ul. Andersa 16",0.79
+458,"Oława, ul. Zielna 19",0.79
+231,"Tarnowskie Góry, ul. Narutowicza 26",0.79
+273,"Jawor, ul. Baczynskiego 4",0.79
+219,"Piotrków Trybunalski, ul. Dojazdowa 14",0.79
+366,"Otwock, ul. Reymonta 5",0.79
+16,"Gorzów Wielkopolski, ul. Północna 23",0.79
+208,"Rybnik, ul. Skrajna 11",0.79
+271,"Skawina, ul. Pocztowa 10",0.79
+411,"Wałcz, ul. Jałowcowa 13",0.79
+154,"Wrocław, ul. Chmielna 5",0.79
+499,"Świętochłowice, ul. Ściegiennego 1",0.78
+87,"Czeladź, ul. Władysława Łokietka 2",0.78
+438,"Świebodzice, ul. Wrzosowa 2",0.78
+18,"Stalowa Wola, ul. Wrzosowa 4",0.78
+15,"Bytom, ul. Topolowa 6",0.78
+80,"Kalisz, ul. Handlowa 10",0.78
+136,"Dzierżoniów, ul. Stolarska 24",0.78
+164,"Dębica, ul. Solidarnosci 1",0.78
+268,"Rybnik, ul. Leszczynowa 2",0.78
+51,"Ostrów Mazowiecka, ul. Powstańców Śląskich 7",0.78
+425,"Sochaczew, ul. Długosza 11",0.78
+444,"Siedlce, ul. Kaliska 30",0.78
+303,"Warszawa, ul. Boczna 2",0.78
+130,"Otwock, ul. Jagiellońska 15",0.78
+336,"Kluczbork, ul. Krótka 23",0.78
+462,"Głogów, ul. Irysowa 22",0.78
+120,"Czerwionka-Leszczyny, ul. Podleśna 5",0.78
+453,"Jasło, ul. Listopada 23",0.78
+210,"Gorzów Wielkopolski, ul. Cedrowa 11",0.77
+479,"Łuków, ul. Jabłoniowa 24",0.77
+440,"Bolesławiec, ul. Działkowa 26",0.77
+307,"Legionowo, ul. Piaskowa 19",0.77
+45,"Nowa Sól, ul. Osiedlowa 30",0.62
+54,"Police, ul. Wspólna 5",0.61
+183,"Jaworzno, ul. Szafirowa 26",0.61
+218,"Częstochowa, ul. Orzechowa 17",0.61
+288,"Świnoujście, ul. Krzywa 17",0.61
+456,"Olsztyn, ul. Młyńska 18",0.61
+284,"Lębork, ul. Dolna 29",0.61
+178,"Czeladź, ul. Orzeszkowej 2",0.61
+487,"Chojnice, ul. Kilińskiego 15",0.61
+84,"Szczecin, ul. Daszyńskiego 6",0.61
+472,"Katowice, ul. Mazowiecka 10",0.61
+132,"Sandomierz, ul. Władysława Łokietka 9",0.61
+186,"Sanok, ul. Strzelecka 25",0.61
+278,"Poznań, ul. Kochanowskiego 20",0.61
+64,"Włocławek, ul. Wolności 19",0.61
+101,"Polkowice, ul. Hallera 29",0.60
+109,"Płońsk, ul. Borowa 3",0.60
+405,"Zgierz, ul. Sybiraków 18",0.60
+191,"Pabianice, ul. Moniuszki 4",0.60
+372,"Radom, ul. Korfantego 8",0.60
+229,"Nowa Sól, ul. Górnicza 4",0.60
+228,"Goleniów, ul. Agrestowa 23",0.60
+65,"Kościan, ul. Konwaliowa 11",0.60
+235,"Biała Podlaska, ul. Bolesława Chrobrego 8",0.60
+306,"Tomaszów Mazowiecki, ul. Kossaka 21",0.60
+103,"Szczecin, ul. Czereśniowa 22",0.60
+300,"Sochaczew, ul. Owocowa 1",0.60
+13,"Kraków, ul. Łanowa 14",0.60
+50,"Starachowice, ul. Okrężna 7",0.60
+310,"Bełchatów, ul. Prusa 20",0.60
+185,"Żary, ul. Rynek 4",0.60
+488,"Pabianice, ul. Szafirowa 2",0.60
+83,"Ostróda, ul. Zbożowa 22",0.60
+224,"Grodzisk Mazowiecki, ul. Wodna 3",0.60
+148,"Łomża, ul. Dobra 21",0.60
+351,"Konin, ul. Zamkowa 25",0.60
+308,"Kościerzyna, ul. Srebrna 1",0.60
+137,"Białystok, ul. Kolejowa 12",0.60
+44,"Świdnik, ul. Powstańców Śląskich 5",0.60
+233,"Gorzów Wielkopolski, ul. Podmiejska 30",0.60
+127,"Gniezno, ul. Długosza 3",0.60
+432,"Myszków, ul. Staszica 17",0.59
+486,"Bielawa, ul. Kasprowicza 6",0.59
+412,"Augustów, ul. Narutowicza 2",0.59
+299,"Gniezno, ul. Podmiejska 8",0.59
+491,"Piotrków Trybunalski, ul. Sucharskiego 19",0.59
+383,"Żyrardów, ul. Żwirowa 11",0.59
+408,"Olkusz, ul. Zakole 28",0.59
+365,"Legionowo, ul. Graniczna 6",0.59
+79,"Piastów, ul. Wałowa 22",0.59
+166,"Koszalin, ul. Kilińskiego 8",0.59
+341,"Piaseczno, ul. Szmaragdowa 16",0.59
+244,"Lubliniec, ul. Mostowa 1",0.59
+317,"Oleśnica, ul. Strzelecka 1",0.59
+387,"Tomaszów Mazowiecki, ul. Bydgoska 4",0.59
+363,"Pruszków, ul. Bociania 6",0.59
+416,"Stalowa Wola, ul. Rzeczna 11",0.59
+179,"Łomża, ul. Lisia 12",0.59
+6,"Siedlce, ul. Wąska 5",0.59
+81,"Oława, ul. Chmielna 30",0.59
+245,"Marki, ul. Tysiąclecia 4",0.59
+190,"Sopot, ul. Jaworowa 29",0.59
+358,"Otwock, ul. Kusocińskiego 27",0.59
+481,"Ruda Śląska, ul. Kaszubska 26",0.59
+134,"Giżycko, ul. Kraszewskiego 6",0.59
+283,"Mysłowice, ul. Dąbrowskiego 6",0.59
+315,"Piastów, ul. Borowa 8",0.59
+133,"Knurów, ul. Paderewskiego 25",0.59
+100,"Zduńska Wola, ul. Przechodnia 16",0.58
+117,"Środa Wielkopolska, ul. Bursztynowa 11",0.58
+446,"Reda, ul. Podmiejska 9",0.58
+475,"Mikołów, ul. Żytnia 9",0.58
+380,"Racibórz, ul. Majowa 3",0.58
+388,"Stalowa Wola, ul. Zaułek 16",0.58
+301,"Szczecin, ul. Piwna 16",0.58
+384,"Myszków, ul. Korfantego 3",0.57
+437,"Skawina, ul. Podleśna 26",0.57
+362,"Tarnów, ul. Staffa 27",0.57
+433,"Środa Wielkopolska, ul. Widok 17",0.57
+257,"Lębork, ul. Północna 12",0.57
+222,"Gdańsk, ul. Narcyzowa 27",0.57
+309,"Inowrocław, ul. Akacjowa 22",0.42
+193,"Ząbki, ul. Sosnowa 5",0.42
+357,"Tychy, ul. Gołębia 17",0.41
+163,"Bełchatów, ul. Kowalska 13",0.41
+410,"Świdnik, ul. Wyspiańskiego 6",0.41
+324,"Oława, ul. Szkolna 6",0.41
+34,"Kluczbork, ul. Poniatowskiego 26",0.41
+322,"Świętochłowice, ul. Solidarnosci 5",0.41
+238,"Radom, ul. Porzeczkowa 3",0.41
+256,"Stargard Szczeciński, ul. Willowa 14",0.41
+345,"Kutno, ul. Kraszewskiego 29",0.41
+259,"Pabianice, ul. Pogodna 9",0.41
+452,"Wejherowo, ul. Wierzbowa 15",0.41
+62,"Toruń, ul. Jadwigi 28",0.40
+461,"Police, ul. Owocowa 20",0.40
+474,"Zakopane, ul. Chełmońskiego 28",0.40
+350,"Rybnik, ul. Kalinowa 11",0.40
+493,"Słupsk, ul. Andersa 22",0.40
+129,"Wrocław, ul. Sosnowa 23",0.40
+106,"Starachowice, ul. Nałkowskiej 24",0.40
+139,"Kraśnik, ul. Jasna 9",0.40
+30,"Oświęcim, ul. Słowianska 2",0.40
+86,"Szczecinek, ul. Pomorska 12",0.40
+225,"Lubliniec, ul. Kossaka 15",0.40
+468,"Polkowice, ul. Jagiellońska 4",0.40
+466,"Puławy, ul. Podwale 11",0.40
+36,"Leszno, ul. Daleka 8",0.40
+78,"Kołobrzeg, ul. Świerczewskiego 2",0.40
+169,"Szczytno, ul. Warszawska 15",0.40
+33,"Września, ul. Malczewskiego 25",0.40
+335,"Pruszcz Gdański, ul. Sokola 27",0.40
+337,"Dąbrowa Górnicza, ul. Bolesława Chrobrego 16",0.40
+112,"Inowrocław, ul. Wysoka 15",0.40
+161,"Jasło, ul. Fiołkowa 9",0.39
+490,"Gdynia, ul. Słowackiego 1",0.39
+399,"Brodnica, ul. Azaliowa 20",0.39
+248,"Środa Wielkopolska, ul. Błękitna 9",0.39
+289,"Opole, ul. Żurawia 24",0.39
+252,"Pszczyna, ul. Prosta 4",0.39
+282,"Chrzanów, ul. Daleka 17",0.39
+7,"Sochaczew, ul. Wróblewskiego 4",0.39
+254,"Tomaszów Mazowiecki, ul. Wschodnia 12",0.39
+19,"Tczew, ul. Jeziorna 23",0.39
+448,"Brodnica, ul. Dąbrowskiego 19",0.39
+217,"Iława, ul. Wiosenna 17",0.39
+445,"Swarzędz, ul. Jagiellońska 5",0.39
+108,"Świebodzice, ul. Szarych Szeregów 21",0.39
+482,"Lębork, ul. Rybacka 22",0.39
+142,"Legnica, ul. Browarna 14",0.39
+60,"Mysłowice, ul. Górna 5",0.39
+187,"Rumia, ul. Leśna 13",0.38
+110,"Krosno, ul. Powstańców Śląskich 7",0.38
+174,"Sanok, ul. Widokowa 20",0.38
+201,"Bielsk Podlaski, ul. Kielecka 21",0.38
+331,"Skawina, ul. Popiełuszki 5",0.38
+484,"Chojnice, ul. Klonowa 12",0.37

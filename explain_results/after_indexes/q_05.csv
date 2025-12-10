@@ -1,0 +1,42 @@
+﻿QUERY PLAN
+Nested Loop  (cost=3183981.33..3189620.14 rows=112776 width=76) (actual time=56043.013..56761.786 rows=8 loops=1)
+  CTE aggregated
+    ->  Finalize GroupAggregate  (cost=3152308.23..3181443.87 rows=112776 width=44) (actual time=56041.945..56760.718 rows=8 loops=1)
+"          Group Key: st.name, (CASE WHEN ((ss.fk_discount_id IS NOT NULL) AND (tso.fk_special_offer_id IS NOT NULL)) THEN 'discount + special offer'::text WHEN ((ss.fk_discount_id IS NOT NULL) AND (tso.fk_special_offer_id IS NULL)) THEN 'only discount'::text WHEN ((ss.fk_discount_id IS NULL) AND (tso.fk_special_offer_id IS NOT NULL)) THEN 'only special offer'::text ELSE 'none'::text END)"
+          ->  Gather Merge  (cost=3152308.23..3178624.47 rows=225552 width=44) (actual time=56041.931..56760.705 rows=24 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                ->  Sort  (cost=3151308.21..3151590.15 rows=112776 width=44) (actual time=55934.929..55934.942 rows=8 loops=3)
+"                      Sort Key: st.name, (CASE WHEN ((ss.fk_discount_id IS NOT NULL) AND (tso.fk_special_offer_id IS NOT NULL)) THEN 'discount + special offer'::text WHEN ((ss.fk_discount_id IS NOT NULL) AND (tso.fk_special_offer_id IS NULL)) THEN 'only discount'::text WHEN ((ss.fk_discount_id IS NULL) AND (tso.fk_special_offer_id IS NOT NULL)) THEN 'only special offer'::text ELSE 'none'::text END)"
+                      Sort Method: quicksort  Memory: 25kB
+                      Worker 0:  Sort Method: quicksort  Memory: 25kB
+                      Worker 1:  Sort Method: quicksort  Memory: 25kB
+                      ->  Partial HashAggregate  (cost=2878546.25..3138372.55 rows=112776 width=44) (actual time=55934.581..55934.867 rows=8 loops=3)
+"                            Group Key: st.name, CASE WHEN ((ss.fk_discount_id IS NOT NULL) AND (tso.fk_special_offer_id IS NOT NULL)) THEN 'discount + special offer'::text WHEN ((ss.fk_discount_id IS NOT NULL) AND (tso.fk_special_offer_id IS NULL)) THEN 'only discount'::text WHEN ((ss.fk_discount_id IS NULL) AND (tso.fk_special_offer_id IS NOT NULL)) THEN 'only special offer'::text ELSE 'none'::text END"
+                            Planned Partitions: 4  Batches: 1  Memory Usage: 1561kB
+                            Worker 0:  Batches: 1  Memory Usage: 1561kB
+                            Worker 1:  Batches: 1  Memory Usage: 1561kB
+                            ->  Parallel Hash Left Join  (cost=422085.16..1388442.62 rows=16556707 width=40) (actual time=50537.340..54027.771 rows=6589642 loops=3)
+                                  Hash Cond: (t._id = tso.fk_ticket_id)
+                                  ->  Hash Left Join  (cost=405585.05..1142742.69 rows=16556707 width=12) (actual time=29763.601..45557.939 rows=6577865 loops=3)
+                                        Hash Cond: (ss.fk_seat_screening_type_id = st._id)
+                                        ->  Parallel Hash Join  (cost=405583.98..1069264.94 rows=16556707 width=12) (actual time=29761.741..44032.468 rows=6577865 loops=3)
+                                              Hash Cond: (ss.fk_ticket_id = t._id)
+                                              ->  Parallel Seq Scan on seat_screening ss  (cost=0.00..423918.70 rows=16756670 width=12) (actual time=0.389..5643.543 rows=13405335 loops=3)
+                                              ->  Parallel Hash  (cost=270612.98..270612.98 rows=8226800 width=4) (actual time=21780.231..21780.232 rows=6577865 loops=3)
+                                                    Buckets: 262144  Batches: 256  Memory Usage: 5120kB
+                                                    ->  Parallel Seq Scan on ticket t  (cost=0.00..270612.98 rows=8226800 width=4) (actual time=0.437..14174.706 rows=6577865 loops=3)
+"                                                          Filter: (status = ANY ('{used,valid}'::ticket_status[]))"
+                                                          Rows Removed by Filter: 83061
+                                        ->  Hash  (cost=1.03..1.03 rows=3 width=8) (actual time=1.825..1.825 rows=3 loops=3)
+                                              Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                              ->  Seq Scan on seat_screening_type st  (cost=0.00..1.03 rows=3 width=8) (actual time=1.808..1.810 rows=3 loops=3)
+                                  ->  Parallel Hash  (cost=9200.94..9200.94 rows=444894 width=8) (actual time=1435.599..1435.600 rows=355915 loops=3)
+                                        Buckets: 262144  Batches: 8  Memory Usage: 7296kB
+                                        ->  Parallel Seq Scan on ticket_special_offer tso  (cost=0.00..9200.94 rows=444894 width=8) (actual time=0.299..1325.481 rows=355915 loops=3)
+  ->  CTE Scan on aggregated  (cost=0.00..2255.52 rows=112776 width=44) (actual time=56041.949..56041.951 rows=8 loops=1)
+  ->  Materialize  (cost=2537.46..2537.48 rows=1 width=32) (actual time=0.004..0.005 rows=1 loops=8)
+        ->  Aggregate  (cost=2537.46..2537.47 rows=1 width=32) (actual time=0.030..0.031 rows=1 loops=1)
+              ->  CTE Scan on aggregated aggregated_1  (cost=0.00..2255.52 rows=112776 width=8) (actual time=0.001..0.015 rows=8 loops=1)
+Planning Time: 30.148 ms
+Execution Time: 56770.101 ms

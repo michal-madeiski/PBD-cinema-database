@@ -1,0 +1,56 @@
+﻿QUERY PLAN
+Sort  (cost=559346.93..559346.97 rows=16 width=194) (actual time=31967.837..31976.344 rows=16 loops=1)
+"  Sort Key: (round(sum(ss.price), 2)) DESC"
+  Sort Method: quicksort  Memory: 25kB
+  ->  GroupAggregate  (cost=48838.44..559346.61 rows=16 width=194) (actual time=4251.446..31976.291 rows=16 loops=1)
+        Group Key: r._id
+        ->  Gather Merge  (cost=48838.44..557152.10 rows=292548 width=131) (actual time=1777.580..31950.700 rows=90808 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              ->  Incremental Sort  (cost=47838.42..522384.78 rows=121895 width=131) (actual time=1428.901..15629.974 rows=30269 loops=3)
+"                    Sort Key: r._id, c._id"
+                    Presorted Key: r._id
+                    Full-sort Groups: 16  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                    Pre-sorted Groups: 16  Sort Method: quicksort  Average Memory: 271kB  Peak Memory: 278kB
+                    Worker 0:  Full-sort Groups: 16  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                      Pre-sorted Groups: 16  Sort Method: quicksort  Average Memory: 219kB  Peak Memory: 231kB
+                    Worker 1:  Full-sort Groups: 16  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                      Pre-sorted Groups: 16  Sort Method: quicksort  Average Memory: 215kB  Peak Memory: 229kB
+                    ->  Nested Loop  (cost=16303.59..513001.42 rows=121895 width=131) (actual time=492.266..15576.109 rows=30269 loops=3)
+                          ->  Nested Loop  (cost=16303.16..453477.90 rows=124133 width=135) (actual time=489.922..11950.775 rows=101775 loops=3)
+                                ->  Merge Join  (cost=16302.72..16395.39 rows=6173 width=130) (actual time=489.513..502.756 rows=5059 loops=3)
+                                      Merge Cond: (c.fk_region_id = r._id)
+                                      ->  Sort  (cost=16301.24..16316.67 rows=6173 width=12) (actual time=489.080..493.020 rows=5059 loops=3)
+                                            Sort Key: c.fk_region_id
+                                            Sort Method: quicksort  Memory: 391kB
+                                            Worker 0:  Sort Method: quicksort  Memory: 330kB
+                                            Worker 1:  Sort Method: quicksort  Memory: 330kB
+                                            ->  Hash Join  (cost=465.42..15912.59 rows=6173 width=12) (actual time=4.443..486.903 rows=5059 loops=3)
+                                                  Hash Cond: (rm.fk_cinema_id = c._id)
+                                                  ->  Hash Join  (cost=450.17..15881.00 rows=6173 width=8) (actual time=4.165..484.299 rows=5059 loops=3)
+                                                        Hash Cond: (s.fk_room_id = rm._id)
+                                                        ->  Parallel Bitmap Heap Scan on screening s  (cost=380.31..15794.91 rows=6173 width=8) (actual time=3.072..478.745 rows=5059 loops=3)
+"                                                              Recheck Cond: ((start_time >= date_trunc('month'::text, (CURRENT_DATE - '1 mon'::interval))) AND (start_time < date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone)))"
+                                                              Heap Blocks: exact=3969
+                                                              ->  Bitmap Index Scan on idx_screening_start_time_id  (cost=0.00..376.60 rows=14816 width=0) (actual time=5.257..5.258 rows=15178 loops=1)
+"                                                                    Index Cond: ((start_time >= date_trunc('month'::text, (CURRENT_DATE - '1 mon'::interval))) AND (start_time < date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone)))"
+                                                        ->  Hash  (cost=38.83..38.83 rows=2483 width=8) (actual time=1.068..1.069 rows=2483 loops=3)
+                                                              Buckets: 4096  Batches: 1  Memory Usage: 129kB
+                                                              ->  Seq Scan on room rm  (cost=0.00..38.83 rows=2483 width=8) (actual time=0.169..0.674 rows=2483 loops=3)
+                                                  ->  Hash  (cost=9.00..9.00 rows=500 width=8) (actual time=0.217..0.217 rows=500 loops=3)
+                                                        Buckets: 1024  Batches: 1  Memory Usage: 28kB
+                                                        ->  Seq Scan on cinema c  (cost=0.00..9.00 rows=500 width=8) (actual time=0.069..0.140 rows=500 loops=3)
+                                      ->  Sort  (cost=1.48..1.52 rows=16 width=122) (actual time=0.428..0.437 rows=16 loops=3)
+                                            Sort Key: r._id
+                                            Sort Method: quicksort  Memory: 25kB
+                                            Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                            Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                            ->  Seq Scan on region r  (cost=0.00..1.16 rows=16 width=122) (actual time=0.417..0.418 rows=16 loops=3)
+                                ->  Index Scan using idx_seat_screening_fk_screening_id on seat_screening ss  (cost=0.44..70.14 rows=67 width=13) (actual time=0.516..2.248 rows=20 loops=15178)
+                                      Index Cond: (fk_screening_id = s._id)
+                          ->  Index Scan using ticket_pkey1 on ticket t  (cost=0.44..0.48 rows=1 width=4) (actual time=0.034..0.034 rows=0 loops=305324)
+                                Index Cond: (_id = ss.fk_ticket_id)
+                                Filter: (status = 'used'::ticket_status)
+                                Rows Removed by Filter: 0
+Planning Time: 6.618 ms
+Execution Time: 31976.863 ms

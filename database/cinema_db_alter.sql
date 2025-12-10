@@ -1,6 +1,9 @@
--- BEGIN;
--- ALTER TYPE ticket_type_name ADD VALUE 'vip';
--- COMMIT; 
+BEGIN;
+
+ALTER TYPE ticket_type_name ADD VALUE 'vip';
+
+COMMIT; 
+
 
 BEGIN;
 
@@ -23,7 +26,6 @@ CREATE TABLE ticket (
         REFERENCES payment (_id)
 );
 
-
 INSERT INTO ticket (
     fk_payment_id, 
     fk_ticket_type_id, 
@@ -42,15 +44,12 @@ SELECT
 FROM seat_screening
 WHERE status IN ('used', 'valid', 'payment_pending', 'reserved');
 
-
 ALTER TABLE seat_screening ADD COLUMN fk_ticket_id INT;
-
 
 UPDATE seat_screening ss
 SET fk_ticket_id = t._id
 FROM ticket t
 WHERE ss._id = t._temp_legacy_id;
-
 
 ALTER TABLE seat_screening 
     ADD CONSTRAINT c_fk_ticket_id 
@@ -58,22 +57,16 @@ ALTER TABLE seat_screening
     REFERENCES ticket (_id) 
     ON DELETE SET NULL;
 
-
 ALTER TABLE ticket_type RENAME TO seat_screening_type;
-
 
 ALTER TABLE ticket_special_offer
     DROP CONSTRAINT ticket_special_offer_pkey,
     DROP CONSTRAINT c_fk_ticket_id;
-    
 
 UPDATE ticket_special_offer tso 
 SET fk_ticket_id = t._id
 FROM ticket t 
 WHERE t._temp_legacy_id= tso.fk_ticket_id; 
-
-
-
 
 ALTER TABLE ticket_special_offer
     ADD PRIMARY KEY (fk_ticket_id, fk_special_offer_id), 
@@ -86,6 +79,7 @@ ALTER TABLE seat_screening
     DROP COLUMN fk_payment_id,
     DROP COLUMN qr_code,
     DROP COLUMN status; 
+
 ALTER TABLE seat_screening
     RENAME COLUMN fk_ticket_type_id TO fk_seat_screening_type_id;  
 
@@ -111,4 +105,19 @@ ALTER TABLE ticket
     ON DELETE SET NULL;
 
 ALTER TABLE ticket DROP COLUMN _temp_legacy_id;
+
+COMMIT;
+
+
+BEGIN;
+
+INSERT INTO ticket_type(name, percentage, min_size)
+    VALUES('double', 5, 2); 
+
+INSERT INTO ticket_type(name, percentage, min_size)
+    VALUES('family', 10, 3);
+
+INSERT INTO ticket_type(name, percentage, min_size)
+    VALUES('group', 15, 5);
+
 COMMIT;

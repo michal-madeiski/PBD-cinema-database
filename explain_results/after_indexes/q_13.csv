@@ -1,0 +1,51 @@
+﻿QUERY PLAN
+Limit  (cost=6347513.14..6347513.16 rows=10 width=56) (actual time=87657.309..87657.379 rows=10 loops=1)
+  ->  Sort  (cost=6347513.14..6347538.14 rows=10000 width=56) (actual time=87657.303..87657.372 rows=10 loops=1)
+        Sort Key: ((sum((sum(esi.screening_income))) - l.cost)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        ->  GroupAggregate  (cost=6344177.29..6347297.04 rows=10000 width=56) (actual time=87626.715..87655.170 rows=10000 loops=1)
+"              Group Key: m._id, l.cost"
+              ->  Incremental Sort  (cost=6344177.29..6347072.04 rows=10000 width=56) (actual time=87626.709..87647.484 rows=10000 loops=1)
+"                    Sort Key: m._id, l.cost"
+                    Presorted Key: m._id
+                    Full-sort Groups: 313  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+                    ->  Merge Join  (cost=6344177.04..6346622.04 rows=10000 width=56) (actual time=87626.653..87645.419 rows=10000 loops=1)
+                          Merge Cond: (m._id = l._id)
+                          ->  Merge Join  (cost=6344176.75..6346134.75 rows=10000 width=53) (actual time=87626.182..87640.031 rows=10000 loops=1)
+                                Merge Cond: (m._id = mv.fk_movie_id)
+                                ->  Index Scan using movie_pkey on movie m  (cost=0.29..358.29 rows=10000 width=17) (actual time=0.022..3.050 rows=10000 loops=1)
+                                ->  Finalize GroupAggregate  (cost=6344176.47..6345526.47 rows=10000 width=36) (actual time=87626.155..87634.267 rows=10000 loops=1)
+                                      Group Key: mv.fk_movie_id
+                                      ->  Gather Merge  (cost=6344176.47..6345326.47 rows=10000 width=36) (actual time=87626.148..87627.927 rows=10000 loops=1)
+                                            Workers Planned: 1
+                                            Workers Launched: 1
+                                            ->  Sort  (cost=6343176.46..6343201.46 rows=10000 width=36) (actual time=43812.445..43812.998 rows=5000 loops=2)
+                                                  Sort Key: mv.fk_movie_id
+                                                  Sort Method: quicksort  Memory: 1244kB
+                                                  Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                                  ->  Partial HashAggregate  (cost=6342387.07..6342512.07 rows=10000 width=36) (actual time=43810.371..43811.536 rows=5000 loops=2)
+                                                        Group Key: mv.fk_movie_id
+                                                        Batches: 1  Memory Usage: 4241kB
+                                                        Worker 0:  Batches: 1  Memory Usage: 409kB
+                                                        ->  Merge Join  (cost=2878106.47..5477592.95 rows=172958824 width=36) (actual time=43548.263..43672.983 rows=1008517 loops=2)
+                                                              Merge Cond: (mv.fk_version_id = esi.version)
+                                                              ->  Sort  (cost=1873.74..1916.98 rows=17296 width=8) (actual time=9.849..12.131 rows=14702 loops=2)
+                                                                    Sort Key: mv.fk_version_id
+                                                                    Sort Method: quicksort  Memory: 1458kB
+                                                                    Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                                                    ->  Parallel Index Only Scan using no_duplicate_movie_version on movie_version mv  (cost=0.29..656.26 rows=17296 width=8) (actual time=0.027..5.642 rows=14702 loops=2)
+                                                                          Heap Fetches: 0
+                                                              ->  Materialize  (cost=2876232.73..2886232.73 rows=2000000 width=36) (actual time=87076.814..87134.471 rows=2017035 loops=1)
+                                                                    ->  Sort  (cost=2876232.73..2881232.73 rows=2000000 width=36) (actual time=87076.800..87077.092 rows=3297 loops=1)
+                                                                          Sort Key: esi.version
+                                                                          Sort Method: external merge  Disk: 43120kB
+                                                                          ->  Subquery Scan on esi  (cost=137.91..2557542.05 rows=2000000 width=36) (actual time=6.300..85782.428 rows=2000000 loops=1)
+                                                                                ->  GroupAggregate  (cost=137.91..2537542.05 rows=2000000 width=40) (actual time=6.297..85479.815 rows=2000000 loops=1)
+                                                                                      Group Key: s._id
+                                                                                      ->  Merge Join  (cost=137.91..2311462.01 rows=40216008 width=17) (actual time=0.808..77169.318 rows=40216006 loops=1)
+                                                                                            Merge Cond: (s._id = s_sc.fk_screening_id)
+                                                                                            ->  Index Scan using screening_pkey on screening s  (cost=0.43..66672.98 rows=2000000 width=8) (actual time=0.184..776.356 rows=2000000 loops=1)
+                                                                                            ->  Index Scan using idx_seat_screening_fk_screening_id on seat_screening s_sc  (cost=0.44..1737192.98 rows=40216008 width=13) (actual time=0.613..66768.216 rows=40216006 loops=1)
+                          ->  Index Scan using license_pkey on license l  (cost=0.29..337.29 rows=10000 width=11) (actual time=0.466..2.772 rows=10000 loops=1)
+Planning Time: 4.792 ms
+Execution Time: 87664.538 ms

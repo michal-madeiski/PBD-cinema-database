@@ -1,0 +1,23 @@
+﻿QUERY PLAN
+Sort  (cost=33130.36..33293.12 rows=65102 width=34) (actual time=986.066..993.993 rows=36285 loops=1)
+  Sort Key: (sum((s.end_time - s.start_time))) DESC
+  Sort Method: quicksort  Memory: 3198kB
+  ->  Finalize GroupAggregate  (cost=1031.03..27925.32 rows=65102 width=34) (actual time=82.662..980.064 rows=36285 loops=1)
+        Group Key: u._id
+        ->  Gather Merge  (cost=1031.03..26704.66 rows=54252 width=50) (actual time=82.607..960.073 rows=36285 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              ->  Partial GroupAggregate  (cost=31.01..19442.61 rows=27126 width=50) (actual time=3.681..732.129 rows=12095 loops=3)
+                    Group Key: u._id
+                    ->  Merge Join  (cost=31.01..18900.09 rows=27126 width=34) (actual time=3.566..717.910 rows=22350 loops=3)
+                          Merge Cond: (u._id = w._id)
+                          ->  Merge Join  (cost=30.09..162845.41 rows=27126 width=38) (actual time=3.110..675.033 rows=22350 loops=3)
+                                Merge Cond: (u._id = s.fk_worker_id)
+"                                ->  Parallel Index Scan using user_pkey on ""user"" u  (cost=0.43..40713.21 rows=460625 width=18) (actual time=0.558..59.956 rows=35001 loops=3)"
+                                ->  Index Only Scan using idx_shift_worker_time_covering on shift s  (cost=0.45..158354.09 rows=65102 width=20) (actual time=0.100..600.521 rows=67049 loops=3)
+"                                      Index Cond: ((start_time >= date_trunc('month'::text, (CURRENT_DATE - '1 mon'::interval))) AND (start_time < date_trunc('month'::text, (CURRENT_DATE)::timestamp with time zone)))"
+                                      Heap Fetches: 0
+                          ->  Index Only Scan using idx_worker_user_id on worker w  (cost=0.42..2801.42 rows=105000 width=4) (actual time=0.255..32.281 rows=104662 loops=3)
+                                Heap Fetches: 0
+Planning Time: 2.227 ms
+Execution Time: 995.616 ms

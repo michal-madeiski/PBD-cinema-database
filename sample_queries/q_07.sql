@@ -8,6 +8,6 @@ SELECT
             product_sale
     ) AS "Suma za produkty",
     (
-        SELECT COALESCE(SUM(ticket.price), 0)
+        SELECT COALESCE(SUM(ticket.total_price), 0)
         FROM ticket
     ) AS "Suma za bilety";

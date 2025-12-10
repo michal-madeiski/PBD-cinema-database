@@ -1,0 +1,25 @@
+﻿QUERY PLAN
+Sort  (cost=299061.52..299086.52 rows=10000 width=25) (actual time=2830.426..2830.719 rows=10000 loops=1)
+"  Sort Key: so.amount DESC, (count(t._id)) DESC"
+  Sort Method: quicksort  Memory: 819kB
+  ->  HashAggregate  (cost=298297.14..298397.14 rows=10000 width=25) (actual time=2827.057..2827.987 rows=10000 loops=1)
+        Group Key: so._id
+        Batches: 1  Memory Usage: 1425kB
+        ->  Hash Left Join  (cost=271922.09..292958.41 rows=1067746 width=21) (actual time=2291.520..2667.601 rows=1067746 loops=1)
+              Hash Cond: (tso.fk_ticket_id = t._id)
+              ->  Hash Right Join  (cost=309.00..18542.48 rows=1067746 width=21) (actual time=3.740..267.541 rows=1067746 loops=1)
+                    Hash Cond: (tso.fk_special_offer_id = so._id)
+                    ->  Seq Scan on ticket_special_offer tso  (cost=0.00..15429.46 rows=1067746 width=8) (actual time=0.324..58.557 rows=1067746 loops=1)
+                    ->  Hash  (cost=184.00..184.00 rows=10000 width=17) (actual time=3.384..3.385 rows=10000 loops=1)
+                          Buckets: 16384  Batches: 1  Memory Usage: 608kB
+                          ->  Seq Scan on special_offer so  (cost=0.00..184.00 rows=10000 width=17) (actual time=0.305..2.368 rows=10000 loops=1)
+              ->  Hash  (cost=271613.08..271613.08 rows=1 width=4) (actual time=2287.768..2287.805 rows=41 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                    ->  Gather  (cost=1000.00..271613.08 rows=1 width=4) (actual time=2218.157..2287.761 rows=41 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          ->  Parallel Seq Scan on ticket t  (cost=0.00..270612.98 rows=1 width=4) (actual time=2160.654..2229.987 rows=14 loops=3)
+                                Filter: (total_price < '5'::double precision)
+                                Rows Removed by Filter: 6660913
+Planning Time: 4.806 ms
+Execution Time: 2831.274 ms

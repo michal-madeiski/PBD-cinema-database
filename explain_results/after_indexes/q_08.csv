@@ -1,0 +1,22 @@
+﻿QUERY PLAN
+Sort  (cost=69912.81..69914.06 rows=500 width=68) (actual time=1383.411..1383.427 rows=500 loops=1)
+"  Sort Key: (round(((count(screening._id))::numeric / (COALESCE(((CURRENT_DATE - (min(screening.start_time))::date) + 1), 1))::numeric), 2)) DESC"
+  Sort Method: quicksort  Memory: 53kB
+  ->  HashAggregate  (cost=69867.90..69890.40 rows=500 width=68) (actual time=1382.983..1383.263 rows=500 loops=1)
+        Group Key: cinema._id
+        Batches: 1  Memory Usage: 105kB
+        ->  Hash Right Join  (cost=85.12..55155.93 rows=1961596 width=40) (actual time=1.243..1031.223 rows=1960475 loops=1)
+              Hash Cond: (room.fk_cinema_id = cinema._id)
+              ->  Hash Right Join  (cost=69.87..49947.85 rows=1961596 width=16) (actual time=0.990..642.963 rows=1960475 loops=1)
+                    Hash Cond: (screening.fk_room_id = room._id)
+                    ->  Seq Scan on screening  (cost=0.00..44720.00 rows=1961596 width=16) (actual time=0.039..289.082 rows=1960475 loops=1)
+                          Filter: (start_time <= CURRENT_DATE)
+                          Rows Removed by Filter: 39525
+                    ->  Hash  (cost=38.83..38.83 rows=2483 width=8) (actual time=0.909..0.912 rows=2483 loops=1)
+                          Buckets: 4096  Batches: 1  Memory Usage: 129kB
+                          ->  Seq Scan on room  (cost=0.00..38.83 rows=2483 width=8) (actual time=0.017..0.440 rows=2483 loops=1)
+              ->  Hash  (cost=9.00..9.00 rows=500 width=28) (actual time=0.239..0.239 rows=500 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 39kB
+                    ->  Seq Scan on cinema  (cost=0.00..9.00 rows=500 width=28) (actual time=0.025..0.130 rows=500 loops=1)
+Planning Time: 2.861 ms
+Execution Time: 1384.034 ms

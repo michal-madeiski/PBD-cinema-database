@@ -1,0 +1,17 @@
+﻿region_id,region_name,cinemas_count,total_ticket_revenue,revenue_per_cinema
+3,Warmińsko - mazurskie,42,204033.25,4857.93
+5,Świętokrzyskie,43,191976.60,4464.57
+15,Mazowieckie,40,178242.25,4456.06
+12,Śląskie,34,172399.85,5070.58
+1,Lubelskie,31,165827.95,5349.29
+9,Dolnośląskie,34,158961.05,4675.33
+11,Podkarpackie,33,156390.70,4739.11
+14,Małopolskie,34,143914.00,4232.76
+2,Łódzkie,28,136774.40,4884.80
+7,Opolskie,30,132008.80,4400.29
+6,Wielkopolskie,26,125813.60,4838.98
+8,Kujawsko - pomorskie,24,121456.55,5060.69
+16,Podlaskie,25,112657.10,4506.28
+10,Lubuskie,28,111142.25,3969.37
+4,Zachodniopomorskie,27,110934.95,4108.70
+13,Pomorskie,21,87437.05,4163.67

@@ -1,0 +1,18 @@
+﻿QUERY PLAN
+Result  (cost=284205.77..284205.78 rows=1 width=40) (actual time=47607.365..47614.373 rows=1 loops=1)
+  InitPlan 1
+    ->  Finalize Aggregate  (cost=12592.56..12592.57 rows=1 width=32) (actual time=200.662..200.740 rows=1 loops=1)
+          ->  Gather  (cost=12592.34..12592.55 rows=2 width=32) (actual time=200.000..200.726 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                ->  Partial Aggregate  (cost=11592.34..11592.35 rows=1 width=32) (actual time=123.677..123.678 rows=1 loops=3)
+                      ->  Parallel Seq Scan on product_sale  (cost=0.00..10550.67 rows=416667 width=6) (actual time=0.169..47.326 rows=333333 loops=3)
+  InitPlan 2
+    ->  Finalize Aggregate  (cost=271613.19..271613.20 rows=1 width=8) (actual time=47406.695..47413.623 rows=1 loops=1)
+          ->  Gather  (cost=271612.98..271613.19 rows=2 width=8) (actual time=47406.683..47413.612 rows=3 loops=1)
+                Workers Planned: 2
+                Workers Launched: 2
+                ->  Partial Aggregate  (cost=270612.98..270612.99 rows=1 width=8) (actual time=47363.670..47363.671 rows=1 loops=3)
+                      ->  Parallel Seq Scan on ticket  (cost=0.00..249797.58 rows=8326158 width=8) (actual time=4.402..46396.073 rows=6660926 loops=3)
+Planning Time: 1.254 ms
+Execution Time: 47614.905 ms

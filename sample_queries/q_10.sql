@@ -3,13 +3,14 @@
 SELECT
     EXTRACT(MONTH FROM screening.start_time) AS "Miesiąc",
     ROUND(
-        100 * COUNT(ticket._id) FILTER (
+        100 * COUNT(seat_screening._id) FILTER (
             WHERE ticket.status = 'used'
-        )::NUMERIC / COALESCE(NULLIF(COUNT(ticket._id), 0), 1),
+        )::NUMERIC / COALESCE(NULLIF(COUNT(seat_screening._id), 0), 1),
         2
     ) AS "Obłożenie w %"
 FROM screening
-    LEFT JOIN ticket ON ticket.fk_screening_id = screening._id
+    LEFT JOIN seat_screening ON seat_screening.fk_screening_id = screening._id
+    LEFT JOIN ticket ON ticket._id = seat_screening.fk_ticket_id
 WHERE screening.start_time <= CURRENT_DATE
 GROUP BY EXTRACT(
         MONTH

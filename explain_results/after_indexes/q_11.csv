@@ -1,0 +1,27 @@
+﻿QUERY PLAN
+Nested Loop  (cost=784664.17..784664.26 rows=1 width=96) (actual time=18048.262..18294.110 rows=1 loops=1)
+  ->  Finalize Aggregate  (cost=598198.17..598198.18 rows=1 width=64) (actual time=13867.356..14055.029 rows=1 loops=1)
+        ->  Gather  (cost=598197.95..598198.16 rows=2 width=16) (actual time=13865.306..14055.017 rows=3 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              ->  Partial Aggregate  (cost=597197.95..597197.96 rows=1 width=16) (actual time=13822.991..13823.078 rows=1 loops=3)
+                    ->  Parallel Hash Join  (cost=181771.00..534751.76 rows=8326158 width=4) (actual time=9854.022..13350.112 rows=6660926 loops=3)
+                          Hash Cond: (t.fk_payment_id = p._id)
+                          ->  Parallel Seq Scan on ticket t  (cost=0.00..249797.58 rows=8326158 width=4) (actual time=0.406..5683.466 rows=6660926 loops=3)
+                                Filter: (fk_payment_id IS NOT NULL)
+                          ->  Parallel Hash  (cost=113410.67..113410.67 rows=4166667 width=8) (actual time=2534.791..2534.792 rows=3333333 loops=3)
+                                Buckets: 262144  Batches: 128  Memory Usage: 5152kB
+                                ->  Parallel Seq Scan on payment p  (cost=0.00..113410.67 rows=4166667 width=8) (actual time=0.490..1520.744 rows=3333333 loops=3)
+  ->  Finalize Aggregate  (cost=186466.00..186466.02 rows=1 width=64) (actual time=4180.890..4239.063 rows=1 loops=1)
+        ->  Gather  (cost=186465.78..186465.99 rows=2 width=16) (actual time=4179.308..4239.051 rows=3 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              ->  Partial Aggregate  (cost=185465.78..185465.79 rows=1 width=16) (actual time=4133.883..4134.373 rows=1 loops=3)
+                    ->  Parallel Hash Join  (cost=17387.00..182340.78 rows=416667 width=4) (actual time=3306.981..4109.691 rows=333333 loops=3)
+                          Hash Cond: (p_1._id = ps.fk_payment_id)
+                          ->  Parallel Seq Scan on payment p_1  (cost=0.00..113410.67 rows=4166667 width=8) (actual time=0.605..2385.529 rows=3333333 loops=3)
+                          ->  Parallel Hash  (cost=10550.67..10550.67 rows=416667 width=4) (actual time=227.339..227.341 rows=333333 loops=3)
+                                Buckets: 262144  Batches: 8  Memory Usage: 6976kB
+                                ->  Parallel Seq Scan on product_sale ps  (cost=0.00..10550.67 rows=416667 width=4) (actual time=0.223..162.580 rows=333333 loops=3)
+Planning Time: 6.034 ms
+Execution Time: 18294.664 ms
