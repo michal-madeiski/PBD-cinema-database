@@ -22,7 +22,7 @@ The main goal of the project is to design and implement a relational database fo
 
 ---
 
-### ▶️ Running the Project
+### ▶️ Running the Project (sql solution)
 1. database/cinema_db.sql - create database
    
 2. seeder.py - seed the databse with sample data
