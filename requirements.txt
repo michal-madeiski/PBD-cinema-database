@@ -11,3 +11,4 @@ SQLAlchemy==2.0.44
 typing_extensions==4.15.0
 tzdata==2025.2
 wheel==0.45.1
+pymongo==4.16.0
