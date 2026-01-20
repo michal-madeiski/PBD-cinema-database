@@ -1,4 +1,7 @@
 import random
+from datetime import datetime, timedelta
+from decimal import Decimal
+from bson import ObjectId, Decimal128
 from pymongo import MongoClient, errors
 from faker import Faker
 from datetime import timedelta
@@ -7,206 +10,204 @@ import random
 
 #CONFIG 
 fake = Faker(['pl_PL']) 
-client = MongoClient("mongodb://localhost:27017")
-db = client["cinema_mongodb_local"]
+client = MongoClient("mongodb://localhost:27017/")
+db = client["cinema_db"]
 
-def product_snapshot_for_order(product_list):
-    product_snapshot_list = []
-    product_snapshot_total_price = 0
+WORKER_TYPES = ['service', 'supervisor']
+MANAGER_TYPE = 'regional_manager'
+CLIENT_TYPE = 'client'
+SHIFT_TYPES = ['cashier', 'usher', 'cleaner', 'projection', 'technical_support']
 
-    product_snapshot_amount = random.randint(1, 4)
-    for _ in range(product_snapshot_amount):
-        product_for_snapshot = random.choice(product_list)
-        
-        count = random.randint(1, 4)
-        product_snapshot = {
-            "product_id": product_for_snapshot["_id"],
-            "name": product_for_snapshot["name"],
-            "count": count,
-            "price": product_for_snapshot["price"]*count,
-        }
-        product_snapshot_total_price += product_snapshot["price"]
-        product_snapshot_list.append(product_snapshot)
+
+def get_cinema_ids():
+    cinemas = list(db.cinema.find({}, {"_id": 1}))
+    return [c["_id"] for c in cinemas]
+
+
+def seed_workers_with_shifts(count=10):
+    cinema_ids = get_cinema_ids()
     
-    return product_snapshot_list, product_snapshot_total_price
+    if not cinema_ids:
+        print("Brak kin w bazie! Nie można seedować pracowników.")
+        return
+        
+    print(f"--- Generowanie {count} pracowników (Service/Supervisor) ---")
+    
+    workers = []
+    shifts = []
 
-def ticket_for_order(taken_seats_from_screening, screening_id, movie_title, group_type_list, special_offer_list, ticket_type_list, discount_list, order_status, is_archive):
-    ticket_list = []
-    tickets_total_price = 0
+    for _ in range(count):
+        user_id = ObjectId()
+        user_type = random.choice(WORKER_TYPES)
+        
+        create_date = fake.date_between(start_date='-10y', end_date='-2y')
+        create_datetime = datetime.combine(create_date, datetime.min.time())
+        
+        salary_py = Decimal(random.randrange(350000, 850000)) / 100
+        salary_bson = Decimal128(salary_py)
 
-    current_taken_seat_index = 0
-    total_seats_count = len(taken_seats_from_screening)
-    while current_taken_seat_index < total_seats_count:
-        seats_remaining = total_seats_count - current_taken_seat_index
-
-        possible_group_type = [g for g in group_type_list if g["min_size"] <= seats_remaining]
-
-        group_type_for_ticket = random.choice(possible_group_type)
-        group_type_discount_percentage = group_type_for_ticket["discount_percentage"]
-
-        ticket_seats_amount = group_type_for_ticket["min_size"]
-        if ticket_seats_amount > seats_remaining:
-            ticket_seats_amount = seats_remaining
-
-        ticket_status = "valid"
-
-        if order_status == "reserved":
-            ticket_status = "reserved"
-
-        if is_archive:
-            ticket_status = "used" if random.random() >= 0.02 else "not_used"
-
-        group_type_snapshot = {
-            "_id": group_type_for_ticket["_id"],
-            "name": group_type_for_ticket["name"],
-            "dicsount_percentage": group_type_discount_percentage
+        user_doc = {
+            "_id": user_id,
+            "name": fake.first_name(),
+            "surname": fake.last_name(),
+            "birthdate": datetime.combine(fake.date_of_birth(minimum_age=18, maximum_age=50), datetime.min.time()),
+            "username": fake.user_name(),
+            "email": fake.email(),
+            "password": fake.sha256(),
+            "account_create_date": create_datetime,
+            "last_login_date": fake.date_time_between(start_date=create_date, end_date='now'),
+            "type": user_type,
+            "pesel_number": fake.pesel(),
+            "bank_account_number": fake.iban(),
+            "salary_month": salary_bson,
+            "employments": []
         }
 
-        seats_snapshot = []
-        ticket_price = 0
-        for i in range(ticket_seats_amount):
-            actual_seat_number = taken_seats_from_screening[current_taken_seat_index + i]
+        num_employments = random.randint(1, 4)
+        current_date = create_date
+        shift_slots = [('08:00', '16:00'), ('10:00', '18:00'), ('14:00', '22:00')]
 
-            ticket_type_for_seat = random.choice(ticket_type_list)
-            seat_price = ticket_type_for_seat["base_price"]
-            seat_price_for_total = (1 - group_type_discount_percentage/100)*seat_price
+        for _ in range(num_employments):
+            duration = random.randint(90, 400)
+            t_start = datetime.combine(current_date, datetime.min.time())
+            t_end_date = current_date + timedelta(days=duration)
             
+            assigned_cinema = random.choice(cinema_ids)
+            is_active = t_end_date >= datetime.now().date()
             
-            seat = {
-                "seat_number": actual_seat_number,
-                "ticket_type_id": ticket_type_for_seat["_id"],
-                "ticket_name": ticket_type_for_seat["name"],
-                "ticket_base_price": seat_price,
-            }
-            if random.random() >= 0.7:
-                dicsount_for_seat = random.choice(discount_list)
-                seat["discount_id"] = dicsount_for_seat["_id"]
-                seat["discount_name"] = dicsount_for_seat["name"]
-                seat["discount_percentage"] = dicsount_for_seat["percentage"]
-                seat_price_for_total = (1 - dicsount_for_seat["percentage"]/100)*seat_price
+            emp_doc = {"start_date": t_start, "cinema_id": assigned_cinema}
+            if not is_active:
+                emp_doc["end_date"] = datetime.combine(t_end_date, datetime.min.time())
             
-            ticket_price += seat_price_for_total
-            seats_snapshot.append(seat)
+            user_doc["employments"].append(emp_doc)
 
-        special_offer_for_ticket = random.choice(special_offer_list)
-        special_offer_id = special_offer_for_ticket["_id"]
-        special_offer_amount = special_offer_for_ticket["amount"]
+            limit_date = datetime.now().date() if is_active else t_end_date
+            total_days = (limit_date - current_date).days
+            
+            if total_days > 0:
+                s_count = min(total_days, random.randint(10, 30))
+                days = random.sample([current_date + timedelta(days=d) for d in range(total_days)], s_count)
 
-        special_offer_total_minus = special_offer_amount * ticket_seats_amount
-        ticket_price -= special_offer_total_minus
-        if ticket_price < 0:
-            ticket_price = 0
-        ticket = {
-            "total_price": ticket_price,
-            "qr_code": fake.uuid4(),
-            "status": ticket_status,
-            "group_type_snapshot": group_type_snapshot,
-            "screening_id": screening_id,
-            "movie_title": movie_title,
-            "special_offer_id": special_offer_id,
-            "special_offer_amount": special_offer_total_minus,
-            "seats_snapshot": seats_snapshot
-        }
-        tickets_total_price += ticket_price
-        ticket_list.append(ticket)
-        current_seat_index += ticket_seats_amount
-    return ticket_list, tickets_total_price
+                for day in days:
+                    slot_start, slot_end = random.choice(shift_slots)
+                    s_start = datetime.combine(day, datetime.strptime(slot_start, '%H:%M').time())
+                    s_end = datetime.combine(day, datetime.strptime(slot_end, '%H:%M').time())
+                    
+                    shifts.append({
+                        "start_time": s_start,
+                        "end_time": s_end,
+                        "type": random.choice(SHIFT_TYPES),
+                        "worker_id": user_id,
+                        "cinema_id": assigned_cinema
+                    })
 
-def seed_order(batch_size): 
-    user_ids = [user["_id"] for user in db["user"].find({"type": "client"}, {"_id": 1})]
-    cinema_ids = [cinema["_id"] for cinema in db["cinema"].find({}, {"_id": 1})]
+            if is_active:
+                break
+            current_date = t_end_date + timedelta(days=random.randint(2, 14))
 
-    product_list = list(db["product"].find())
+        workers.append(user_doc)
 
-    group_type_list = list(db["group_type"].find())
-    screening_list = list(db["screening"].find())
-    screening_archive_list = list(db["screening_archive"].find())
-    screening_with_flag = [(screening_archive_list, True), (screening_list, False)]
-    special_offer_list = list(db["special_offer"].find())
-    ticket_type_list = list(db["ticket_type"].find())
-    discount_list = list(db["discount"].find())
-
-    order_list = []
-
-    for curr_screening_list, is_archive in screening_with_flag:
-        for screening in curr_screening_list:
-            screening_start_time = screening["start_time"]
-            filtered_special_offer_list = [offer for offer in special_offer_list if offer["start_time"] < screening_start_time]
-            taken_seats_numbers = [seat["seat_number"] for seat in screening["taken_seats"]]
-            total_seats_amount = len(taken_seats_numbers)
-
-            curr_idx = 0
-
-            while curr_idx < total_seats_amount:
-                order_amount = 0
-                order_status = "paid" if is_archive else random.choices(["reserved", "pending", "paid"], weights=[4, 1, 95], k=1)[0]
-                order_seats_amount = random.randint(1, 10)
-                end_idx = min(curr_idx + order_seats_amount, total_seats_amount)
-
-                seats_chunk_for_order = taken_seats_numbers[curr_idx : end_idx]
-
-                tickets, tickets_total_price = ticket_for_order(
-                    taken_seats_from_screening=seats_chunk_for_order,
-                    screening_id=screening["id"],
-                    movie_title=screening["movie_title"],
-                    group_type_list=group_type_list,
-                    special_offer_list=filtered_special_offer_list,
-                    ticket_type_list=ticket_type_list,
-                    discount_list=discount_list,
-                    order_status=order_status,
-                    is_archive=is_archive
-                )
-
-                order_amount += tickets_total_price
-
-                order = {
-                    "_id": ObjectId(),
-                    "cinema_id": random.choice(cinema_ids),
-                    "status": order_status,
-                    "ticket": tickets,
-                }
-
-                if random.random() >= 0.2:
-                    order["user_id"] = random.choice(user_ids)
-
-                if order_status != "reserved":
-                    order["time_of_payment"] = screening_start_time - timedelta(minutes=random.randint(15, 14*24*60))
-                    order["payment_type"] = random.choice(["blik", "cash", "card", "online", "voucher"])
-
-                    #PRODUCT_SNAPSHOT
-                    product_snapshot_prob = random.random()
-                    if product_snapshot_prob >= 0.7:
-                        product_snapshot_list, product_snapshot_total_price = product_snapshot_for_order(product_list)
-                        order_amount += product_snapshot_total_price
-                        order["product_snapshot"] = product_snapshot_list
-                    #PRODUCT_SNAPSHOT
-
-                order["amount"] = order_amount
-
-                order_list.append(order)
-                curr_idx = end_idx
-
-                if len(order_list) > batch_size:
-                    try:
-                        db["order"].insert_many(order_list)
-                        order_list = []
-                        print(f"Zapisano {batch_size} order")
-                    except errors.BulkWriteError as bwe:
-                        print("Błąd walidacji przy order!")
-                        print(bwe.details['writeErrors'][0])
-                    except Exception as e:
-                        print(f"Inny błąd: {e}")
-    if order_list:
+    if workers:
         try:
-            db["order"].insert_many(order_list)
-            print(f"Zapisano {len(order_list)} order")
+            db.user.insert_many(workers)
+            print(f"Dodano {len(workers)} pracowników.")
+            if shifts:
+                db.shift.insert_many(shifts)
+                print(f"Dodano {len(shifts)} zmian (shifts).")
         except errors.BulkWriteError as bwe:
-            print("Błąd walidacji przy order!")
+            print("Błąd zapisu (Schema Validation?):")
+            print(bwe.details['writeErrors'][0])
+
+def seed_managers(count=5):
+    print(f"--- Generowanie {count} managerów ---")
+    managers = []
+    for _ in range(count):
+        create_date = fake.date_between(start_date='-10y', end_date='-4y')
+        
+        num_terms = random.randint(1, 4)
+        current_date = create_date
+        terms = []
+
+        for _ in range(num_terms):
+            duration = random.randint(180, 400)
+            t_start = datetime.combine(current_date, datetime.min.time())
+            t_end = current_date + timedelta(days=duration)
+            
+            doc = {"start_date": t_start, "region_name": fake.administrative_unit()}
+            
+            if t_end < datetime.now().date():
+                doc["end_date"] = datetime.combine(t_end, datetime.min.time())
+                terms.append(doc)
+                current_date = t_end + timedelta(days=1)
+            else:
+                terms.append(doc)
+                break
+
+        user_doc = {
+            "name": fake.first_name(),
+            "surname": fake.last_name(),
+            "birthdate": datetime.combine(fake.date_of_birth(minimum_age=25, maximum_age=65), datetime.min.time()),
+            "username": fake.user_name(),
+            "email": fake.email(),
+            "password": fake.sha256(),
+            "account_create_date": datetime.combine(create_date, datetime.min.time()),
+            "last_login_date": fake.date_time_between(start_date=create_date, end_date='now'),
+            "type": MANAGER_TYPE,
+            "terms": terms
+        }
+        managers.append(user_doc)
+    
+    if managers:
+        try:
+            db.user.insert_many(managers)
+            print(f"Sukces: Dodano {len(managers)} menadżerów.")
+        except errors.BulkWriteError as bwe:
+            print("Błąd walidacji przy menadżerach!")
             print(bwe.details['writeErrors'][0])
         except Exception as e:
             print(f"Inny błąd: {e}")
 
 
+def seed_clients(count=50):
+    print(f"--- Generowanie {count} klientów ---")
+    clients = []
+    for _ in range(count):
+        create_date = fake.date_between(start_date='-5y', end_date='-4y')
+        
+        user_doc = {
+            "name": fake.first_name(),
+            "surname": fake.last_name(),
+            "birthdate": datetime.combine(fake.date_of_birth(minimum_age=13, maximum_age=90), datetime.min.time()),
+            "username": fake.user_name(),
+            "email": fake.email(),
+            "password": fake.sha256(),
+            "account_create_date": datetime.combine(create_date, datetime.min.time()),
+            "last_login_date": fake.date_time_between(start_date=create_date, end_date='now'),
+            "type": CLIENT_TYPE
+        }
+        clients.append(user_doc)
+    
+    if clients:
+        try:
+            db.user.insert_many(clients)
+            print(f"Sukces: Dodano {len(clients)} klientów.")
+        except errors.BulkWriteError as bwe:
+            print("Błąd walidacji przy klientach!")
+            print(bwe.details['writeErrors'][0])
+        except Exception as e:
+            print(f"Inny błąd: {e}")
+
+
+def seed_smth(arg="piszemy sparametryzowane"): 
+    pass 
+
+
 
 if __name__=="__main__": 
-    pass
+    # seed_managers(100)
+    # seed_workers_with_shifts(50000) #POTRZEBUJE CINEMA!!!
+    # seed_clients(200_000)
+    
+    # db.user.delete_many({})
+    # db.shift.delete_many({})
+    print("Koniec.")
