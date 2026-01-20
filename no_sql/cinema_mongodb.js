@@ -288,7 +288,7 @@ db.createCollection("product", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "product",
-      "required": ["name", "barcode", "is_available", "price"],
+      "required": ["name", "is_available", "price"],
       "properties": {
         "name": {
           "bsonType": "string"
@@ -551,7 +551,7 @@ db.createCollection("user", {
           "bsonType": "string"
         },
         "salary_month": {
-          "bsonType": "string"
+          "bsonType": "decimal"
         },
         "employments": {
           "bsonType": "array",
