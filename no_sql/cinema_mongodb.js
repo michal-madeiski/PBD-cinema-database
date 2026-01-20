@@ -159,7 +159,7 @@ db.createCollection("order", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "order",
-      "required": ["cinema_id", "status", "amount", "payment_type", "time_of_payment"],
+      "required": ["cinema_id", "status", "amount"],
       "properties": {
         "user_id": {
           "bsonType": "objectId"
