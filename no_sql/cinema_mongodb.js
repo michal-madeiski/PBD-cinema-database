@@ -24,13 +24,10 @@ db.createCollection("cinema", {
           "bsonType": "array",
           "items": {
             "title": "object",
-            "required": ["_id ", "room_number"],
+            "required": ["room_number"],
             "properties": {
-              "_id ": {
-                "bsonType": "objectId"
-              },
               "room_number": {
-                "bsonType": "string"
+                "bsonType": "int"
               },
               "seats": {
                 "bsonType": "array",
@@ -162,7 +159,7 @@ db.createCollection("order", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "order",
-      "required": ["cinema_id", "status", "amount"],
+      "required": ["cinema_id", "status", "amount", "payment_type", "time_of_payment"],
       "properties": {
         "user_id": {
           "bsonType": "objectId"
@@ -176,7 +173,7 @@ db.createCollection("order", {
         "amount": {
           "bsonType": "decimal"
         },
-        "time_of_payment ": {
+        "time_of_payment": {
           "bsonType": "date"
         },
         "product_snapshot": {
@@ -221,7 +218,7 @@ db.createCollection("order", {
               "group_type_snapshot": {
                 "bsonType": "object",
                 "title": "object",
-                "required": ["name", "discount_percentage", "id "],
+                "required": ["name", "discount_percentage", "_id"],
                 "properties": {
                   "name": {
                     "bsonType": "string"
@@ -229,7 +226,7 @@ db.createCollection("order", {
                   "discount_percentage": {
                     "bsonType": "decimal"
                   },
-                  "id ": {
+                  "_id": {
                     "bsonType": "objectId"
                   }
                 }  
@@ -291,7 +288,7 @@ db.createCollection("product", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "product",
-      "required": ["name", "barcode", "is_available ", "price"],
+      "required": ["name", "barcode", "is_available", "price"],
       "properties": {
         "name": {
           "bsonType": "string"
@@ -299,7 +296,7 @@ db.createCollection("product", {
         "barcode": {
           "bsonType": "string"
         },
-        "is_available ": {
+        "is_available": {
           "bsonType": "bool"
         },
         "price": {
@@ -317,7 +314,7 @@ db.createCollection("screening", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "screening",
-      "required": ["cinema_id"],
+      "required": ["cinema_id", "start_time", "end_time", "movie_id", "movie_title", "version_snapshot", "room_number"],
       "properties": {
         "start_time": {
           "bsonType": "date"
@@ -360,7 +357,7 @@ db.createCollection("screening", {
             "required": ["seat_number", "status"],
             "properties": {
               "seat_number": {
-                "bsonType": "string"
+                "bsonType": "int"
               },
               "status": {
                 "enum": ["reserved", "paid"]
@@ -374,13 +371,76 @@ db.createCollection("screening", {
 });
 //SCREENING
 
+//SCREENING_ARCHIVE
+db.createCollection("screening_archive", {
+  validator: {
+    $jsonSchema: {
+      "bsonType": "object",
+      "title": "screening_archive",
+      "required": ["cinema_id", "start_time", "end_time", "movie_id", "movie_title", "version_snapshot", "room_number"],
+      "properties": {
+        "start_time": {
+          "bsonType": "date"
+        },
+        "end_time": {
+          "bsonType": "date"
+        },
+        "movie_id": {
+          "bsonType": "objectId"
+        },
+        "movie_title": {
+          "bsonType": "string"
+        },
+        "version_snapshot": {
+          "bsonType": "object",
+          "title": "object",
+          "required": ["language", "subtitles", "format"],
+          "properties": {
+            "language": {
+              "bsonType": "string"
+            },
+            "subtitles": {
+              "bsonType": "string"
+            },
+            "format": {
+              "bsonType": "string"
+            }
+          }  
+        },
+        "cinema_id": {
+          "bsonType": "objectId"
+        },
+        "room_number": {
+          "bsonType": "int"
+        },
+        "taken_seats": {
+          "bsonType": "array",
+          "items": {
+            "title": "object",
+            "required": ["seat_number", "status"],
+            "properties": {
+              "seat_number": {
+                "bsonType": "int"
+              },
+              "status": {
+                "enum": ["reserved", "paid"]
+              }
+            }
+          }  
+        }
+      }  
+    } 
+  }
+});
+//SCREENING_ARCHIVE
+
 //SHIFT
 db.createCollection("shift", {
   validator: {
     $jsonSchema: {
       "bsonType": "object",
       "title": "shift",
-      "required": ["start_time", "end_time", "type", "worker_id ", "cinema_id"],
+      "required": ["start_time", "end_time", "type", "worker_id", "cinema_id"],
       "properties": {
         "start_time": {
           "bsonType": "date"
@@ -391,7 +451,7 @@ db.createCollection("shift", {
         "type": {
           "enum": ["cashier", "usher", "cleaner", "projection", "technical_support"]
         },
-        "worker_id ": {
+        "worker_id": {
           "bsonType": "objectId"
         },
         "cinema_id": {
@@ -427,7 +487,7 @@ db.createCollection("special_offer", {
     } 
   }
 });
-//SPECIAK_OFFER
+//SPECIAL_OFFER
 
 //TICKET_TYPE
 db.createCollection("ticket_type", {
@@ -455,7 +515,7 @@ db.createCollection("user", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "user",
-      "required": ["name", "surname", "birthdate", "username", "email", "password", "acount_create_date", "type"],
+      "required": ["name", "surname", "birthdate", "username", "email", "password", "account_create_date", "type"],
       "properties": {
         "name": {
           "bsonType": "string"
@@ -473,9 +533,9 @@ db.createCollection("user", {
           "bsonType": "string"
         },
         "password": {
-          "bsonType": "symbol"
+          "bsonType": "string"
         },
-        "acount_create_date": {
+        "account_create_date": {
           "bsonType": "date"
         },
         "last_login_date": {

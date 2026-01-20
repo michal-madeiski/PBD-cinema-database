@@ -1,4 +1,5 @@
 --Number of tickets sold per movie
+--EXPLAIN ANALYZE
 SELECT m._id,
     m.title,
     COUNT (DISTINCT ss.fk_ticket_id) AS tickets_sold
