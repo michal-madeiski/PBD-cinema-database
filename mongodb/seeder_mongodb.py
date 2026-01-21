@@ -459,18 +459,24 @@ def seed_order(batch_size):
     group_type_list = list(db["group_type"].find())
     ticket_type_list = list(db["ticket_type"].find())
     discount_list = list(db["discount"].find())
-    special_offer_list = list(db["special_offer"].find({}, {"_id": 1, "start_time": 1, "amount": 1}))
-    screening_list = list(db["screening"].find({}, {"_id": 1, "movie_title": 1, "taken_seats": 1, "start_time": 1}))
-    screening_archive_list = list(db["screening_archive"].find())
-    screening_with_flag = [(screening_archive_list, True), (screening_list, False)]
+
+    special_offer_list = list(db["special_offer"].find({}, {"_id": 1, "start_time": 1, "amount": 1}).sort("start_time", 1))
+
+    screening_sources = (("screening_archive", True), ("screening", False))
 
     order_list = []
+    count = 0
 
-    for curr_screening_list, is_archive in screening_with_flag:
-        for screening in curr_screening_list:
+    for curr_screening_list, is_archive in screening_sources:
+        screening_cursor = db[curr_screening_list].find({}, {"_id": 1, "movie_title": 1, "taken_seats": 1, "start_time": 1}).batch_size(1000)
+        for screening in screening_cursor:
             screening_start_time = screening["start_time"]
             filtered_special_offer_list = [offer for offer in special_offer_list if offer["start_time"] < screening_start_time]
-            taken_seats_numbers = [seat["seat_number"] for seat in screening["taken_seats"]]
+
+            taken_seats = screening.get("taken_seats", [])
+            if not taken_seats:
+                continue
+            taken_seats_numbers = [seat["seat_number"] for seat in taken_seats]
             total_seats_amount = len(taken_seats_numbers)
 
             curr_idx = 0
@@ -528,7 +534,8 @@ def seed_order(batch_size):
                     try:
                         db["order"].insert_many(order_list)
                         order_list = []
-                        print(f"Zapisano {batch_size} order")
+                        count += 1
+                        print(f"{count}. Zapisano {batch_size} order")
                     except errors.BulkWriteError as bwe:
                         print("Błąd walidacji przy order!")
                         print(bwe.details['writeErrors'][0])
@@ -537,7 +544,8 @@ def seed_order(batch_size):
     if order_list:
         try:
             db["order"].insert_many(order_list)
-            print(f"Zapisano {len(order_list)} order")
+            count += 1
+            print(f"{count}. Zapisano {len(order_list)} order")
         except errors.BulkWriteError as bwe:
             print("Błąd walidacji przy order!")
             print(bwe.details['writeErrors'][0])
@@ -738,14 +746,16 @@ def clear_mongodb():
 if __name__=="__main__": 
     clear_mongodb()
 
-    seed_cinema(20, 10, 30)
+    seed_cinema(100, 10, 50)
     seed_discount()
     seed_group_type()
-    seed_special_offer()
+    seed_special_offer(10_000)
     seed_ticket_type()
-    seed_product(100)
-    seed_movies_and_screenings(1000, 10000)
-    seed_clients(2000)
-    seed_managers(10)
-    seed_workers_with_shifts(200)
-    seed_order(4000)
+    seed_product(1000)
+    for _ in range (15):
+        seed_movies_and_screenings(7000, 100_000)
+    for _ in range(25):
+        seed_clients(100_000)
+    seed_managers(50)
+    seed_workers_with_shifts(10_000)
+    seed_order(2000)
