@@ -238,7 +238,7 @@ db.createCollection("order", {
                 "bsonType": "array",
                 "items": {
                   "title": "object",
-                  "required": ["seat_number", "ticket_type", "ticket_base_price", "ticket_type_id", "discount_name", "discount_id", "discount_percentage"],
+                  "required": ["seat_number", "ticket_type", "ticket_base_price", "ticket_type_id"],
                   "properties": {
                     "seat_number": {
                       "bsonType": "int"

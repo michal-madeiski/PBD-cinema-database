@@ -6,17 +6,23 @@ from bson.decimal128 import Decimal128
 from pymongo import MongoClient, errors
 from datetime import timedelta, datetime
 
+#CONFIG
 fake = Faker(['pl_PL']) 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["cinema_mongodb_local"]
+#CONFIG
 
+#CONST
 WORKER_TYPES = ['service', 'supervisor']
 MANAGER_TYPE = 'regional_manager'
 CLIENT_TYPE = 'client'
 SHIFT_TYPES = ['cashier', 'usher', 'cleaner', 'projection', 'technical_support']
+PAYMENT_TYPES = ["blik", "cash", "card", "online", "voucher"]
+ORDER_STATUSES = ["reserved", "pending", "paid"]
+#CONST
+
 
 def get_versions_pool(pool_size):
-    """Generuje pulę unikalnych wersji do losowania"""
     languages = ["PL", "EN", "GER", "FR", "ES"]
     subtitles_opts = ["NO", "PL", "EN"]
     formats = ["2D", "3D", "IMAX"]
@@ -31,10 +37,11 @@ def get_versions_pool(pool_size):
         result.append(version)
     return result
 
-#CONST COLLECTIONS
+#CONST
 VERSIONS = get_versions_pool(10)
+#CONST
 
-#Helpery
+#Helper
 def generate_taken_seats(room_capacity=100, active = False):
     taken_seats = []
     seats_to_take = random.randint(0, room_capacity)
@@ -53,13 +60,13 @@ def generate_taken_seats(room_capacity=100, active = False):
     return taken_seats
 
 #Batchable functions 
-def movies_and_screenings_sector(movies_count=1000, screenings_count =100000):    
+def seed_movies_and_screenings(movies_count=1000, screenings_count =100000):    
     versions_pool = VERSIONS
     
     movies_batch = []
     screenings_archive_batch = []
     screenings_active_batch = []
-    #FILMY
+    #MOVIE
     for _ in range(movies_count):
         num_versions_for_movie = random.randint(1, 5)
         movie_versions = random.choices(versions_pool, k=num_versions_for_movie)
@@ -85,7 +92,7 @@ def movies_and_screenings_sector(movies_count=1000, screenings_count =100000):
         }
         movies_batch.append(movie)
 
-    #SCREENINGI
+    #SCREENING
     cinemas = list(db.cinema.find({}, {"_id": 1, "rooms": 1}))
     now =datetime.now()
     for i in range(screenings_count):
@@ -117,8 +124,7 @@ def movies_and_screenings_sector(movies_count=1000, screenings_count =100000):
         else:
             screenings_active_batch.append(screening)
     
-
-    ##Zapis
+    #Save
     if movies_batch:
         db.movie.insert_many(movies_batch)
         print(f"Dodano {len(movies_batch)} filmów.")
@@ -195,28 +201,28 @@ def seed_group_type():
 
     if "pojedynczy" not in existing_names:
         group_types.append({
-            "name": "pojedynczy",
+            "name": "single",
             "discount_percentage": Decimal128("0.00"),
             "min_size": 1
         })
 
     if "podwójny" not in existing_names:
         group_types.append({
-            "name": "podwójny",
+            "name": "double",
             "discount_percentage": Decimal128("5.00"),
             "min_size": 2
         })
 
     if "rodzinny" not in existing_names:
         group_types.append({
-            "name": "rodzinny",
+            "name": "family",
             "discount_percentage": Decimal128("10.00"),
             "min_size": 3
         })
 
     if "grupowy" not in existing_names:
         group_types.append({
-            "name": "grupowy",
+            "name": "group",
             "discount_percentage": Decimal128("30.00"),
             "min_size": 10
         })
@@ -450,14 +456,13 @@ def seed_order(batch_size):
     cinema_ids = [cinema["_id"] for cinema in db["cinema"].find({}, {"_id": 1})]
 
     product_list = list(db["product"].find())
-
     group_type_list = list(db["group_type"].find())
-    screening_list = list(db["screening"].find())
-    screening_archive_list = list(db["screening_archive"].find())
-    screening_with_flag = [(screening_archive_list, True), (screening_list, False)]
-    special_offer_list = list(db["special_offer"].find())
     ticket_type_list = list(db["ticket_type"].find())
     discount_list = list(db["discount"].find())
+    special_offer_list = list(db["special_offer"].find({}, {"_id": 1, "start_time": 1, "amount": 1}))
+    screening_list = list(db["screening"].find({}, {"_id": 1, "movie_title": 1, "taken_seats": 1, "start_time": 1}))
+    screening_archive_list = list(db["screening_archive"].find())
+    screening_with_flag = [(screening_archive_list, True), (screening_list, False)]
 
     order_list = []
 
@@ -472,7 +477,7 @@ def seed_order(batch_size):
 
             while curr_idx < total_seats_amount:
                 order_amount = 0
-                order_status = "paid" if is_archive else random.choices(["reserved", "pending", "paid"], weights=[4, 1, 95], k=1)[0]
+                order_status = "paid" if is_archive else random.choices(ORDER_STATUSES, weights=[4, 1, 95], k=1)[0]
                 order_seats_amount = random.randint(1, 10)
                 end_idx = min(curr_idx + order_seats_amount, total_seats_amount)
 
@@ -504,7 +509,7 @@ def seed_order(batch_size):
 
                 if order_status != "reserved":
                     order["time_of_payment"] = screening_start_time - timedelta(minutes=random.randint(15, 14*24*60))
-                    order["payment_type"] = random.choice(["blik", "cash", "card", "online", "voucher"])
+                    order["payment_type"] = random.choice(PAYMENT_TYPES)
 
                     #PRODUCT_SNAPSHOT
                     product_snapshot_prob = random.random()
@@ -539,11 +544,9 @@ def seed_order(batch_size):
         except Exception as e:
             print(f"Inny błąd: {e}")
 
-
 def get_cinema_ids():
     cinemas = list(db.cinema.find({}, {"_id": 1}))
     return [c["_id"] for c in cinemas]
-
 
 def seed_workers_with_shifts(count=10):
     cinema_ids = get_cinema_ids()
@@ -688,7 +691,6 @@ def seed_managers(count=5):
         except Exception as e:
             print(f"Inny błąd: {e}")
 
-
 def seed_clients(count=50):
     print(f"--- Generowanie {count} klientów ---")
     clients = []
@@ -718,15 +720,23 @@ def seed_clients(count=50):
         except Exception as e:
             print(f"Inny błąd: {e}")
 
-
-
-if __name__=="__main__": 
+def clear_mongodb():
     collections = db.list_collection_names()
-
+    count = 1
     for collection_name in collections:
         if collection_name.startswith("system."):
             continue
-        db[collection_name].delete_many({})
+        try:
+            db[collection_name].delete_many({})
+            print(f"{count}. Wyczyszczono {collection_name}")
+            count += 1
+        except Exception as e:
+            print(f"Błąd przy usuwaniu: {e}")
+    print("")
+
+
+if __name__=="__main__": 
+    clear_mongodb()
 
     seed_cinema(20, 10, 30)
     seed_discount()
@@ -734,9 +744,8 @@ if __name__=="__main__":
     seed_special_offer()
     seed_ticket_type()
     seed_product(100)
-    movies_and_screenings_sector(1000, 100000)
-    seed_clients(20000)
+    seed_movies_and_screenings(1000, 10000)
+    seed_clients(2000)
     seed_managers(10)
     seed_workers_with_shifts(200)
-    seed_order(10000)
-    print("Koniec.")
+    seed_order(4000)
