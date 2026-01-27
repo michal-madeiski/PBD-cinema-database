@@ -7,8 +7,8 @@ from datetime import datetime
 
 #CONFIG 
 fake = Faker(['pl_PL']) 
-client = MongoClient("url_do_bazy")
-db = client["nazwa"]
+client = MongoClient("mongodb://localhost:27017/")
+db = client["moja-baza-mongo"]
 
 
 def get_versions_pool(pool_size):

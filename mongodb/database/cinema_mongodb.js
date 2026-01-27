@@ -159,7 +159,7 @@ db.createCollection("order", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "order",
-      "required": ["cinema_id", "status", "amount", "payment_type", "time_of_payment"],
+      "required": ["cinema_id", "status", "amount"],
       "properties": {
         "user_id": {
           "bsonType": "objectId"
@@ -238,7 +238,7 @@ db.createCollection("order", {
                 "bsonType": "array",
                 "items": {
                   "title": "object",
-                  "required": ["seat_number", "ticket_type", "ticket_base_price", "ticket_type_id", "discount_name", "discount_id", "discount_percentage"],
+                  "required": ["seat_number", "ticket_type", "ticket_base_price", "ticket_type_id"],
                   "properties": {
                     "seat_number": {
                       "bsonType": "int"
@@ -288,7 +288,7 @@ db.createCollection("product", {
     $jsonSchema: {
       "bsonType": "object",
       "title": "product",
-      "required": ["name", "barcode", "is_available", "price"],
+      "required": ["name", "is_available", "price"],
       "properties": {
         "name": {
           "bsonType": "string"
@@ -551,7 +551,7 @@ db.createCollection("user", {
           "bsonType": "string"
         },
         "salary_month": {
-          "bsonType": "string"
+          "bsonType": "decimal"
         },
         "employments": {
           "bsonType": "array",
