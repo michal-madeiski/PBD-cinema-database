@@ -1,0 +1,24 @@
+01 Number of tickets sold per movie.
+02 Number of screenings per film format.
+03 Workers with the highest monthly salary.
+04 Total ticket revenue per cinema from the last year.
+05 Ticket promotion breakdown.
+06 Top 10 best-selling products.
+07 Product revenue vs ticket revenue.
+08 Average daily screenings per cinema.
+09 Cinema ranking by last month's ticket revenue.
+10 Room occupancy by month.
+11 Cash payments percentage: tickets, products, total.
+12 Most screened version for each movie.
+13 Top 10 movie incomes.
+14 Overall number of workers per shift type in each cinema.
+15 Workers with above-average employment time.
+16 Every 10,000th customer in the system.
+17 Region breakdown: cinema count, total revenue, revenue per cinema from last month's tickets.
+18 Number of free tickets per special offer.
+19 Employees with the most hours worked last month.
+20 Regional managers who managed 3 or more regions.
+21 Which seats are available for the given screening?
+22 Which screenings are available in the given cinema?
+23 Client's ticket history.
+24 Cinemas in city.
