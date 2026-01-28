@@ -1,5 +1,4 @@
 //Average daily screenings per cinema
-
 db.cinema.aggregate([
     {
         $lookup: {
