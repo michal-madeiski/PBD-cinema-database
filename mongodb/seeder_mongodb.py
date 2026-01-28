@@ -8,8 +8,9 @@ from datetime import timedelta, datetime
 
 #CONFIG
 fake = Faker(['pl_PL']) 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["cinema_mongodb_local"]
+# client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://admin1:p%40ssw0rd1@cinemadbsrv.pidtmrq.mongodb.net/")
+db = client["cinema_db"]
 #CONFIG
 
 #CONST
@@ -746,16 +747,16 @@ def clear_mongodb():
 if __name__=="__main__": 
     clear_mongodb()
 
-    seed_cinema(100, 10, 50)
+    seed_cinema(20, 10, 50)
     seed_discount()
     seed_group_type()
-    seed_special_offer(10_000)
+    seed_special_offer(1000)
     seed_ticket_type()
     seed_product(1000)
-    for _ in range (15):
-        seed_movies_and_screenings(7000, 100_000)
-    for _ in range(25):
-        seed_clients(100_000)
+    for _ in range (3):
+        seed_movies_and_screenings(700, 1000)
+    for _ in range(5):
+        seed_clients(1000)
     seed_managers(50)
-    seed_workers_with_shifts(10_000)
+    seed_workers_with_shifts(1000)
     seed_order(2000)
