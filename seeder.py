@@ -830,50 +830,54 @@ if __name__ == "__main__":
     print("ZACZYNAM SEEDOWANIE")
 
     # COMPLETE DATABASE:
-    # REGION = 100
-    # PRODUCT = 1000
-    # MOVIE_AND_LICENSE = 10_000
-    # min_versions = 1
-    # max_versions = 5
-    # min_cinema_movie_version = 10
-    # max_cinema_movie_version = 50 
-    # min_room = 2
-    # max_room = 8
-    # CINEMA = 500
-    # SERVICE = 100_000
-    # SUPERVISOR = 5000
-    # CLIENT = 1_000_000
-    # REGIONAL_MANAGER = 500
-    # EMPLOYMENT = 150_000
-    # SCREENING = 2_000_000
-    # PAYMENT = 10_000_000
-    # PRODUCT_SALE = 1_000_000
-    # TERM = 700
-    # SPECIAL_OFFER = 10_000
-    # TICKET_SPECIAL_OFFER = 2_000_000
-
-    # TEST DATABASE:
-    REGION = 16
-    PRODUCT = 100
-    MOVIE_AND_LICENSE = 1000
+    REGION = 100
+    PRODUCT = 1000
+    MOVIE_AND_LICENSE = 10_000
     min_versions = 1
     max_versions = 5
-    min_cinema_movie_version=10
-    max_cinema_movie_version=20
+    min_cinema_movie_version = 10
+    max_cinema_movie_version = 50 
     min_room = 2
-    max_room = 5
-    CINEMA = 50
-    SERVICE = 1000
-    SUPERVISOR = 50
-    CLIENT = 10_000
-    REGIONAL_MANAGER = 50
-    EMPLOYMENT = 1500
-    SCREENING = 2000
-    PAYMENT = 10_000
-    PRODUCT_SALE = 1000
-    TERM = 70
-    SPECIAL_OFFER = 250
-    TICKET_SPECIAL_OFFER = 10_000
+    max_room = 8
+    CINEMA = 500
+    SERVICE = 100_000
+    SUPERVISOR = 5000
+    CLIENT = 1_000_000
+    REGIONAL_MANAGER = 500
+    EMPLOYMENT = 150_000
+    SCREENING = 2_000_000
+    PAYMENT = 10_000_000
+    calculate_payments_batch = 100_000
+    PRODUCT_SALE = 1_000_000
+    TERM = 700
+    SPECIAL_OFFER = 10_000
+    TICKET_SPECIAL_OFFER = 2_000_000
+    ticket_special_offer_batch = 100_000
+
+    # TEST DATABASE:
+    # REGION = 16
+    # PRODUCT = 100
+    # MOVIE_AND_LICENSE = 1000
+    # min_versions = 1
+    # max_versions = 5
+    # min_cinema_movie_version=10
+    # max_cinema_movie_version=20
+    # min_room = 2
+    # max_room = 5
+    # CINEMA = 50
+    # SERVICE = 1000
+    # SUPERVISOR = 50
+    # CLIENT = 10_000
+    # REGIONAL_MANAGER = 50
+    # EMPLOYMENT = 1500
+    # SCREENING = 2000
+    # PAYMENT = 10_000
+    # calculate_payments_batch = 10_000
+    # PRODUCT_SALE = 1000
+    # TERM = 70
+    # SPECIAL_OFFER = 250
+    # TICKET_SPECIAL_OFFER = 10_000
+    # ticket_special_offer_batch = 2000
     
 
     # does not require other tables
@@ -918,8 +922,6 @@ if __name__ == "__main__":
     seed_ticket()
 
     # requires: ticket, special_offer
-    # seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=100_000) # COMPLETE DATABASE
-    seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=2000) # TEST DATABASE
+    seed_ticket_special_offer(TICKET_SPECIAL_OFFER, batch_size=ticket_special_offer_batch)
 
-    # calculate_payments() # COMPLETE DATABASE
-    calculate_payments(batch_size=10_000)  # TEST DATABASE
+    calculate_payments(calculate_payments_batch)

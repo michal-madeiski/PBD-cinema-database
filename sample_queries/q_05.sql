@@ -1,4 +1,4 @@
---Ticket promotion breakdown
+--Ticket promotion breakdown.
 --EXPLAIN ANALYZE
 WITH ticket_data AS (
     SELECT

@@ -1,4 +1,4 @@
-// Cinemas in city.
+//Cinemas in city.
 db.cinema.aggregate([
     {
         $match: {

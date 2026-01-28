@@ -1,4 +1,4 @@
---Number of screenings per film format
+--Number of screenings per film format.
 --EXPLAIN ANALYZE
 SELECT v.format,
     COUNT(s._id) AS screenings

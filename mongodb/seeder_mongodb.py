@@ -8,9 +8,8 @@ from datetime import timedelta, datetime
 
 #CONFIG
 fake = Faker(['pl_PL']) 
-# client = MongoClient("mongodb://localhost:27017/")
-client = MongoClient("mongodb+srv://admin1:p%40ssw0rd1@cinemadbsrv.pidtmrq.mongodb.net/")
-db = client["cinema_db"]
+client = MongoClient("mongodb://localhost:27017/")
+db = client["cinema_mongodb_local"]
 #CONFIG
 
 #CONST
@@ -61,7 +60,7 @@ def generate_taken_seats(room_capacity=100, active = False):
     return taken_seats
 
 #Batchable functions 
-def seed_movies_and_screenings(movies_count=1000, screenings_count =100000):    
+def seed_movie_and_screening(movies_count=1000, screenings_count =100000):    
     versions_pool = VERSIONS
     
     movies_batch = []
@@ -557,7 +556,7 @@ def get_cinema_ids():
     cinemas = list(db.cinema.find({}, {"_id": 1}))
     return [c["_id"] for c in cinemas]
 
-def seed_workers_with_shifts(count=10):
+def seed_worker(count=10):
     cinema_ids = get_cinema_ids()
     
     if not cinema_ids:
@@ -651,7 +650,7 @@ def seed_workers_with_shifts(count=10):
             print("Błąd zapisu (Schema Validation?):")
             print(bwe.details['writeErrors'][0])
 
-def seed_managers(count=5):
+def seed_regional_manager(count=5):
     print(f"--- Generowanie {count} managerów ---")
     managers = []
     for _ in range(count):
@@ -700,7 +699,7 @@ def seed_managers(count=5):
         except Exception as e:
             print(f"Inny błąd: {e}")
 
-def seed_clients(count=50):
+def seed_client(count=50):
     print(f"--- Generowanie {count} klientów ---")
     clients = []
     for _ in range(count):
@@ -746,17 +745,49 @@ def clear_mongodb():
 
 if __name__=="__main__": 
     clear_mongodb()
+    print("ZACZYNAM SEEDOWANIE")
 
-    seed_cinema(20, 10, 50)
+    # COMPLETE DATABASE:
+    CINEMA = 100
+    max_room = 10
+    max_seat = 50
+    SPECIAL_OFFER = 10_000
+    PRODUCT = 1000
+    movie_and_screening_loop = 15
+    MOVIE = 2000
+    SCREENING = 100_000
+    client_loop = 25
+    CLIENT = 100_000
+    REGIONAL_MANAGER = 50
+    WORKER = 10_000
+    order_batch = 2000
+
+    # TEST DATABASE:
+    # CINEMA = 10
+    # max_room = 5
+    # max_seat = 30
+    # SPECIAL_OFFER = 1000
+    # PRODUCT = 100
+    # movie_and_screening_loop = 3
+    # MOVIE = 300
+    # SCREENING = 3000
+    # client_loop = 5
+    # CLIENT = 30_000
+    # REGIONAL_MANAGER = 5
+    # WORKER = 500
+    # order_batch = 2000
+
+
+    seed_cinema(CINEMA, max_room, max_seat)
     seed_discount()
     seed_group_type()
-    seed_special_offer(1000)
+    seed_special_offer(SPECIAL_OFFER)
     seed_ticket_type()
-    seed_product(1000)
-    for _ in range (3):
-        seed_movies_and_screenings(700, 1000)
-    for _ in range(5):
-        seed_clients(1000)
-    seed_managers(50)
-    seed_workers_with_shifts(1000)
-    seed_order(2000)
+    seed_product(PRODUCT)
+    for _ in range (movie_and_screening_loop):
+        seed_movie_and_screening(MOVIE, SCREENING)
+    for _ in range(client_loop):
+        seed_client(CLIENT)
+    seed_regional_manager(REGIONAL_MANAGER)
+    seed_worker(WORKER)
+    seed_order(order_batch)

@@ -1,4 +1,4 @@
-//Number of tickets sold per movie
+//Number of tickets sold per movie.
 db.screening_archive.aggregate([
     {$group:{
         _id: "$movie_id",

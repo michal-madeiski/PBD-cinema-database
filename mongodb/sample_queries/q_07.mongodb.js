@@ -1,4 +1,4 @@
-//Product revenue vs ticket revenue
+//Product revenue vs ticket revenue.
 db.order.aggregate([
     { $group: {
         _id: null,

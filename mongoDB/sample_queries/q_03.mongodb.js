@@ -1,0 +1,2 @@
+//Workers with the highest monthly salary.
+db.user.find({type: { $in: ["supervisor","regional_manager","service"]}, salary_month: {$exists: true ,$ne: null}}, {_id: 1, name: 1, surname: 1, salary_month: 1}).sort({salary_month: -1}).limit(10)

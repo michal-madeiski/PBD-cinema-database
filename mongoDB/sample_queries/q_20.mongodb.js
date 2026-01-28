@@ -1,4 +1,4 @@
-// Regional managers who managed 3 or more DISTINCT regions
+//Regional managers who managed 3 or more regions.
 db.user.aggregate([
     {
         $match: {

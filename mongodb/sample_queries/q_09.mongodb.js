@@ -1,4 +1,4 @@
-//Cinema ranking by last month's ticket revenue
+//Cinema ranking by last month's ticket revenue.
 db.cinema.aggregate([
     {
         $lookup: {

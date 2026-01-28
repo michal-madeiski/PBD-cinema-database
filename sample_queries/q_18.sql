@@ -1,4 +1,4 @@
---Number of free tickets per special offer
+--Number of free tickets per special offer.
 --EXPLAIN ANALYZE
 SELECT so._id AS special_offer_id,
     so.name,

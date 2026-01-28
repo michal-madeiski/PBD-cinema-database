@@ -1,4 +1,4 @@
-// Region breakdown: cinema count, total revenue, revenue per cinema from last month's tickets.
+//Region breakdown: cinema count, total revenue, revenue per cinema from last month's tickets.
 db.order.aggregate([
     {
         $match: {

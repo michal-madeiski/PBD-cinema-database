@@ -1,4 +1,4 @@
-//Top 10 best-selling products
+//Top 10 best-selling products.
 db.order.aggregate([
     { $unwind: "$product_snapshot" },
     {

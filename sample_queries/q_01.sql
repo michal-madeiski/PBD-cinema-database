@@ -1,4 +1,4 @@
---Number of tickets sold per movie
+--Number of tickets sold per movie.
 --EXPLAIN ANALYZE
 SELECT m._id,
     m.title,

@@ -1,4 +1,4 @@
-//Ticket promotion breakdown
+//Ticket promotion breakdown.
 db.order.aggregate([
     { $unwind: "$ticket" },
     {

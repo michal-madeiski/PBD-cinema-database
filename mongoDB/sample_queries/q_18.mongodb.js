@@ -1,4 +1,4 @@
-// Number of free tickets per special offer
+//Number of free tickets per special offer.
 db.order.aggregate([
     {
         $unwind: "$ticket"

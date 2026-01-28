@@ -1,4 +1,4 @@
-// Employees with the most hours worked last month
+//Employees with the most hours worked last month.
 db.shift.aggregate([
     {
         $match: {

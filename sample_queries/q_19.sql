@@ -1,4 +1,4 @@
---Employees with the most hours worked last month
+--Employees with the most hours worked last month.
 --EXPLAIN ANALYZE
 SELECT u._id AS worker_id,
     u.name,

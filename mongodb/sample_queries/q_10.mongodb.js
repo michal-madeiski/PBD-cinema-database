@@ -1,4 +1,4 @@
-//Room occupancy by month
+//Room occupancy by month.
 db.screening_archive.aggregate([
   {
     $lookup: {

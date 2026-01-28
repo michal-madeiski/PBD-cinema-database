@@ -1,4 +1,4 @@
---Average daily screenings per cinema
+--Average daily screenings per cinema.
 --EXPLAIN ANALYZE
 SELECT
     cinema._id AS "Id kina",

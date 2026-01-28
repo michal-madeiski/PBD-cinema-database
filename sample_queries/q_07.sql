@@ -1,4 +1,4 @@
---Product revenue vs ticket revenue
+--Product revenue vs ticket revenue.
 --EXPLAIN ANALYZE
 SELECT 
     (

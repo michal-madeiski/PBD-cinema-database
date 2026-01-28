@@ -1,4 +1,4 @@
---Every 10,000th customer in the system
+--Every 10,000th customer in the system.
 --EXPLAIN ANALYZE
 SELECT *
 FROM (

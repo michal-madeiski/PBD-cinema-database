@@ -5,4 +5,3 @@ var endOfDay = new Date(startOfDay);
 endOfDay.setDate(startOfDay.getDate() + 1);
 
 db.screening.find({cinema_id: cinema_id, start_time: {$gte: startOfDay, $lt: endOfDay}}, {_id: 0,start_time: 1, movie_title: 1, version_snapshot: 1})
-

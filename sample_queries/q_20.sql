@@ -1,4 +1,4 @@
---Regional managers who managed 3 or more regions
+--Regional managers who managed 3 or more regions.
 --EXPLAIN ANALYZE
 SELECT u._id AS regional_manager_id,
     u.name,
